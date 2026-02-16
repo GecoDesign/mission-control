@@ -6,6 +6,7 @@ import { LatestBriefingWidget } from "./latest-briefing-widget"
 import { TopIdeasWidget } from "./top-ideas-widget"
 import { QuickStatsWidget } from "./quick-stats-widget"
 import { ProjectProgressWidget } from "./project-progress-widget"
+import { ThingsWidget } from "./things-widget"
 
 export function DashboardView() {
   return (
@@ -17,11 +18,12 @@ export function DashboardView() {
         </p>
       </div>
 
-      {/* Top Row - Stats, Tasks, Kanban */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Top Row - Stats, Tasks, Kanban, Things */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <QuickStatsWidget />
         <ActiveTasksWidget />
         <KanbanSummaryWidget />
+        <ThingsWidget />
       </div>
 
       {/* Bottom Row - Briefing, Ideas, Projects */}
