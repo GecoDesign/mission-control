@@ -171,7 +171,9 @@ export async function getThingsTasks(area: string = "Work  - Geco Design"): Prom
   upcoming: ThingsTask[];
 }> {
   // Check if we should use mock data (for development or if Things access fails)
-  const useMock = process.env.USE_MOCK_THINGS === 'true' || process.env.NODE_ENV === 'development';
+  // Explicitly setting USE_MOCK_THINGS overrides NODE_ENV
+  const useMock = process.env.USE_MOCK_THINGS === 'true' || 
+    (process.env.NODE_ENV === 'development' && process.env.USE_MOCK_THINGS !== 'false');
   
   if (useMock) {
     console.log('Using mock Things data for development');

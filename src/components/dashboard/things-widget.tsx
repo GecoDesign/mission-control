@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Circle, Calendar, Tag } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { CheckCircle2, Circle, Calendar, Tag, RefreshCw, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatDeadline, type ThingsTask } from "@/types/things"
 
@@ -41,11 +42,22 @@ export function ThingsWidget() {
     }
   }
 
+  const openInThings = (uuid: string) => {
+    window.open(`things:///show?id=${uuid}`, '_blank')
+  }
+
+  const addTaskInThings = () => {
+    window.open('things:///add?list=Work%20%20-%20Geco%20Design', '_blank')
+  }
+
   const TaskItem = ({ task }: { task: ThingsTask }) => (
-    <div className="flex items-start gap-3 p-2 rounded hover:bg-accent transition-colors group">
-      <Circle className="w-4 h-4 mt-0.5 text-muted-foreground group-hover:text-primary transition-colors" />
+    <button 
+      onClick={() => openInThings(task.uuid)}
+      className="flex items-start gap-3 p-2 rounded hover:bg-accent transition-colors group w-full text-left"
+    >
+      <Circle className="w-4 h-4 mt-0.5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
       <div className="flex-1 min-w-0 space-y-1">
-        <p className="text-sm font-medium leading-tight">
+        <p className="text-sm font-medium leading-tight group-hover:text-primary transition-colors">
           {task.title}
         </p>
         
@@ -79,7 +91,7 @@ export function ThingsWidget() {
           )}
         </div>
       </div>
-    </div>
+    </button>
   )
 
   const EmptyState = ({ message }: { message: string }) => (
@@ -97,9 +109,20 @@ export function ThingsWidget() {
             <CheckCircle2 className="w-5 h-5 text-purple-500" />
             Things · Geco Design
           </CardTitle>
-          <Badge variant="outline">
-            {todayTasks.length + upcomingTasks.length}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline">
+              {todayTasks.length + upcomingTasks.length}
+            </Badge>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={loadTasks}
+              disabled={loading}
+              className="h-8 w-8"
+            >
+              <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+            </Button>
+          </div>
         </div>
       </CardHeader>
       
@@ -151,17 +174,27 @@ export function ThingsWidget() {
               <EmptyState message="No tasks in Work - Geco Design" />
             )}
 
-            {/* Summary Footer */}
-            {(todayTasks.length > 0 || upcomingTasks.length > 0) && (
-              <div className="pt-3 border-t">
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>
-                    {todayTasks.length} today · {upcomingTasks.length} upcoming
-                  </span>
-                  <Tag className="w-3 h-3" />
+            {/* Summary Footer with Quick Add */}
+            <div className="pt-3 border-t">
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-muted-foreground">
+                  {todayTasks.length > 0 || upcomingTasks.length > 0 ? (
+                    <span>{todayTasks.length} today · {upcomingTasks.length} upcoming</span>
+                  ) : (
+                    <span>No active tasks</span>
+                  )}
                 </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={addTaskInThings}
+                  className="h-7 text-xs gap-1"
+                >
+                  <Plus className="w-3 h-3" />
+                  Add Task
+                </Button>
               </div>
-            )}
+            </div>
           </>
         )}
       </CardContent>
