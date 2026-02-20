@@ -336,20 +336,38 @@ export default function ToolsPage() {
                         </div>
                         <CardDescription>{tool.description}</CardDescription>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        asChild
-                        className="ml-4"
-                      >
-                        <a
-                          href={`file:///Users/minime/Library/Mobile%20Documents/com~apple~CloudDocs/Alex%20-%20MiniMe/${tool.file}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                      <div className="flex gap-2 ml-4">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          asChild
                         >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      </Button>
+                          <a
+                            href={`file:///Users/alexanderstevens/Library/Mobile%20Documents/com~apple~CloudDocs/Alex%20-%20MiniMe/${tool.file}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Open on your Mac"
+                          >
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            <span className="text-xs">Mac</span>
+                          </a>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          asChild
+                        >
+                          <a
+                            href={`file:///Users/minime/Library/Mobile%20Documents/com~apple~CloudDocs/Alex%20-%20MiniMe/${tool.file}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Open on MiniMe"
+                          >
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            <span className="text-xs">MiniMe</span>
+                          </a>
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>
