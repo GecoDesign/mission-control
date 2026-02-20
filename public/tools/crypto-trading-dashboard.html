@@ -420,6 +420,19 @@
             <div class="last-update">Last updated: <span id="last-update">Loading...</span></div>
         </header>
 
+        <div class="portfolio-summary" id="market-indicators" style="margin-bottom: 20px;">
+            <div class="summary-card" style="grid-column: span 2;">
+                <h3>🪙 BTC (Market Indicator)</h3>
+                <div class="value" id="btc-price">Loading...</div>
+                <div style="font-size: 0.9em; margin-top: 5px;" id="btc-change">--</div>
+            </div>
+            <div class="summary-card" style="grid-column: span 2;">
+                <h3>💎 ETH (Alt Market Health)</h3>
+                <div class="value" id="eth-price">Loading...</div>
+                <div style="font-size: 0.9em; margin-top: 5px;" id="eth-change">--</div>
+            </div>
+        </div>
+
         <div class="portfolio-summary" id="portfolio-summary">
             <div class="summary-card">
                 <h3>Best Performer</h3>
@@ -468,7 +481,17 @@
         // Configuration
         const CONFIG = {
             refreshInterval: 300000, // 5 minutes
-            baseTokens: ['DICKBUTT', 'DRB', 'BNKR', 'PEPE', '9MM'],
+            marketIndicators: [
+                { symbol: 'BTC', name: 'Bitcoin', coinGeckoId: 'bitcoin' },
+                { symbol: 'ETH', name: 'Ethereum', coinGeckoId: 'ethereum' }
+            ],
+            baseTokens: [
+                { symbol: 'DICKBUTT', search: 'DICKBUTT' },
+                { symbol: 'DRB', search: 'DRB' },
+                { symbol: 'BNKR', search: 'BNKR' },
+                { symbol: 'PEPE', search: 'PEPE' },
+                { symbol: '9MM', search: '0xe290816384416fb1dB9225e176b716346dB9f9fE', useCA: true }
+            ],
             pulseTokens: [
                 { symbol: 'PLSX', name: 'PulseX' },
                 { symbol: 'PDAI', name: 'PDAI', contract: '0xaE8429918FdBF9a5867e3243697637Dc56aa76A1' },
@@ -590,8 +613,9 @@
         }
 
         // Process token data
-        async function processToken(symbol, chain = 'base') {
-            const dexData = await fetchDEXScreenerData(symbol, chain);
+        async function processToken(searchTerm, chain = 'base', displaySymbol = null) {
+            const symbol = displaySymbol || searchTerm;
+            const dexData = await fetchDEXScreenerData(searchTerm, chain);
             
             if (!dexData) {
                 return {
@@ -765,6 +789,24 @@
             document.getElementById('tokens-tracked').textContent = allTokens.length;
         }
 
+        // Fetch market indicators (BTC/ETH)
+        async function fetchMarketIndicators() {
+            for (const indicator of CONFIG.marketIndicators) {
+                try {
+                    const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${indicator.coinGeckoId}&vs_currencies=usd&include_24hr_change=true`);
+                    const data = await response.json();
+                    const price = data[indicator.coinGeckoId]?.usd || 0;
+                    const change = data[indicator.coinGeckoId]?.usd_24h_change || 0;
+                    
+                    document.getElementById(`${indicator.symbol.toLowerCase()}-price`).textContent = `$${price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    const changeColor = change > 0 ? '#10b981' : '#ef4444';
+                    document.getElementById(`${indicator.symbol.toLowerCase()}-change`).innerHTML = `<span style="color: ${changeColor};">${change > 0 ? '+' : ''}${change.toFixed(2)}% (24h)</span>`;
+                } catch (error) {
+                    console.error(`Error fetching ${indicator.symbol}:`, error);
+                }
+            }
+        }
+
         // Main refresh function
         async function refreshData() {
             console.log('Refreshing data...');
@@ -772,14 +814,20 @@
             // Update timestamp
             document.getElementById('last-update').textContent = new Date().toLocaleString();
             
+            // Fetch market indicators first
+            fetchMarketIndicators();
+            
             // Fetch Basechain tokens
-            const basePromises = CONFIG.baseTokens.map(symbol => processToken(symbol, 'base'));
+            const basePromises = CONFIG.baseTokens.map(token => {
+                const searchTerm = token.search || token.symbol || token;
+                return processToken(searchTerm, 'base', token.symbol || token);
+            });
             tokenData.base = await Promise.all(basePromises);
             document.getElementById('base-tokens').innerHTML = tokenData.base.map(renderTokenCard).join('');
             
             // Fetch Pulsechain tokens
             const pulsePromises = CONFIG.pulseTokens.map(token => 
-                processToken(token.symbol, 'pulsechain')
+                processToken(token.symbol, 'pulsechain', token.symbol)
             );
             tokenData.pulse = await Promise.all(pulsePromises);
             document.getElementById('pulse-tokens').innerHTML = tokenData.pulse.map(renderTokenCard).join('');
