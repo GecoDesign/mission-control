@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Portfolio Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #fff;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            border: 1px solid #333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #252525;
+            border-color: #444;
+        }
+
+        button.primary {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        button.primary:hover {
+            background: #1d4ed8;
+        }
+
+        .portfolio-summary {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            padding: 15px;
+            background: #0f0f0f;
+            border-radius: 8px;
+        }
+
+        .summary-label {
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .summary-value {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .positive {
+            color: #22c55e;
+        }
+
+        .negative {
+            color: #ef4444;
+        }
+
+        .section {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.4em;
+            color: #fff;
+        }
+
+        .token-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .token-card {
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            transition: border-color 0.2s;
+        }
+
+        .token-card:hover {
+            border-color: #444;
+        }
+
+        .token-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .token-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .token-network {
+            font-size: 0.85em;
+            color: #888;
+            background: #1a1a1a;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .token-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #888;
+        }
+
+        .stat-value {
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .token-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+        }
+
+        .token-actions button {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.9em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: #888;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .close-modal:hover {
+            color: #fff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+            font-size: 0.95em;
+        }
+
+        input, select {
+            width: 100%;
+            background: #0f0f0f;
+            border: 1px solid #333;
+            color: #e0e0e0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .alert-badge {
+            display: inline-block;
+            background: #dc2626;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .alerts-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #0f0f0f;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .alert-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #1a1a1a;
+            border-left: 3px solid #dc2626;
+            border-radius: 4px;
+        }
+
+        .timestamp {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        .manual-price-note {
+            background: #dc2626;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .holdings-info {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .holdings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .holding-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: #0f0f0f;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .summary-value {
+                font-size: 1.4em;
+            }
+
+            .token-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                width: 100%;
+            }
+
+            .controls button {
+                flex: 1;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+
+        .error {
+            background: #dc2626;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+
+        .success {
+            background: #22c55e;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+
+        .auto-refresh-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: #333;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle-switch.active {
+            background: #2563eb;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(24px);
+        }
+
+        .btc-alerts {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .btc-alert-level {
+            padding: 8px 15px;
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .btc-alert-level.triggered {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Crypto Portfolio Dashboard</h1>
+            <div class="controls">
+                <div class="auto-refresh-toggle">
+                    <span>Auto-refresh</span>
+                    <div class="toggle-switch active" id="autoRefreshToggle">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <button onclick="refreshPrices()">🔄 Refresh</button>
+                <button onclick="showImportExport()">💾 Import/Export</button>
+            </div>
+        </header>
+
+        <div class="portfolio-summary">
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">Total Portfolio Value</div>
+                    <div class="summary-value" id="totalValue">$0.00</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">24h Change ($)</div>
+                    <div class="summary-value" id="change24h">$0.00</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">24h Change (%)</div>
+                    <div class="summary-value" id="change24hPercent">0.00%</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Total P/L</div>
+                    <div class="summary-value" id="totalPL">$0.00</div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="allocationChart"></canvas>
+            </div>
+            <div class="timestamp" id="lastUpdated">Last updated: Never</div>
+        </div>
+
+        <!-- BTC Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>₿ Bitcoin</h2>
+            </div>
+            <div id="btcContainer"></div>
+        </div>
+
+        <!-- Base Chain Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Base Chain Tokens</h2>
+            </div>
+            <div class="token-grid" id="baseTokens"></div>
+        </div>
+
+        <!-- Pulsechain Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Pulsechain Tokens</h2>
+            </div>
+            <div class="token-grid" id="pulseTokens"></div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🔔 Alert History</h2>
+                <button onclick="clearAlerts()">Clear All</button>
+            </div>
+            <div class="alerts-list" id="alertsList"></div>
+        </div>
+    </div>
+
+    <!-- Holdings Modal -->
+    <div class="modal" id="holdingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Manage Holdings</h2>
+                <button class="close-modal" onclick="closeModal('holdingsModal')">×</button>
+            </div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- Alerts Modal -->
+    <div class="modal" id="alertsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Set Price Alert</h2>
+                <button class="close-modal" onclick="closeModal('alertsModal')">×</button>
+            </div>
+            <div id="alertModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Import/Export Modal -->
+    <div class="modal" id="importExportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Import/Export Data</h2>
+                <button class="close-modal" onclick="closeModal('importExportModal')">×</button>
+            </div>
+            <div class="form-group">
+                <button class="primary" onclick="exportData()" style="width: 100%;">📤 Export Holdings & Alerts</button>
+            </div>
+            <div class="form-group">
+                <label>Import Data (JSON)</label>
+                <input type="file" id="importFile" accept=".json">
+                <button onclick="importData()" style="width: 100%; margin-top: 10px;">📥 Import</button>
+            </div>
+            <div class="form-group">
+                <textarea id="exportOutput" rows="10" style="width: 100%; font-family: monospace; font-size: 0.85em;" readonly></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const COINGECKO_API = 'https://api.coingecko.com/api/v3';
+        const REFRESH_INTERVAL = 60000; // 60 seconds
+        
+        // Token definitions
+        const TOKENS = {
+            btc: {
+                id: 'bitcoin',
+                symbol: 'BTC',
+                name: 'Bitcoin',
+                network: 'Bitcoin',
+                coingeckoId: 'bitcoin',
+                manualPrice: false
+            },
+            // Base Chain
+            dickbutt: {
+                id: 'dickbutt',
+                symbol: 'DICKBUTT',
+                name: 'Dickbutt',
+                network: 'Base',
+                coingeckoId: null, // Unknown - needs research
+                manualPrice: true
+            },
+            drb: {
+                id: 'drb',
+                symbol: 'DRB',
+                name: 'DRB',
+                network: 'Base',
+                coingeckoId: null,
+                manualPrice: true
+            },
+            bnkr: {
+                id: 'bnkr',
+                symbol: 'BNKR',
+                name: 'BNKR',
+                network: 'Base',
+                coingeckoId: null,
+                manualPrice: true
+            },
+            pepe: {
+                id: 'pepe-base',
+                symbol: 'PEPE',
+                name: 'Pepe',
+                network: 'Base',
+                coingeckoId: 'pepe', // Main PEPE (may need Base-specific ID)
+                manualPrice: false
+            },
+            '9mm': {
+                id: '9mm',
+                symbol: '9MM',
+                name: '9MM',
+                network: 'Base',
+                coingeckoId: null,
+                manualPrice: true
+            },
+            // Pulsechain
+            plsx: {
+                id: 'plsx',
+                symbol: 'PLSX',
+                name: 'PulseX',
+                network: 'Pulsechain',
+                coingeckoId: 'pulsex',
+                manualPrice: false
+            },
+            pdai: {
+                id: 'pdai',
+                symbol: 'PDAI',
+                name: 'PDAI',
+                network: 'Pulsechain',
+                contract: '0xaE8429918FdBF9a5867e3243697637Dc56aa76A1',
+                coingeckoId: null,
+                manualPrice: true
+            },
+            hex: {
+                id: 'hex',
+                symbol: 'HEX',
+                name: 'HEX',
+                network: 'Pulsechain',
+                coingeckoId: 'hex',
+                manualPrice: false
+            }
+        };
+
+        // State
+        let state = {
+            prices: {},
+            holdings: {},
+            alerts: {},
+            alertHistory: [],
+            autoRefresh: true,
+            refreshTimer: null
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            initializeUI();
+            refreshPrices();
+            setupAutoRefresh();
+        });
+
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('cryptoPortfolio');
+            if (saved) {
+                const data = JSON.parse(saved);
+                state.holdings = data.holdings || {};
+                state.alerts = data.alerts || {};
+                state.alertHistory = data.alertHistory || [];
+                state.autoRefresh = data.autoRefresh !== undefined ? data.autoRefresh : true;
+                
+                // Load manual prices
+                if (data.prices) {
+                    state.prices = data.prices;
+                }
+            }
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('cryptoPortfolio', JSON.stringify({
+                holdings: state.holdings,
+                alerts: state.alerts,
+                alertHistory: state.alertHistory,
+                autoRefresh: state.autoRefresh,
+                prices: state.prices
+            }));
+        }
+
+        // Initialize UI
+        function initializeUI() {
+            // Auto-refresh toggle
+            const toggle = document.getElementById('autoRefreshToggle');
+            if (!state.autoRefresh) {
+                toggle.classList.remove('active');
+            }
+            toggle.addEventListener('click', toggleAutoRefresh);
+
+            renderTokens();
+            renderAlerts();
+            updateSummary();
+        }
+
+        // Toggle auto-refresh
+        function toggleAutoRefresh() {
+            state.autoRefresh = !state.autoRefresh;
+            const toggle = document.getElementById('autoRefreshToggle');
+            toggle.classList.toggle('active');
+            saveState();
+            setupAutoRefresh();
+        }
+
+        // Setup auto-refresh
+        function setupAutoRefresh() {
+            if (state.refreshTimer) {
+                clearInterval(state.refreshTimer);
+            }
+            
+            if (state.autoRefresh) {
+                state.refreshTimer = setInterval(refreshPrices, REFRESH_INTERVAL);
+            }
+        }
+
+        // Refresh prices from CoinGecko
+        async function refreshPrices() {
+            const btn = event?.target;
+            if (btn) btn.textContent = '⏳ Refreshing...';
+
+            // Get all CoinGecko IDs
+            const ids = Object.values(TOKENS)
+                .filter(t => t.coingeckoId && !t.manualPrice)
+                .map(t => t.coingeckoId)
+                .join(',');
+
+            try {
+                const response = await fetch(
+                    `${COINGECKO_API}/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true&include_market_cap=true&include_24hr_vol=true`
+                );
+                
+                if (!response.ok) throw new Error('CoinGecko API error');
+                
+                const data = await response.json();
+                
+                // Update prices
+                Object.entries(TOKENS).forEach(([key, token]) => {
+                    if (token.coingeckoId && data[token.coingeckoId]) {
+                        const priceData = data[token.coingeckoId];
+                        state.prices[key] = {
+                            price: priceData.usd,
+                            change24h: priceData.usd_24h_change || 0,
+                            marketCap: priceData.usd_market_cap || 0,
+                            volume24h: priceData.usd_24h_vol || 0,
+                            timestamp: Date.now()
+                        };
+                    } else if (!state.prices[key]) {
+                        // Initialize manual price entry
+                        state.prices[key] = {
+                            price: 0,
+                            change24h: 0,
+                            marketCap: 0,
+                            volume24h: 0,
+                            manual: true
+                        };
+                    }
+                });
+
+                checkAlerts();
+                updateSummary();
+                renderTokens();
+                
+                document.getElementById('lastUpdated').textContent = 
+                    `Last updated: ${new Date().toLocaleString()}`;
+                
+                saveState();
+            } catch (error) {
+                console.error('Error fetching prices:', error);
+                showNotification('Failed to fetch prices. Using cached data.', 'error');
+            }
+
+            if (btn) btn.textContent = '🔄 Refresh';
+        }
+
+        // Render BTC section
+        function renderBTC() {
+            const btc = TOKENS.btc;
+            const priceData = state.prices.btc || {};
+            const holdings = state.holdings.btc || [];
+            
+            const totalHoldings = holdings.reduce((sum, h) => sum + parseFloat(h.quantity || 0), 0);
+            const totalValue = totalHoldings * (priceData.price || 0);
+            const totalCost = holdings.reduce((sum, h) => 
+                sum + (parseFloat(h.quantity || 0) * parseFloat(h.entryPrice || 0)), 0);
+            const profitLoss = totalValue - totalCost;
+
+            const levels = [70000, 80000, 90000, 100000];
+            const currentPrice = priceData.price || 0;
+            
+            return `
+                <div class="token-card">
+                    <div class="token-header">
+                        <div class="token-name">${btc.symbol}</div>
+                        <div class="token-network">${btc.network}</div>
+                    </div>
+                    <div class="token-stats">
+                        <div class="stat">
+                            <div class="stat-label">Price</div>
+                            <div class="stat-value">$${formatNumber(priceData.price || 0)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">24h Change</div>
+                            <div class="stat-value ${priceData.change24h >= 0 ? 'positive' : 'negative'}">
+                                ${priceData.change24h >= 0 ? '+' : ''}${formatNumber(priceData.change24h || 0)}%
+                            </div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Market Cap</div>
+                            <div class="stat-value">$${formatLargeNumber(priceData.marketCap || 0)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Holdings</div>
+                            <div class="stat-value">${formatNumber(totalHoldings, 8)} BTC</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Position Value</div>
+                            <div class="stat-value">$${formatNumber(totalValue)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">P/L</div>
+                            <div class="stat-value ${profitLoss >= 0 ? 'positive' : 'negative'}">
+                                ${profitLoss >= 0 ? '+' : ''}$${formatNumber(Math.abs(profitLoss))}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btc-alerts">
+                        ${levels.map(level => `
+                            <div class="btc-alert-level ${currentPrice >= level ? 'triggered' : ''}">
+                                $${formatNumber(level)} ${currentPrice >= level ? '✅' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="token-actions">
+                        <button onclick="manageHoldings('btc')">💼 Holdings</button>
+                        <button onclick="setAlert('btc')">🔔 Alert</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render all tokens
+        function renderTokens() {
+            // BTC
+            document.getElementById('btcContainer').innerHTML = renderBTC();
+
+            // Base tokens
+            const baseTokens = ['dickbutt', 'drb', 'bnkr', 'pepe', '9mm'];
+            document.getElementById('baseTokens').innerHTML = baseTokens.map(renderToken).join('');
+
+            // Pulse tokens
+            const pulseTokens = ['plsx', 'pdai', 'hex'];
+            document.getElementById('pulseTokens').innerHTML = pulseTokens.map(renderToken).join('');
+        }
+
+        // Render individual token card
+        function renderToken(tokenId) {
+            const token = TOKENS[tokenId];
+            const priceData = state.prices[tokenId] || {};
+            const holdings = state.holdings[tokenId] || [];
+            const alerts = state.alerts[tokenId] || [];
+            
+            const totalHoldings = holdings.reduce((sum, h) => sum + parseFloat(h.quantity || 0), 0);
+            const totalValue = totalHoldings * (priceData.price || 0);
+            const totalCost = holdings.reduce((sum, h) => 
+                sum + (parseFloat(h.quantity || 0) * parseFloat(h.entryPrice || 0)), 0);
+            const profitLoss = totalValue - totalCost;
+
+            const hasActiveAlerts = alerts.some(a => 
+                (a.type === 'above' && priceData.price >= a.price) ||
+                (a.type === 'below' && priceData.price <= a.price)
+            );
+
+            return `
+                <div class="token-card">
+                    ${token.manualPrice ? '<div class="manual-price-note">⚠️ Manual price entry required (not on CoinGecko)</div>' : ''}
+                    <div class="token-header">
+                        <div class="token-name">
+                            ${token.symbol}
+                            ${hasActiveAlerts ? '<span class="alert-badge">ALERT</span>' : ''}
+                        </div>
+                        <div class="token-network">${token.network}</div>
+                    </div>
+                    <div class="token-stats">
+                        <div class="stat">
+                            <div class="stat-label">Price ${priceData.manual ? '(Manual)' : ''}</div>
+                            <div class="stat-value">$${formatNumber(priceData.price || 0, 8)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">24h Change</div>
+                            <div class="stat-value ${priceData.change24h >= 0 ? 'positive' : 'negative'}">
+                                ${priceData.change24h >= 0 ? '+' : ''}${formatNumber(priceData.change24h || 0)}%
+                            </div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Market Cap</div>
+                            <div class="stat-value">$${formatLargeNumber(priceData.marketCap || 0)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Volume 24h</div>
+                            <div class="stat-value">$${formatLargeNumber(priceData.volume24h || 0)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Holdings</div>
+                            <div class="stat-value">${formatNumber(totalHoldings, 4)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Position Value</div>
+                            <div class="stat-value">$${formatNumber(totalValue)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">P/L</div>
+                            <div class="stat-value ${profitLoss >= 0 ? 'positive' : 'negative'}">
+                                ${profitLoss >= 0 ? '+' : ''}$${formatNumber(Math.abs(profitLoss))}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="token-actions">
+                        ${token.manualPrice ? '<button onclick="updateManualPrice(\'' + tokenId + '\')">💲 Update Price</button>' : ''}
+                        <button onclick="manageHoldings('${tokenId}')">💼 Holdings</button>
+                        <button onclick="setAlert('${tokenId}')">🔔 Alert</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update manual price
+        function updateManualPrice(tokenId) {
+            const token = TOKENS[tokenId];
+            const current = state.prices[tokenId] || {};
+            
+            const price = prompt(`Enter current price for ${token.symbol}:`, current.price || '');
+            if (price === null) return;
+            
+            const parsedPrice = parseFloat(price);
+            if (isNaN(parsedPrice)) {
+                alert('Invalid price');
+                return;
+            }
+
+            // Calculate 24h change from previous price
+            const oldPrice = current.price || parsedPrice;
+            const change24h = ((parsedPrice - oldPrice) / oldPrice) * 100;
+
+            state.prices[tokenId] = {
+                ...current,
+                price: parsedPrice,
+                change24h: change24h,
+                manual: true,
+                timestamp: Date.now()
+            };
+
+            saveState();
+            checkAlerts();
+            updateSummary();
+            renderTokens();
+        }
+
+        // Manage holdings
+        function manageHoldings(tokenId) {
+            const token = TOKENS[tokenId];
+            const holdings = state.holdings[tokenId] || [];
+
+            const content = `
+                <div class="form-group">
+                    <label>Add New Position</label>
+                    <input type="number" id="newQuantity" placeholder="Quantity" step="any">
+                </div>
+                <div class="form-group">
+                    <input type="number" id="newEntryPrice" placeholder="Entry Price (USD)" step="any">
+                </div>
+                <div class="form-group">
+                    <button class="primary" onclick="addHolding('${tokenId}')" style="width: 100%;">Add Position</button>
+                </div>
+                <div class="holdings-info">
+                    <h3>Current Positions</h3>
+                    <div class="holdings-list">
+                        ${holdings.length === 0 ? '<p>No positions yet</p>' : holdings.map((h, i) => `
+                            <div class="holding-item">
+                                <div>
+                                    <strong>${formatNumber(h.quantity, 4)} @ $${formatNumber(h.entryPrice, 8)}</strong>
+                                    <br>
+                                    <small>Added: ${new Date(h.timestamp).toLocaleDateString()}</small>
+                                </div>
+                                <button onclick="removeHolding('${tokenId}', ${i})">🗑️</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('holdingsModal').classList.add('active');
+        }
+
+        // Add holding
+        function addHolding(tokenId) {
+            const quantity = parseFloat(document.getElementById('newQuantity').value);
+            const entryPrice = parseFloat(document.getElementById('newEntryPrice').value);
+
+            if (isNaN(quantity) || isNaN(entryPrice) || quantity <= 0 || entryPrice <= 0) {
+                alert('Please enter valid quantity and entry price');
+                return;
+            }
+
+            if (!state.holdings[tokenId]) {
+                state.holdings[tokenId] = [];
+            }
+
+            state.holdings[tokenId].push({
+                quantity,
+                entryPrice,
+                timestamp: Date.now()
+            });
+
+            saveState();
+            updateSummary();
+            renderTokens();
+            manageHoldings(tokenId); // Refresh modal
+        }
+
+        // Remove holding
+        function removeHolding(tokenId, index) {
+            if (confirm('Remove this position?')) {
+                state.holdings[tokenId].splice(index, 1);
+                saveState();
+                updateSummary();
+                renderTokens();
+                manageHoldings(tokenId);
+            }
+        }
+
+        // Set alert
+        function setAlert(tokenId) {
+            const token = TOKENS[tokenId];
+            const currentAlerts = state.alerts[tokenId] || [];
+
+            const content = `
+                <div class="form-group">
+                    <label>Alert Type</label>
+                    <select id="alertType">
+                        <option value="above">Price Above</option>
+                        <option value="below">Price Below</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Price Threshold (USD)</label>
+                    <input type="number" id="alertPrice" placeholder="0.00" step="any">
+                </div>
+                <div class="form-group">
+                    <button class="primary" onclick="addAlert('${tokenId}')" style="width: 100%;">Add Alert</button>
+                </div>
+                <div class="holdings-info">
+                    <h3>Active Alerts</h3>
+                    <div class="holdings-list">
+                        ${currentAlerts.length === 0 ? '<p>No alerts set</p>' : currentAlerts.map((a, i) => `
+                            <div class="holding-item">
+                                <div>
+                                    <strong>${a.type === 'above' ? 'Above' : 'Below'} $${formatNumber(a.price, 8)}</strong>
+                                </div>
+                                <button onclick="removeAlert('${tokenId}', ${i})">🗑️</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('alertModalContent').innerHTML = content;
+            document.getElementById('alertsModal').classList.add('active');
+        }
+
+        // Add alert
+        function addAlert(tokenId) {
+            const type = document.getElementById('alertType').value;
+            const price = parseFloat(document.getElementById('alertPrice').value);
+
+            if (isNaN(price) || price <= 0) {
+                alert('Please enter a valid price');
+                return;
+            }
+
+            if (!state.alerts[tokenId]) {
+                state.alerts[tokenId] = [];
+            }
+
+            state.alerts[tokenId].push({ type, price });
+            saveState();
+            setAlert(tokenId); // Refresh modal
+        }
+
+        // Remove alert
+        function removeAlert(tokenId, index) {
+            state.alerts[tokenId].splice(index, 1);
+            saveState();
+            setAlert(tokenId);
+        }
+
+        // Check alerts
+        function checkAlerts() {
+            Object.entries(state.alerts).forEach(([tokenId, alerts]) => {
+                const priceData = state.prices[tokenId];
+                if (!priceData) return;
+
+                alerts.forEach(alert => {
+                    const triggered = 
+                        (alert.type === 'above' && priceData.price >= alert.price) ||
+                        (alert.type === 'below' && priceData.price <= alert.price);
+
+                    if (triggered) {
+                        const alertKey = `${tokenId}-${alert.type}-${alert.price}`;
+                        const lastTriggered = state.alertHistory.find(h => h.key === alertKey);
+                        
+                        // Only trigger if not triggered in last hour
+                        if (!lastTriggered || Date.now() - lastTriggered.timestamp > 3600000) {
+                            state.alertHistory.push({
+                                key: alertKey,
+                                tokenId,
+                                token: TOKENS[tokenId].symbol,
+                                type: alert.type,
+                                price: alert.price,
+                                currentPrice: priceData.price,
+                                timestamp: Date.now()
+                            });
+                            saveState();
+                            renderAlerts();
+                        }
+                    }
+                });
+            });
+        }
+
+        // Render alerts
+        function renderAlerts() {
+            const container = document.getElementById('alertsList');
+            if (state.alertHistory.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #888;">No alerts triggered yet</p>';
+                return;
+            }
+
+            container.innerHTML = state.alertHistory
+                .sort((a, b) => b.timestamp - a.timestamp)
+                .slice(0, 50)
+                .map(alert => `
+                    <div class="alert-item">
+                        <strong>${alert.token}</strong> went ${alert.type} $${formatNumber(alert.price, 8)}
+                        <br>
+                        Current: $${formatNumber(alert.currentPrice, 8)}
+                        <br>
+                        <small>${new Date(alert.timestamp).toLocaleString()}</small>
+                    </div>
+                `).join('');
+        }
+
+        // Clear alerts
+        function clearAlerts() {
+            if (confirm('Clear all alert history?')) {
+                state.alertHistory = [];
+                saveState();
+                renderAlerts();
+            }
+        }
+
+        // Update summary
+        function updateSummary() {
+            let totalValue = 0;
+            let totalCost = 0;
+            let allocationData = [];
+
+            Object.entries(TOKENS).forEach(([tokenId, token]) => {
+                const holdings = state.holdings[tokenId] || [];
+                const priceData = state.prices[tokenId] || {};
+                
+                const quantity = holdings.reduce((sum, h) => sum + parseFloat(h.quantity || 0), 0);
+                const cost = holdings.reduce((sum, h) => 
+                    sum + (parseFloat(h.quantity || 0) * parseFloat(h.entryPrice || 0)), 0);
+                const value = quantity * (priceData.price || 0);
+
+                if (value > 0) {
+                    allocationData.push({
+                        label: token.symbol,
+                        value: value
+                    });
+                }
+
+                totalValue += value;
+                totalCost += cost;
+            });
+
+            const totalPL = totalValue - totalCost;
+            const change24h = 0; // Would need historical data for accurate calc
+
+            document.getElementById('totalValue').textContent = '$' + formatNumber(totalValue);
+            document.getElementById('totalPL').textContent = 
+                (totalPL >= 0 ? '+' : '') + '$' + formatNumber(Math.abs(totalPL));
+            document.getElementById('totalPL').className = 
+                'summary-value ' + (totalPL >= 0 ? 'positive' : 'negative');
+
+            // Update allocation chart
+            updateAllocationChart(allocationData);
+        }
+
+        // Update allocation chart
+        let allocationChart = null;
+        function updateAllocationChart(data) {
+            const ctx = document.getElementById('allocationChart');
+            
+            if (allocationChart) {
+                allocationChart.destroy();
+            }
+
+            if (data.length === 0) {
+                return;
+            }
+
+            allocationChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(d => d.label),
+                    datasets: [{
+                        data: data.map(d => d.value),
+                        backgroundColor: [
+                            '#2563eb', '#7c3aed', '#db2777', '#dc2626',
+                            '#ea580c', '#ca8a04', '#65a30d', '#059669',
+                            '#0891b2', '#0284c7', '#4f46e5', '#9333ea'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#e0e0e0',
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: $${formatNumber(value)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Import/Export
+        function showImportExport() {
+            document.getElementById('importExportModal').classList.add('active');
+        }
+
+        function exportData() {
+            const data = {
+                version: 1,
+                exportDate: new Date().toISOString(),
+                holdings: state.holdings,
+                alerts: state.alerts,
+                prices: state.prices
+            };
+
+            const json = JSON.stringify(data, null, 2);
+            document.getElementById('exportOutput').value = json;
+
+            // Download
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `crypto-portfolio-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData() {
+            const file = document.getElementById('importFile').files[0];
+            if (!file) {
+                alert('Please select a file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will overwrite your current data. Continue?')) {
+                        state.holdings = data.holdings || {};
+                        state.alerts = data.alerts || {};
+                        if (data.prices) {
+                            state.prices = data.prices;
+                        }
+                        
+                        saveState();
+                        updateSummary();
+                        renderTokens();
+                        alert('Data imported successfully!');
+                        closeModal('importExportModal');
+                    }
+                } catch (error) {
+                    alert('Invalid file format');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Modal controls
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Formatting helpers
+        function formatNumber(num, decimals = 2) {
+            if (num === 0) return '0.00';
+            if (!num) return '0.00';
+            
+            // For very small numbers, show more decimals
+            if (Math.abs(num) < 0.01 && decimals === 2) {
+                decimals = 8;
+            }
+            
+            return parseFloat(num).toLocaleString('en-US', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+        }
+
+        function formatLargeNumber(num) {
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+            return num.toFixed(2);
+        }
+
+        function showNotification(message, type = 'success') {
+            // Simple notification - could be enhanced
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // Close modals on background click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

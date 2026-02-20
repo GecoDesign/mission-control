@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Business Prospecting Tool - geco.design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .header p {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .search-filter input,
+        .search-filter select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            min-width: 150px;
+        }
+
+        .search-filter input:focus,
+        .search-filter select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .prospects-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .prospect-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: box-shadow 0.2s;
+        }
+
+        .prospect-card:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .prospect-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .prospect-title {
+            flex: 1;
+        }
+
+        .prospect-title h3 {
+            font-size: 1.25rem;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .prospect-meta {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.625rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-sector {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .badge-location {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .badge-score {
+            background: var(--success);
+            color: white;
+            font-weight: 600;
+        }
+
+        .badge-score.low {
+            background: var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .badge-score.medium {
+            background: var(--warning);
+        }
+
+        .badge-score.high {
+            background: var(--success);
+        }
+
+        .prospect-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-research { background: #dbeafe; color: #1e40af; }
+        .status-qualified { background: #fef3c7; color: #92400e; }
+        .status-contacted { background: #e0e7ff; color: #3730a3; }
+        .status-proposal { background: #fce7f3; color: #831843; }
+        .status-won { background: #d1fae5; color: #065f46; }
+        .status-lost { background: #fee2e2; color: #991b1b; }
+
+        .prospect-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            color: var(--gray-600);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            color: var(--gray-900);
+        }
+
+        .detail-value a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .detail-value a:hover {
+            text-decoration: underline;
+        }
+
+        .prospect-notes {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+
+        .audit-checklist {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .audit-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .audit-item.fail {
+            color: var(--danger);
+        }
+
+        .audit-item.pass {
+            color: var(--success);
+        }
+
+        .integration-hints {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .hint-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .prospect-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8125rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            color: var(--gray-900);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-600);
+            padding: 0;
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.625rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            cursor: pointer;
+        }
+
+        .scoring-section {
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+
+        .scoring-section h4 {
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-600);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Local Business Prospecting Tool</h1>
+        <p>UK Market Research & Client Qualification for geco.design</p>
+    </div>
+
+    <div class="container">
+        <div class="stats-bar" id="statsBar"></div>
+
+        <div class="actions-bar">
+            <button class="btn btn-primary" onclick="openAddModal()">➕ Add Prospect</button>
+            <button class="btn btn-secondary" onclick="exportToCSV()">📊 Export to CSV</button>
+            <button class="btn btn-secondary" onclick="importFromCSV()">📥 Import CSV</button>
+            <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleCSVImport(event)">
+        </div>
+
+        <div class="search-filter">
+            <input type="text" id="searchInput" placeholder="🔍 Search by name, website, or contact..." onkeyup="filterProspects()">
+            <select id="sectorFilter" onchange="filterProspects()">
+                <option value="">All Sectors</option>
+                <option value="Construction">Construction</option>
+                <option value="Architect">Architect</option>
+                <option value="Surveyor">Surveyor</option>
+                <option value="Accountant">Accountant</option>
+                <option value="Solicitor">Solicitor</option>
+                <option value="Estate Agent">Estate Agent</option>
+                <option value="Engineer">Engineer</option>
+                <option value="Other">Other</option>
+            </select>
+            <select id="statusFilter" onchange="filterProspects()">
+                <option value="">All Statuses</option>
+                <option value="Research">Research</option>
+                <option value="Qualified">Qualified</option>
+                <option value="Contacted">Contacted</option>
+                <option value="Proposal">Proposal</option>
+                <option value="Won">Won</option>
+                <option value="Lost">Lost</option>
+            </select>
+            <select id="scoreFilter" onchange="filterProspects()">
+                <option value="">All Scores</option>
+                <option value="high">High Priority (70+)</option>
+                <option value="medium">Medium Priority (40-69)</option>
+                <option value="low">Low Priority (&lt;40)</option>
+            </select>
+            <input type="text" id="locationFilter" placeholder="Location filter..." onkeyup="filterProspects()">
+        </div>
+
+        <div class="prospects-grid" id="prospectsGrid"></div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="prospectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Prospect</h2>
+                <button class="close-modal" onclick="closeModal()">×</button>
+            </div>
+
+            <form id="prospectForm" onsubmit="saveProspect(event)">
+                <input type="hidden" id="prospectId">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Business Name *</label>
+                        <input type="text" id="businessName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contact Name</label>
+                        <input type="text" id="contactName">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="phone">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Website</label>
+                        <input type="url" id="website" placeholder="https://">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sector *</label>
+                        <select id="sector" required>
+                            <option value="">Select sector...</option>
+                            <option value="Construction">Construction</option>
+                            <option value="Architect">Architect</option>
+                            <option value="Surveyor">Surveyor</option>
+                            <option value="Accountant">Accountant</option>
+                            <option value="Solicitor">Solicitor</option>
+                            <option value="Estate Agent">Estate Agent</option>
+                            <option value="Engineer">Engineer</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="location" placeholder="e.g., London, Manchester">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Business Size</label>
+                        <select id="businessSize">
+                            <option value="">Select size...</option>
+                            <option value="Micro (1-9)">Micro (1-9)</option>
+                            <option value="Small (10-49)">Small (10-49)</option>
+                            <option value="Medium (50-249)">Medium (50-249)</option>
+                            <option value="Large (250+)">Large (250+)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Outreach Status</label>
+                        <select id="status">
+                            <option value="Research">Research</option>
+                            <option value="Qualified">Qualified</option>
+                            <option value="Contacted">Contacted</option>
+                            <option value="Proposal">Proposal</option>
+                            <option value="Won">Won</option>
+                            <option value="Lost">Lost</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Research Notes</label>
+                        <textarea id="notes" placeholder="Notes from LinkedIn, website review, etc."></textarea>
+                    </div>
+                </div>
+
+                <div class="scoring-section">
+                    <h4>📊 Qualification Scoring</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Website Quality (Poor = Higher Score)</label>
+                            <select id="websiteQuality">
+                                <option value="0">Excellent (Modern, fast) - 0pts</option>
+                                <option value="10">Good (Decent but aging) - 10pts</option>
+                                <option value="20">Fair (Outdated design) - 20pts</option>
+                                <option value="30">Poor (Very old/broken) - 30pts</option>
+                                <option value="35">None (No website) - 35pts</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Social Media Presence</label>
+                            <select id="socialPresence">
+                                <option value="0">Strong & Active - 0pts</option>
+                                <option value="5">Present but inactive - 5pts</option>
+                                <option value="10">Minimal/outdated - 10pts</option>
+                                <option value="15">None - 15pts</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Estimated Budget</label>
+                            <select id="budget">
+                                <option value="5">£10k+ - 5pts</option>
+                                <option value="10">£5-10k - 10pts</option>
+                                <option value="15">£2-5k - 15pts</option>
+                                <option value="10">£1-2k - 10pts</option>
+                                <option value="5">&lt;£1k - 5pts</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Fit with geco.design Services</label>
+                            <select id="serviceFit">
+                                <option value="25">Perfect fit - 25pts</option>
+                                <option value="20">Strong fit - 20pts</option>
+                                <option value="15">Good fit - 15pts</option>
+                                <option value="10">Fair fit - 10pts</option>
+                                <option value="5">Poor fit - 5pts</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scoring-section">
+                    <h4>🔍 Quick Website Audit</h4>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="audit_mobile">
+                            <label for="audit_mobile">Not Mobile-Friendly</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="audit_ssl">
+                            <label for="audit_ssl">No SSL/HTTPS</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="audit_speed">
+                            <label for="audit_speed">Slow Loading</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="audit_seo">
+                            <label for="audit_seo">Poor SEO</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="audit_design">
+                            <label for="audit_design">Outdated Design</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="audit_content">
+                            <label for="audit_content">Weak Content</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">💾 Save Prospect</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let prospects = [];
+
+        // Load prospects from localStorage
+        function loadProspects() {
+            const stored = localStorage.getItem('geco_prospects');
+            if (stored) {
+                prospects = JSON.parse(stored);
+            }
+        }
+
+        // Save prospects to localStorage
+        function saveToStorage() {
+            localStorage.setItem('geco_prospects', JSON.stringify(prospects));
+        }
+
+        // Calculate prospect score
+        function calculateScore(prospect) {
+            const websiteQuality = parseInt(prospect.websiteQuality) || 0;
+            const socialPresence = parseInt(prospect.socialPresence) || 0;
+            const budget = parseInt(prospect.budget) || 0;
+            const serviceFit = parseInt(prospect.serviceFit) || 0;
+            return websiteQuality + socialPresence + budget + serviceFit;
+        }
+
+        // Get score badge class
+        function getScoreBadgeClass(score) {
+            if (score >= 70) return 'high';
+            if (score >= 40) return 'medium';
+            return 'low';
+        }
+
+        // Generate integration hints
+        function getIntegrationHints(prospect) {
+            const hints = [];
+            const score = calculateScore(prospect);
+            const auditIssues = prospect.audit || {};
+
+            // Backlink outreach tool
+            if ((auditIssues.audit_seo || score >= 60) && prospect.website) {
+                hints.push('🔗 Backlink Outreach');
+            }
+
+            // Pricing calculator
+            if (score >= 50 || prospect.status === 'Qualified' || prospect.status === 'Contacted') {
+                hints.push('💰 Pricing Calculator');
+            }
+
+            // Website audit report
+            if (Object.keys(auditIssues).length >= 3) {
+                hints.push('📋 Full Audit Report');
+            }
+
+            // SEO service
+            if (auditIssues.audit_seo) {
+                hints.push('🎯 SEO Service');
+            }
+
+            // Redesign opportunity
+            if (auditIssues.audit_design || parseInt(prospect.websiteQuality) >= 20) {
+                hints.push('🎨 Redesign Priority');
+            }
+
+            return hints;
+        }
+
+        // Render statistics
+        function renderStats() {
+            const total = prospects.length;
+            const qualified = prospects.filter(p => p.status === 'Qualified').length;
+            const contacted = prospects.filter(p => p.status === 'Contacted').length;
+            const won = prospects.filter(p => p.status === 'Won').length;
+            const avgScore = total > 0 ? Math.round(prospects.reduce((sum, p) => sum + calculateScore(p), 0) / total) : 0;
+
+            document.getElementById('statsBar').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">Total Prospects</div>
+                    <div class="stat-value">${total}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Qualified</div>
+                    <div class="stat-value">${qualified}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Contacted</div>
+                    <div class="stat-value">${contacted}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Won</div>
+                    <div class="stat-value">${won}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Avg Score</div>
+                    <div class="stat-value">${avgScore}</div>
+                </div>
+            `;
+        }
+
+        // Render prospects
+        function renderProspects(prospectsToRender = prospects) {
+            const grid = document.getElementById('prospectsGrid');
+
+            if (prospectsToRender.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3>No prospects found</h3>
+                        <p>Add your first prospect to get started, or adjust your filters.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort by score (highest first)
+            const sorted = [...prospectsToRender].sort((a, b) => calculateScore(b) - calculateScore(a));
+
+            grid.innerHTML = sorted.map(prospect => {
+                const score = calculateScore(prospect);
+                const scoreBadgeClass = getScoreBadgeClass(score);
+                const hints = getIntegrationHints(prospect);
+                const auditIssues = prospect.audit || {};
+                const auditKeys = Object.keys(auditIssues).filter(k => auditIssues[k]);
+
+                return `
+                    <div class="prospect-card">
+                        <div class="prospect-header">
+                            <div class="prospect-title">
+                                <h3>${prospect.businessName}</h3>
+                                <div class="prospect-meta">
+                                    <span class="badge badge-sector">${prospect.sector}</span>
+                                    ${prospect.location ? `<span class="badge badge-location">📍 ${prospect.location}</span>` : ''}
+                                    <span class="badge badge-score ${scoreBadgeClass}">Score: ${score}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="prospect-status status-${prospect.status.toLowerCase()}">${prospect.status}</span>
+                            </div>
+                        </div>
+
+                        <div class="prospect-details">
+                            ${prospect.contactName ? `
+                                <div class="detail-item">
+                                    <div class="detail-label">Contact</div>
+                                    <div class="detail-value">${prospect.contactName}</div>
+                                </div>
+                            ` : ''}
+                            ${prospect.email ? `
+                                <div class="detail-item">
+                                    <div class="detail-label">Email</div>
+                                    <div class="detail-value"><a href="mailto:${prospect.email}">${prospect.email}</a></div>
+                                </div>
+                            ` : ''}
+                            ${prospect.phone ? `
+                                <div class="detail-item">
+                                    <div class="detail-label">Phone</div>
+                                    <div class="detail-value"><a href="tel:${prospect.phone}">${prospect.phone}</a></div>
+                                </div>
+                            ` : ''}
+                            ${prospect.website ? `
+                                <div class="detail-item">
+                                    <div class="detail-label">Website</div>
+                                    <div class="detail-value"><a href="${prospect.website}" target="_blank">${prospect.website}</a></div>
+                                </div>
+                            ` : ''}
+                            ${prospect.businessSize ? `
+                                <div class="detail-item">
+                                    <div class="detail-label">Size</div>
+                                    <div class="detail-value">${prospect.businessSize}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        ${prospect.notes ? `
+                            <div class="prospect-notes">
+                                <strong>Research Notes:</strong><br>
+                                ${prospect.notes.replace(/\n/g, '<br>')}
+                            </div>
+                        ` : ''}
+
+                        ${auditKeys.length > 0 ? `
+                            <div class="audit-checklist">
+                                ${auditKeys.map(key => {
+                                    const labels = {
+                                        audit_mobile: '📱 Not Mobile-Friendly',
+                                        audit_ssl: '🔒 No SSL',
+                                        audit_speed: '⚡ Slow',
+                                        audit_seo: '🎯 Poor SEO',
+                                        audit_design: '🎨 Outdated Design',
+                                        audit_content: '📝 Weak Content'
+                                    };
+                                    return `<div class="audit-item fail">❌ ${labels[key]}</div>`;
+                                }).join('')}
+                            </div>
+                        ` : ''}
+
+                        ${hints.length > 0 ? `
+                            <div class="integration-hints">
+                                ${hints.map(hint => `<span class="hint-badge">${hint}</span>`).join('')}
+                            </div>
+                        ` : ''}
+
+                        <div class="prospect-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="editProspect('${prospect.id}')">✏️ Edit</button>
+                            <button class="btn btn-secondary btn-sm" onclick="deleteProspect('${prospect.id}')">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter prospects
+        function filterProspects() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const sectorFilter = document.getElementById('sectorFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const scoreFilter = document.getElementById('scoreFilter').value;
+            const locationFilter = document.getElementById('locationFilter').value.toLowerCase();
+
+            const filtered = prospects.filter(prospect => {
+                const matchesSearch = !searchTerm || 
+                    prospect.businessName.toLowerCase().includes(searchTerm) ||
+                    (prospect.website && prospect.website.toLowerCase().includes(searchTerm)) ||
+                    (prospect.contactName && prospect.contactName.toLowerCase().includes(searchTerm)) ||
+                    (prospect.email && prospect.email.toLowerCase().includes(searchTerm));
+
+                const matchesSector = !sectorFilter || prospect.sector === sectorFilter;
+                const matchesStatus = !statusFilter || prospect.status === statusFilter;
+                const matchesLocation = !locationFilter || 
+                    (prospect.location && prospect.location.toLowerCase().includes(locationFilter));
+
+                let matchesScore = true;
+                if (scoreFilter) {
+                    const score = calculateScore(prospect);
+                    if (scoreFilter === 'high') matchesScore = score >= 70;
+                    else if (scoreFilter === 'medium') matchesScore = score >= 40 && score < 70;
+                    else if (scoreFilter === 'low') matchesScore = score < 40;
+                }
+
+                return matchesSearch && matchesSector && matchesStatus && matchesScore && matchesLocation;
+            });
+
+            renderProspects(filtered);
+        }
+
+        // Open add modal
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Prospect';
+            document.getElementById('prospectForm').reset();
+            document.getElementById('prospectId').value = '';
+            document.getElementById('prospectModal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('prospectModal').classList.remove('active');
+        }
+
+        // Edit prospect
+        function editProspect(id) {
+            const prospect = prospects.find(p => p.id === id);
+            if (!prospect) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit Prospect';
+            document.getElementById('prospectId').value = prospect.id;
+            document.getElementById('businessName').value = prospect.businessName;
+            document.getElementById('contactName').value = prospect.contactName || '';
+            document.getElementById('email').value = prospect.email || '';
+            document.getElementById('phone').value = prospect.phone || '';
+            document.getElementById('website').value = prospect.website || '';
+            document.getElementById('sector').value = prospect.sector;
+            document.getElementById('location').value = prospect.location || '';
+            document.getElementById('businessSize').value = prospect.businessSize || '';
+            document.getElementById('status').value = prospect.status;
+            document.getElementById('notes').value = prospect.notes || '';
+            document.getElementById('websiteQuality').value = prospect.websiteQuality || '0';
+            document.getElementById('socialPresence').value = prospect.socialPresence || '0';
+            document.getElementById('budget').value = prospect.budget || '5';
+            document.getElementById('serviceFit').value = prospect.serviceFit || '15';
+
+            // Set audit checkboxes
+            const audit = prospect.audit || {};
+            document.getElementById('audit_mobile').checked = audit.audit_mobile || false;
+            document.getElementById('audit_ssl').checked = audit.audit_ssl || false;
+            document.getElementById('audit_speed').checked = audit.audit_speed || false;
+            document.getElementById('audit_seo').checked = audit.audit_seo || false;
+            document.getElementById('audit_design').checked = audit.audit_design || false;
+            document.getElementById('audit_content').checked = audit.audit_content || false;
+
+            document.getElementById('prospectModal').classList.add('active');
+        }
+
+        // Save prospect
+        function saveProspect(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('prospectId').value || Date.now().toString();
+            const audit = {
+                audit_mobile: document.getElementById('audit_mobile').checked,
+                audit_ssl: document.getElementById('audit_ssl').checked,
+                audit_speed: document.getElementById('audit_speed').checked,
+                audit_seo: document.getElementById('audit_seo').checked,
+                audit_design: document.getElementById('audit_design').checked,
+                audit_content: document.getElementById('audit_content').checked
+            };
+
+            const prospect = {
+                id,
+                businessName: document.getElementById('businessName').value,
+                contactName: document.getElementById('contactName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                website: document.getElementById('website').value,
+                sector: document.getElementById('sector').value,
+                location: document.getElementById('location').value,
+                businessSize: document.getElementById('businessSize').value,
+                status: document.getElementById('status').value,
+                notes: document.getElementById('notes').value,
+                websiteQuality: document.getElementById('websiteQuality').value,
+                socialPresence: document.getElementById('socialPresence').value,
+                budget: document.getElementById('budget').value,
+                serviceFit: document.getElementById('serviceFit').value,
+                audit,
+                dateAdded: prospects.find(p => p.id === id)?.dateAdded || new Date().toISOString()
+            };
+
+            const existingIndex = prospects.findIndex(p => p.id === id);
+            if (existingIndex >= 0) {
+                prospects[existingIndex] = prospect;
+            } else {
+                prospects.push(prospect);
+            }
+
+            saveToStorage();
+            closeModal();
+            renderStats();
+            renderProspects();
+        }
+
+        // Delete prospect
+        function deleteProspect(id) {
+            if (!confirm('Are you sure you want to delete this prospect?')) return;
+
+            prospects = prospects.filter(p => p.id !== id);
+            saveToStorage();
+            renderStats();
+            renderProspects();
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            if (prospects.length === 0) {
+                alert('No prospects to export');
+                return;
+            }
+
+            const headers = [
+                'Business Name', 'Contact Name', 'Email', 'Phone', 'Website', 'Sector',
+                'Location', 'Business Size', 'Status', 'Score', 'Website Quality',
+                'Social Presence', 'Budget', 'Service Fit', 'Notes', 'Audit Issues'
+            ];
+
+            const rows = prospects.map(p => {
+                const score = calculateScore(p);
+                const audit = p.audit || {};
+                const auditIssues = Object.keys(audit).filter(k => audit[k]).map(k => 
+                    k.replace('audit_', '').replace('_', ' ')
+                ).join('; ');
+
+                return [
+                    p.businessName,
+                    p.contactName || '',
+                    p.email || '',
+                    p.phone || '',
+                    p.website || '',
+                    p.sector,
+                    p.location || '',
+                    p.businessSize || '',
+                    p.status,
+                    score,
+                    p.websiteQuality || '',
+                    p.socialPresence || '',
+                    p.budget || '',
+                    p.serviceFit || '',
+                    (p.notes || '').replace(/"/g, '""'),
+                    auditIssues
+                ].map(field => `"${field}"`).join(',');
+            });
+
+            const csv = [headers.join(','), ...rows].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `geco-prospects-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Import CSV
+        function importFromCSV() {
+            document.getElementById('csvFileInput').click();
+        }
+
+        function handleCSVImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const text = e.target.result;
+                    const lines = text.split('\n').filter(line => line.trim());
+                    
+                    // Skip header
+                    for (let i = 1; i < lines.length; i++) {
+                        const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(v => v.replace(/^"|"$/g, ''));
+                        
+                        if (values.length >= 6) {
+                            const prospect = {
+                                id: Date.now().toString() + i,
+                                businessName: values[0] || '',
+                                contactName: values[1] || '',
+                                email: values[2] || '',
+                                phone: values[3] || '',
+                                website: values[4] || '',
+                                sector: values[5] || 'Other',
+                                location: values[6] || '',
+                                businessSize: values[7] || '',
+                                status: values[8] || 'Research',
+                                websiteQuality: values[10] || '0',
+                                socialPresence: values[11] || '0',
+                                budget: values[12] || '5',
+                                serviceFit: values[13] || '15',
+                                notes: values[14] || '',
+                                audit: {},
+                                dateAdded: new Date().toISOString()
+                            };
+
+                            prospects.push(prospect);
+                        }
+                    }
+
+                    saveToStorage();
+                    renderStats();
+                    renderProspects();
+                    alert(`Imported ${lines.length - 1} prospects successfully`);
+                } catch (error) {
+                    alert('Error importing CSV: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Initialize
+        loadProspects();
+        renderStats();
+        renderProspects();
+
+        // Close modal on outside click
+        document.getElementById('prospectModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

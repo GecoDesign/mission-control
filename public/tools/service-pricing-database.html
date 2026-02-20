@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geco Design - Service Pricing Database</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 1em;
+            font-weight: 500;
+            color: #495057;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content {
+            padding: 30px;
+            min-height: 500px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .service-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .service-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .service-card .category {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .tier-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+
+        .tier-card h4 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .tier-card .price {
+            font-size: 1.8em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .actions {
+            margin-top: 15px;
+        }
+
+        .actions button {
+            margin-right: 10px;
+        }
+
+        .package-builder {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .package-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .package-total {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+        }
+
+        .addon-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid #e9ecef;
+        }
+
+        .quote-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .quote-output {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+            margin-top: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-tag {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid #667eea;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-tag.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .comparison-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            font-size: 2em;
+            cursor: pointer;
+            color: #6c757d;
+            border: none;
+            background: none;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Geco Design Service Pricing Database</h1>
+            <p>Systematically manage services, pricing, packages & profitability</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('services')">📋 Services</button>
+            <button class="tab" onclick="switchTab('addons')">➕ Add-ons</button>
+            <button class="tab" onclick="switchTab('package-builder')">📦 Package Builder</button>
+            <button class="tab" onclick="switchTab('quote')">💰 Quick Quote</button>
+            <button class="tab" onclick="switchTab('comparison')">📊 Competitor Comparison</button>
+            <button class="tab" onclick="switchTab('analytics')">📈 Analytics</button>
+            <button class="tab" onclick="switchTab('export')">💾 Export/Import</button>
+        </div>
+
+        <div class="content">
+            <!-- SERVICES TAB -->
+            <div id="services" class="tab-content active">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Service Catalog</h2>
+                    <button class="btn btn-primary" onclick="openServiceModal()">+ Add Service</button>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="serviceSearch" placeholder="🔍 Search services..." oninput="filterServices()">
+                </div>
+
+                <div class="filter-tags" id="categoryFilters"></div>
+
+                <div id="servicesList"></div>
+            </div>
+
+            <!-- ADD-ONS TAB -->
+            <div id="addons" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Add-on Options</h2>
+                    <button class="btn btn-primary" onclick="openAddonModal()">+ Add Add-on</button>
+                </div>
+
+                <div id="addonsList"></div>
+            </div>
+
+            <!-- PACKAGE BUILDER TAB -->
+            <div id="package-builder" class="tab-content">
+                <h2>Custom Package Builder</h2>
+                <p style="color: #6c757d; margin-bottom: 20px;">Mix and match services to create custom packages with auto-calculated pricing</p>
+
+                <div class="package-builder">
+                    <h3>Select Services</h3>
+                    <div id="packageServiceSelector"></div>
+
+                    <h3 style="margin-top: 30px;">Select Add-ons</h3>
+                    <div id="packageAddonSelector"></div>
+
+                    <div class="package-total">
+                        <div>Total Package Price</div>
+                        <div id="packageTotalPrice">£0</div>
+                        <div style="font-size: 0.6em; margin-top: 10px;">Estimated Hours: <span id="packageTotalHours">0</span>h</div>
+                    </div>
+
+                    <div style="margin-top: 20px; text-align: center;">
+                        <input type="text" id="packageName" placeholder="Package name (e.g., 'Startup Complete')" style="max-width: 400px; margin-bottom: 10px;">
+                        <br>
+                        <button class="btn btn-success" onclick="savePackage()">💾 Save Package</button>
+                        <button class="btn btn-secondary" onclick="clearPackage()">🗑️ Clear</button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 40px;">
+                    <h3>Saved Packages</h3>
+                    <div id="savedPackagesList"></div>
+                </div>
+            </div>
+
+            <!-- QUICK QUOTE TAB -->
+            <div id="quote" class="tab-content">
+                <h2>Quick Quote Generator</h2>
+                <p style="color: #6c757d; margin-bottom: 20px;">Enter client needs and get an instant ballpark quote</p>
+
+                <div class="quote-section">
+                    <div class="form-group">
+                        <label>Client Name</label>
+                        <input type="text" id="quoteClientName" placeholder="Enter client name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Client Type</label>
+                        <select id="quoteClientType">
+                            <option>Startup</option>
+                            <option>Small Business</option>
+                            <option>Medium Business</option>
+                            <option>Enterprise</option>
+                            <option>Agency</option>
+                            <option>Non-profit</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Project Description</label>
+                        <textarea id="quoteDescription" placeholder="Briefly describe what the client needs..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select Services Needed</label>
+                        <div id="quoteServiceSelector"></div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="generateQuote()">Generate Quote</button>
+                </div>
+
+                <div id="quoteOutput" style="display: none;" class="quote-output"></div>
+            </div>
+
+            <!-- COMPETITOR COMPARISON TAB -->
+            <div id="comparison" class="tab-content">
+                <h2>Competitor Comparison</h2>
+                <p style="color: #6c757d; margin-bottom: 20px;">Track how geco pricing compares to market rates</p>
+
+                <button class="btn btn-primary" onclick="openCompetitorModal()" style="margin-bottom: 20px;">+ Add Competitor Data</button>
+
+                <div id="comparisonData"></div>
+            </div>
+
+            <!-- ANALYTICS TAB -->
+            <div id="analytics" class="tab-content">
+                <h2>Analytics & Insights</h2>
+
+                <div class="grid-3" style="margin-bottom: 30px;">
+                    <div class="stat-card">
+                        <h3 id="totalServices">0</h3>
+                        <p>Total Services</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="avgServicePrice">£0</h3>
+                        <p>Avg Service Price</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalAddons">0</h3>
+                        <p>Add-ons Available</p>
+                    </div>
+                </div>
+
+                <h3>Services by Category</h3>
+                <div id="categoryBreakdown"></div>
+
+                <h3 style="margin-top: 30px;">Profitability Insights</h3>
+                <div id="profitabilityInsights"></div>
+            </div>
+
+            <!-- EXPORT/IMPORT TAB -->
+            <div id="export" class="tab-content">
+                <h2>Export & Import Data</h2>
+
+                <div class="export-buttons">
+                    <button class="btn btn-success" onclick="exportToJSON()">📥 Export to JSON</button>
+                    <button class="btn btn-info" onclick="exportToCSV()">📊 Export Services to CSV</button>
+                    <button class="btn btn-info" onclick="exportQuotePDF()">📄 Export Last Quote (PDF)</button>
+                </div>
+
+                <div class="form-group" style="margin-top: 30px;">
+                    <label>Import Data (JSON)</label>
+                    <input type="file" id="importFile" accept=".json">
+                    <button class="btn btn-primary" onclick="importData()" style="margin-top: 10px;">Import</button>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>Backup & Restore</h3>
+                    <p style="color: #6c757d; margin-bottom: 10px;">Last saved: <span id="lastSaved">Never</span></p>
+                    <button class="btn btn-secondary" onclick="clearAllData()">🗑️ Clear All Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SERVICE MODAL -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="serviceModalTitle">Add Service</h2>
+                <button class="modal-close" onclick="closeServiceModal()">&times;</button>
+            </div>
+
+            <form id="serviceForm">
+                <input type="hidden" id="serviceId">
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Service Name *</label>
+                        <input type="text" id="serviceName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="serviceCategory" required>
+                            <option>Web Design</option>
+                            <option>Web Development</option>
+                            <option>SEO</option>
+                            <option>Content Marketing</option>
+                            <option>Social Media</option>
+                            <option>Branding</option>
+                            <option>E-commerce</option>
+                            <option>Maintenance</option>
+                            <option>Consulting</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="serviceDescription"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Typical Timeline</label>
+                    <input type="text" id="serviceTimeline" placeholder="e.g., 2-4 weeks">
+                </div>
+
+                <h3>Pricing Tiers</h3>
+
+                <div class="tier-grid">
+                    <div class="tier-card">
+                        <h4>Basic</h4>
+                        <div class="form-group">
+                            <label>Price (£)</label>
+                            <input type="number" id="tierBasicPrice" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Hours</label>
+                            <input type="number" id="tierBasicHours" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>What's Included</label>
+                            <textarea id="tierBasicIncludes" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="tier-card">
+                        <h4>Standard</h4>
+                        <div class="form-group">
+                            <label>Price (£)</label>
+                            <input type="number" id="tierStandardPrice" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Hours</label>
+                            <input type="number" id="tierStandardHours" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>What's Included</label>
+                            <textarea id="tierStandardIncludes" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="tier-card">
+                        <h4>Premium</h4>
+                        <div class="form-group">
+                            <label>Price (£)</label>
+                            <input type="number" id="tierPremiumPrice" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Hours</label>
+                            <input type="number" id="tierPremiumHours" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>What's Included</label>
+                            <textarea id="tierPremiumIncludes" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 20px;">Additional Information</h3>
+
+                <div class="form-group">
+                    <label>Success Metrics</label>
+                    <textarea id="serviceMetrics" placeholder="How do you measure success for this service?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Client Suitability</label>
+                    <textarea id="serviceClientSuitability" placeholder="Which types of clients is this service best for?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Profitability Notes</label>
+                    <textarea id="serviceProfitability" placeholder="Notes on margins, profitability based on time tracker data"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Upsell Paths</label>
+                    <textarea id="serviceUpsell" placeholder="Complementary services to offer existing clients"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Templates & Deliverables</label>
+                    <textarea id="serviceDeliverables" placeholder="What gets delivered for this service?"></textarea>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">Save Service</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeServiceModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADDON MODAL -->
+    <div id="addonModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Add-on Option</h2>
+                <button class="modal-close" onclick="closeAddonModal()">&times;</button>
+            </div>
+
+            <form id="addonForm">
+                <input type="hidden" id="addonId">
+
+                <div class="form-group">
+                    <label>Add-on Name *</label>
+                    <input type="text" id="addonName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="addonDescription"></textarea>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Price (£) *</label>
+                        <input type="number" id="addonPrice" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hours</label>
+                        <input type="number" id="addonHours" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Applicable To</label>
+                    <input type="text" id="addonApplicable" placeholder="e.g., All services, Web Design only, etc.">
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">Save Add-on</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAddonModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- COMPETITOR MODAL -->
+    <div id="competitorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Competitor Comparison</h2>
+                <button class="modal-close" onclick="closeCompetitorModal()">&times;</button>
+            </div>
+
+            <form id="competitorForm">
+                <div class="form-group">
+                    <label>Service Type *</label>
+                    <select id="compServiceType" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Competitor Name *</label>
+                    <input type="text" id="compName" required>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Their Price (£) *</label>
+                        <input type="number" id="compPrice" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Your Price (£)</label>
+                        <input type="number" id="compYourPrice" min="0" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="compNotes" placeholder="What do they include? How does quality compare?"></textarea>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">Save Comparison</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeCompetitorModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // DATA STRUCTURE
+        let data = {
+            services: [],
+            addons: [],
+            packages: [],
+            competitors: [],
+            lastModified: null
+        };
+
+        // INITIALIZATION
+        function init() {
+            loadData();
+            renderServices();
+            renderAddons();
+            renderAnalytics();
+            renderCategoryFilters();
+            renderPackageBuilder();
+            renderQuoteServiceSelector();
+            renderComparisonData();
+            renderSavedPackages();
+            updateLastSaved();
+        }
+
+        // LOCAL STORAGE
+        function saveData() {
+            data.lastModified = new Date().toISOString();
+            localStorage.setItem('gecoPricingDB', JSON.stringify(data));
+            updateLastSaved();
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('gecoPricingDB');
+            if (saved) {
+                data = JSON.parse(saved);
+            }
+        }
+
+        function updateLastSaved() {
+            const elem = document.getElementById('lastSaved');
+            if (elem && data.lastModified) {
+                elem.textContent = new Date(data.lastModified).toLocaleString();
+            }
+        }
+
+        // TAB SWITCHING
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'analytics') {
+                renderAnalytics();
+            }
+        }
+
+        // SERVICES
+        function openServiceModal(serviceId = null) {
+            const modal = document.getElementById('serviceModal');
+            const form = document.getElementById('serviceForm');
+            form.reset();
+
+            if (serviceId) {
+                const service = data.services.find(s => s.id === serviceId);
+                if (service) {
+                    document.getElementById('serviceModalTitle').textContent = 'Edit Service';
+                    document.getElementById('serviceId').value = service.id;
+                    document.getElementById('serviceName').value = service.name;
+                    document.getElementById('serviceCategory').value = service.category;
+                    document.getElementById('serviceDescription').value = service.description || '';
+                    document.getElementById('serviceTimeline').value = service.timeline || '';
+                    
+                    // Tiers
+                    ['basic', 'standard', 'premium'].forEach(tier => {
+                        if (service.tiers[tier]) {
+                            document.getElementById(`tier${tier.charAt(0).toUpperCase() + tier.slice(1)}Price`).value = service.tiers[tier].price || '';
+                            document.getElementById(`tier${tier.charAt(0).toUpperCase() + tier.slice(1)}Hours`).value = service.tiers[tier].hours || '';
+                            document.getElementById(`tier${tier.charAt(0).toUpperCase() + tier.slice(1)}Includes`).value = service.tiers[tier].includes || '';
+                        }
+                    });
+
+                    document.getElementById('serviceMetrics').value = service.metrics || '';
+                    document.getElementById('serviceClientSuitability').value = service.clientSuitability || '';
+                    document.getElementById('serviceProfitability').value = service.profitability || '';
+                    document.getElementById('serviceUpsell').value = service.upsell || '';
+                    document.getElementById('serviceDeliverables').value = service.deliverables || '';
+                }
+            } else {
+                document.getElementById('serviceModalTitle').textContent = 'Add Service';
+                document.getElementById('serviceId').value = '';
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeServiceModal() {
+            document.getElementById('serviceModal').classList.remove('active');
+        }
+
+        document.getElementById('serviceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const serviceId = document.getElementById('serviceId').value;
+            const serviceData = {
+                id: serviceId || Date.now().toString(),
+                name: document.getElementById('serviceName').value,
+                category: document.getElementById('serviceCategory').value,
+                description: document.getElementById('serviceDescription').value,
+                timeline: document.getElementById('serviceTimeline').value,
+                tiers: {
+                    basic: {
+                        price: parseFloat(document.getElementById('tierBasicPrice').value) || 0,
+                        hours: parseFloat(document.getElementById('tierBasicHours').value) || 0,
+                        includes: document.getElementById('tierBasicIncludes').value
+                    },
+                    standard: {
+                        price: parseFloat(document.getElementById('tierStandardPrice').value) || 0,
+                        hours: parseFloat(document.getElementById('tierStandardHours').value) || 0,
+                        includes: document.getElementById('tierStandardIncludes').value
+                    },
+                    premium: {
+                        price: parseFloat(document.getElementById('tierPremiumPrice').value) || 0,
+                        hours: parseFloat(document.getElementById('tierPremiumHours').value) || 0,
+                        includes: document.getElementById('tierPremiumIncludes').value
+                    }
+                },
+                metrics: document.getElementById('serviceMetrics').value,
+                clientSuitability: document.getElementById('serviceClientSuitability').value,
+                profitability: document.getElementById('serviceProfitability').value,
+                upsell: document.getElementById('serviceUpsell').value,
+                deliverables: document.getElementById('serviceDeliverables').value
+            };
+
+            if (serviceId) {
+                const index = data.services.findIndex(s => s.id === serviceId);
+                data.services[index] = serviceData;
+            } else {
+                data.services.push(serviceData);
+            }
+
+            saveData();
+            renderServices();
+            renderCategoryFilters();
+            renderAnalytics();
+            renderPackageBuilder();
+            renderQuoteServiceSelector();
+            closeServiceModal();
+        });
+
+        function renderServices() {
+            const container = document.getElementById('servicesList');
+            const searchTerm = document.getElementById('serviceSearch').value.toLowerCase();
+            const activeFilters = Array.from(document.querySelectorAll('.filter-tag.active')).map(t => t.textContent);
+
+            let services = data.services.filter(service => {
+                const matchesSearch = service.name.toLowerCase().includes(searchTerm) || 
+                                    service.description.toLowerCase().includes(searchTerm);
+                const matchesFilter = activeFilters.length === 0 || activeFilters.includes(service.category);
+                return matchesSearch && matchesFilter;
+            });
+
+            if (services.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No services yet</h3>
+                        <p>Add your first service to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = services.map(service => `
+                <div class="service-card">
+                    <span class="category">${service.category}</span>
+                    <h3>${service.name}</h3>
+                    <p>${service.description || 'No description'}</p>
+                    <p><strong>Timeline:</strong> ${service.timeline || 'Not specified'}</p>
+
+                    <div class="tier-grid">
+                        ${['basic', 'standard', 'premium'].map(tier => {
+                            const tierData = service.tiers[tier];
+                            if (tierData.price > 0) {
+                                return `
+                                    <div class="tier-card">
+                                        <h4>${tier.charAt(0).toUpperCase() + tier.slice(1)}</h4>
+                                        <div class="price">£${tierData.price}</div>
+                                        <p><strong>${tierData.hours}h</strong></p>
+                                        <p style="font-size: 0.9em; color: #6c757d;">${tierData.includes || 'No details'}</p>
+                                    </div>
+                                `;
+                            }
+                            return '';
+                        }).join('')}
+                    </div>
+
+                    ${service.metrics ? `<p><strong>Success Metrics:</strong> ${service.metrics}</p>` : ''}
+                    ${service.clientSuitability ? `<p><strong>Best For:</strong> ${service.clientSuitability}</p>` : ''}
+                    ${service.profitability ? `<p><strong>Profitability:</strong> ${service.profitability}</p>` : ''}
+                    ${service.upsell ? `<p><strong>Upsell Paths:</strong> ${service.upsell}</p>` : ''}
+
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="openServiceModal('${service.id}')">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteService('${service.id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteService(serviceId) {
+            if (confirm('Are you sure you want to delete this service?')) {
+                data.services = data.services.filter(s => s.id !== serviceId);
+                saveData();
+                renderServices();
+                renderAnalytics();
+                renderCategoryFilters();
+            }
+        }
+
+        function filterServices() {
+            renderServices();
+        }
+
+        function renderCategoryFilters() {
+            const container = document.getElementById('categoryFilters');
+            const categories = [...new Set(data.services.map(s => s.category))];
+            
+            container.innerHTML = categories.map(cat => 
+                `<div class="filter-tag" onclick="toggleFilter(this)">${cat}</div>`
+            ).join('');
+        }
+
+        function toggleFilter(element) {
+            element.classList.toggle('active');
+            renderServices();
+        }
+
+        // ADD-ONS
+        function openAddonModal(addonId = null) {
+            const modal = document.getElementById('addonModal');
+            const form = document.getElementById('addonForm');
+            form.reset();
+
+            if (addonId) {
+                const addon = data.addons.find(a => a.id === addonId);
+                if (addon) {
+                    document.getElementById('addonId').value = addon.id;
+                    document.getElementById('addonName').value = addon.name;
+                    document.getElementById('addonDescription').value = addon.description || '';
+                    document.getElementById('addonPrice').value = addon.price;
+                    document.getElementById('addonHours').value = addon.hours || '';
+                    document.getElementById('addonApplicable').value = addon.applicable || '';
+                }
+            } else {
+                document.getElementById('addonId').value = '';
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeAddonModal() {
+            document.getElementById('addonModal').classList.remove('active');
+        }
+
+        document.getElementById('addonForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const addonId = document.getElementById('addonId').value;
+            const addonData = {
+                id: addonId || Date.now().toString(),
+                name: document.getElementById('addonName').value,
+                description: document.getElementById('addonDescription').value,
+                price: parseFloat(document.getElementById('addonPrice').value),
+                hours: parseFloat(document.getElementById('addonHours').value) || 0,
+                applicable: document.getElementById('addonApplicable').value
+            };
+
+            if (addonId) {
+                const index = data.addons.findIndex(a => a.id === addonId);
+                data.addons[index] = addonData;
+            } else {
+                data.addons.push(addonData);
+            }
+
+            saveData();
+            renderAddons();
+            renderAnalytics();
+            renderPackageBuilder();
+            closeAddonModal();
+        });
+
+        function renderAddons() {
+            const container = document.getElementById('addonsList');
+
+            if (data.addons.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No add-ons yet</h3>
+                        <p>Add common extras like rush delivery, extra revisions, ongoing support, etc.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = data.addons.map(addon => `
+                <div class="addon-item">
+                    <div>
+                        <strong>${addon.name}</strong> - £${addon.price} ${addon.hours ? `(${addon.hours}h)` : ''}
+                        <br>
+                        <small style="color: #6c757d;">${addon.description || ''}</small>
+                        ${addon.applicable ? `<br><small>Applicable to: ${addon.applicable}</small>` : ''}
+                    </div>
+                    <div>
+                        <button class="btn btn-secondary" onclick="openAddonModal('${addon.id}')">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteAddon('${addon.id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteAddon(addonId) {
+            if (confirm('Are you sure you want to delete this add-on?')) {
+                data.addons = data.addons.filter(a => a.id !== addonId);
+                saveData();
+                renderAddons();
+                renderAnalytics();
+            }
+        }
+
+        // PACKAGE BUILDER
+        function renderPackageBuilder() {
+            const serviceSelector = document.getElementById('packageServiceSelector');
+            const addonSelector = document.getElementById('packageAddonSelector');
+
+            serviceSelector.innerHTML = data.services.map(service => `
+                <div class="checkbox-group">
+                    <input type="checkbox" id="pkg-service-${service.id}" onchange="updatePackageTotal()">
+                    <label for="pkg-service-${service.id}" style="margin: 0;">
+                        <strong>${service.name}</strong>
+                    </label>
+                    <select id="pkg-service-tier-${service.id}" onchange="updatePackageTotal()" style="width: auto; margin-left: 10px;">
+                        <option value="basic">Basic (£${service.tiers.basic.price})</option>
+                        <option value="standard">Standard (£${service.tiers.standard.price})</option>
+                        <option value="premium">Premium (£${service.tiers.premium.price})</option>
+                    </select>
+                </div>
+            `).join('');
+
+            addonSelector.innerHTML = data.addons.map(addon => `
+                <div class="checkbox-group">
+                    <input type="checkbox" id="pkg-addon-${addon.id}" onchange="updatePackageTotal()">
+                    <label for="pkg-addon-${addon.id}" style="margin: 0;">
+                        <strong>${addon.name}</strong> - £${addon.price}
+                    </label>
+                </div>
+            `).join('');
+        }
+
+        function updatePackageTotal() {
+            let totalPrice = 0;
+            let totalHours = 0;
+
+            // Calculate services
+            data.services.forEach(service => {
+                const checkbox = document.getElementById(`pkg-service-${service.id}`);
+                if (checkbox && checkbox.checked) {
+                    const tierSelect = document.getElementById(`pkg-service-tier-${service.id}`);
+                    const tier = tierSelect.value;
+                    totalPrice += service.tiers[tier].price;
+                    totalHours += service.tiers[tier].hours;
+                }
+            });
+
+            // Calculate add-ons
+            data.addons.forEach(addon => {
+                const checkbox = document.getElementById(`pkg-addon-${addon.id}`);
+                if (checkbox && checkbox.checked) {
+                    totalPrice += addon.price;
+                    totalHours += addon.hours;
+                }
+            });
+
+            document.getElementById('packageTotalPrice').textContent = `£${totalPrice.toFixed(2)}`;
+            document.getElementById('packageTotalHours').textContent = totalHours.toFixed(1);
+        }
+
+        function savePackage() {
+            const packageName = document.getElementById('packageName').value.trim();
+            if (!packageName) {
+                alert('Please enter a package name');
+                return;
+            }
+
+            const selectedServices = [];
+            const selectedAddons = [];
+
+            data.services.forEach(service => {
+                const checkbox = document.getElementById(`pkg-service-${service.id}`);
+                if (checkbox && checkbox.checked) {
+                    const tierSelect = document.getElementById(`pkg-service-tier-${service.id}`);
+                    selectedServices.push({
+                        serviceId: service.id,
+                        serviceName: service.name,
+                        tier: tierSelect.value,
+                        price: service.tiers[tierSelect.value].price,
+                        hours: service.tiers[tierSelect.value].hours
+                    });
+                }
+            });
+
+            data.addons.forEach(addon => {
+                const checkbox = document.getElementById(`pkg-addon-${addon.id}`);
+                if (checkbox && checkbox.checked) {
+                    selectedAddons.push({
+                        addonId: addon.id,
+                        addonName: addon.name,
+                        price: addon.price,
+                        hours: addon.hours
+                    });
+                }
+            });
+
+            if (selectedServices.length === 0) {
+                alert('Please select at least one service');
+                return;
+            }
+
+            const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0) + 
+                             selectedAddons.reduce((sum, a) => sum + a.price, 0);
+            const totalHours = selectedServices.reduce((sum, s) => sum + s.hours, 0) + 
+                             selectedAddons.reduce((sum, a) => sum + a.hours, 0);
+
+            data.packages.push({
+                id: Date.now().toString(),
+                name: packageName,
+                services: selectedServices,
+                addons: selectedAddons,
+                totalPrice,
+                totalHours,
+                created: new Date().toISOString()
+            });
+
+            saveData();
+            clearPackage();
+            renderSavedPackages();
+            alert('Package saved successfully!');
+        }
+
+        function clearPackage() {
+            document.getElementById('packageName').value = '';
+            document.querySelectorAll('#packageServiceSelector input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('#packageAddonSelector input[type="checkbox"]').forEach(cb => cb.checked = false);
+            updatePackageTotal();
+        }
+
+        function renderSavedPackages() {
+            const container = document.getElementById('savedPackagesList');
+
+            if (data.packages.length === 0) {
+                container.innerHTML = '<p style="color: #6c757d;">No saved packages yet</p>';
+                return;
+            }
+
+            container.innerHTML = data.packages.map(pkg => `
+                <div class="service-card">
+                    <h3>${pkg.name}</h3>
+                    <p><strong>Total: £${pkg.totalPrice.toFixed(2)}</strong> (${pkg.totalHours}h)</p>
+                    <p><strong>Services:</strong> ${pkg.services.map(s => `${s.serviceName} (${s.tier})`).join(', ')}</p>
+                    ${pkg.addons.length > 0 ? `<p><strong>Add-ons:</strong> ${pkg.addons.map(a => a.addonName).join(', ')}</p>` : ''}
+                    <div class="actions">
+                        <button class="btn btn-danger" onclick="deletePackage('${pkg.id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deletePackage(packageId) {
+            if (confirm('Delete this package?')) {
+                data.packages = data.packages.filter(p => p.id !== packageId);
+                saveData();
+                renderSavedPackages();
+            }
+        }
+
+        // QUICK QUOTE
+        function renderQuoteServiceSelector() {
+            const container = document.getElementById('quoteServiceSelector');
+            
+            container.innerHTML = data.services.map(service => `
+                <div class="checkbox-group">
+                    <input type="checkbox" id="quote-service-${service.id}">
+                    <label for="quote-service-${service.id}" style="margin: 0;">
+                        <strong>${service.name}</strong> (${service.category})
+                    </label>
+                    <select id="quote-service-tier-${service.id}" style="width: auto; margin-left: 10px;">
+                        <option value="basic">Basic</option>
+                        <option value="standard">Standard</option>
+                        <option value="premium">Premium</option>
+                    </select>
+                </div>
+            `).join('');
+        }
+
+        function generateQuote() {
+            const clientName = document.getElementById('quoteClientName').value;
+            const clientType = document.getElementById('quoteClientType').value;
+            const description = document.getElementById('quoteDescription').value;
+
+            const selectedServices = [];
+            let totalPrice = 0;
+            let totalHours = 0;
+
+            data.services.forEach(service => {
+                const checkbox = document.getElementById(`quote-service-${service.id}`);
+                if (checkbox && checkbox.checked) {
+                    const tierSelect = document.getElementById(`quote-service-tier-${service.id}`);
+                    const tier = tierSelect.value;
+                    const tierData = service.tiers[tier];
+                    
+                    selectedServices.push({
+                        name: service.name,
+                        tier: tier.charAt(0).toUpperCase() + tier.slice(1),
+                        price: tierData.price,
+                        hours: tierData.hours,
+                        includes: tierData.includes
+                    });
+
+                    totalPrice += tierData.price;
+                    totalHours += tierData.hours;
+                }
+            });
+
+            if (selectedServices.length === 0) {
+                alert('Please select at least one service');
+                return;
+            }
+
+            const output = document.getElementById('quoteOutput');
+            output.style.display = 'block';
+            output.innerHTML = `
+                <h2>Quote for ${clientName || 'Client'}</h2>
+                <p><strong>Client Type:</strong> ${clientType}</p>
+                ${description ? `<p><strong>Project Description:</strong> ${description}</p>` : ''}
+                
+                <h3 style="margin-top: 20px;">Services</h3>
+                ${selectedServices.map(s => `
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                        <strong>${s.name} - ${s.tier} Tier</strong><br>
+                        Price: £${s.price} | Estimated Hours: ${s.hours}h<br>
+                        <small>${s.includes || 'No details'}</small>
+                    </div>
+                `).join('')}
+
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-top: 20px; text-align: center;">
+                    <h3>Total Investment: £${totalPrice.toFixed(2)}</h3>
+                    <p>Estimated Timeline: ${totalHours} hours (${(totalHours / 8).toFixed(1)} working days)</p>
+                </div>
+
+                <p style="margin-top: 20px; color: #6c757d;">
+                    <small>This quote is valid for 30 days. Final pricing may vary based on specific requirements.</small>
+                </p>
+            `;
+
+            // Store last quote for PDF export
+            data.lastQuote = {
+                clientName,
+                clientType,
+                description,
+                services: selectedServices,
+                totalPrice,
+                totalHours,
+                date: new Date().toISOString()
+            };
+            saveData();
+        }
+
+        // COMPETITOR COMPARISON
+        function openCompetitorModal() {
+            const modal = document.getElementById('competitorModal');
+            const serviceSelect = document.getElementById('compServiceType');
+            
+            // Populate service types
+            serviceSelect.innerHTML = data.services.map(s => 
+                `<option value="${s.id}">${s.name}</option>`
+            ).join('');
+
+            // Update "your price" when service is selected
+            serviceSelect.addEventListener('change', function() {
+                const service = data.services.find(s => s.id === this.value);
+                if (service) {
+                    // Use standard tier price as default
+                    document.getElementById('compYourPrice').value = service.tiers.standard.price;
+                }
+            });
+
+            // Trigger initial update
+            if (serviceSelect.options.length > 0) {
+                serviceSelect.dispatchEvent(new Event('change'));
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeCompetitorModal() {
+            document.getElementById('competitorModal').classList.remove('active');
+        }
+
+        document.getElementById('competitorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const serviceId = document.getElementById('compServiceType').value;
+            const service = data.services.find(s => s.id === serviceId);
+
+            data.competitors.push({
+                id: Date.now().toString(),
+                serviceId,
+                serviceName: service.name,
+                competitorName: document.getElementById('compName').value,
+                competitorPrice: parseFloat(document.getElementById('compPrice').value),
+                yourPrice: parseFloat(document.getElementById('compYourPrice').value),
+                notes: document.getElementById('compNotes').value
+            });
+
+            saveData();
+            renderComparisonData();
+            closeCompetitorModal();
+            this.reset();
+        });
+
+        function renderComparisonData() {
+            const container = document.getElementById('comparisonData');
+
+            if (data.competitors.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No competitor data yet</h3>
+                        <p>Add competitor pricing to track how you compare to the market</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Group by service
+            const byService = {};
+            data.competitors.forEach(comp => {
+                if (!byService[comp.serviceName]) {
+                    byService[comp.serviceName] = [];
+                }
+                byService[comp.serviceName].push(comp);
+            });
+
+            container.innerHTML = Object.keys(byService).map(serviceName => {
+                const comps = byService[serviceName];
+                return `
+                    <div class="service-card">
+                        <h3>${serviceName}</h3>
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Competitor</th>
+                                    <th>Their Price</th>
+                                    <th>Your Price</th>
+                                    <th>Difference</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${comps.map(comp => {
+                                    const diff = comp.yourPrice - comp.competitorPrice;
+                                    const diffPercent = ((diff / comp.competitorPrice) * 100).toFixed(1);
+                                    const diffColor = diff > 0 ? '#dc3545' : '#28a745';
+                                    return `
+                                        <tr>
+                                            <td>${comp.competitorName}</td>
+                                            <td>£${comp.competitorPrice}</td>
+                                            <td>£${comp.yourPrice}</td>
+                                            <td style="color: ${diffColor}; font-weight: bold;">
+                                                ${diff > 0 ? '+' : ''}£${diff.toFixed(2)} (${diffPercent}%)
+                                            </td>
+                                            <td>${comp.notes || '-'}</td>
+                                            <td>
+                                                <button class="btn btn-danger" onclick="deleteComparison('${comp.id}')">Delete</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deleteComparison(compId) {
+            if (confirm('Delete this comparison?')) {
+                data.competitors = data.competitors.filter(c => c.id !== compId);
+                saveData();
+                renderComparisonData();
+            }
+        }
+
+        // ANALYTICS
+        function renderAnalytics() {
+            // Total services
+            document.getElementById('totalServices').textContent = data.services.length;
+
+            // Average price (standard tier)
+            const avgPrice = data.services.length > 0 
+                ? data.services.reduce((sum, s) => sum + s.tiers.standard.price, 0) / data.services.length 
+                : 0;
+            document.getElementById('avgServicePrice').textContent = `£${avgPrice.toFixed(0)}`;
+
+            // Total add-ons
+            document.getElementById('totalAddons').textContent = data.addons.length;
+
+            // Category breakdown
+            const categoryContainer = document.getElementById('categoryBreakdown');
+            const categories = {};
+            data.services.forEach(s => {
+                if (!categories[s.category]) {
+                    categories[s.category] = { count: 0, totalRevenue: 0 };
+                }
+                categories[s.category].count++;
+                categories[s.category].totalRevenue += s.tiers.standard.price;
+            });
+
+            categoryContainer.innerHTML = Object.keys(categories).map(cat => `
+                <div class="service-card">
+                    <h4>${cat}</h4>
+                    <p><strong>${categories[cat].count}</strong> services</p>
+                    <p>Total potential revenue: <strong>£${categories[cat].totalRevenue}</strong></p>
+                </div>
+            `).join('') || '<p style="color: #6c757d;">No data yet</p>';
+
+            // Profitability insights
+            const profitContainer = document.getElementById('profitabilityInsights');
+            const servicesWithProfit = data.services.filter(s => s.profitability);
+            
+            if (servicesWithProfit.length > 0) {
+                profitContainer.innerHTML = servicesWithProfit.map(s => `
+                    <div class="service-card">
+                        <h4>${s.name}</h4>
+                        <p>${s.profitability}</p>
+                    </div>
+                `).join('');
+            } else {
+                profitContainer.innerHTML = '<p style="color: #6c757d;">Add profitability notes to services to see insights here</p>';
+            }
+        }
+
+        // EXPORT / IMPORT
+        function exportToJSON() {
+            const dataStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `geco-pricing-database-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportToCSV() {
+            let csv = 'Service Name,Category,Timeline,Basic Price,Basic Hours,Standard Price,Standard Hours,Premium Price,Premium Hours\n';
+            
+            data.services.forEach(service => {
+                csv += `"${service.name}","${service.category}","${service.timeline}",`;
+                csv += `${service.tiers.basic.price},${service.tiers.basic.hours},`;
+                csv += `${service.tiers.standard.price},${service.tiers.standard.hours},`;
+                csv += `${service.tiers.premium.price},${service.tiers.premium.hours}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `geco-services-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportQuotePDF() {
+            if (!data.lastQuote) {
+                alert('No quote generated yet. Generate a quote first.');
+                return;
+            }
+
+            // Simple HTML page that can be printed to PDF
+            const quote = data.lastQuote;
+            const html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Quote - ${quote.clientName}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 40px; }
+                        h1 { color: #667eea; }
+                        .service { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 5px; }
+                        .total { background: #667eea; color: white; padding: 20px; text-align: center; border-radius: 5px; margin-top: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Geco Design - Project Quote</h1>
+                    <p><strong>Client:</strong> ${quote.clientName}</p>
+                    <p><strong>Client Type:</strong> ${quote.clientType}</p>
+                    <p><strong>Date:</strong> ${new Date(quote.date).toLocaleDateString()}</p>
+                    ${quote.description ? `<p><strong>Description:</strong> ${quote.description}</p>` : ''}
+                    
+                    <h2>Services</h2>
+                    ${quote.services.map(s => `
+                        <div class="service">
+                            <strong>${s.name} - ${s.tier} Tier</strong><br>
+                            Price: £${s.price} | Hours: ${s.hours}h<br>
+                            <small>${s.includes}</small>
+                        </div>
+                    `).join('')}
+
+                    <div class="total">
+                        <h2>Total Investment: £${quote.totalPrice.toFixed(2)}</h2>
+                        <p>Estimated Timeline: ${quote.totalHours} hours</p>
+                    </div>
+
+                    <p style="margin-top: 30px; color: #666;">
+                        This quote is valid for 30 days. Final pricing may vary based on specific requirements.
+                    </p>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const win = window.open(url);
+            setTimeout(() => {
+                win.print();
+            }, 500);
+        }
+
+        function importData() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file to import');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Are you sure?')) {
+                        data = importedData;
+                        saveData();
+                        init();
+                        alert('Data imported successfully!');
+                    }
+                } catch (error) {
+                    alert('Error importing data: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to delete ALL data? This cannot be undone!')) {
+                if (confirm('Really? This will delete everything!')) {
+                    localStorage.removeItem('gecoPricingDB');
+                    data = { services: [], addons: [], packages: [], competitors: [], lastModified: null };
+                    init();
+                    alert('All data cleared');
+                }
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

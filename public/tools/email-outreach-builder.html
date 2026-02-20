@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Outreach Campaign Builder - geco.design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            color: var(--gray-900);
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            color: var(--gray-700);
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: var(--gray-100);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: var(--gray-900);
+        }
+
+        .card h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: var(--gray-700);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        th {
+            background: var(--gray-50);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--gray-700);
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-hot {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-warm {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-cold {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .template-card {
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .template-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+        }
+
+        .template-card.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .email-preview {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: Georgia, serif;
+            line-height: 1.8;
+        }
+
+        .email-preview .subject {
+            font-weight: bold;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--gray-300);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, var(--success), #059669);
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+        }
+
+        .stat-card .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .merge-field {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            margin: 0 2px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+
+        .tips-list {
+            list-style: none;
+        }
+
+        .tips-list li {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .tips-list li strong {
+            color: var(--primary);
+        }
+
+        .sequence-step {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .sequence-step .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
+
+            .tabs {
+                padding: 8px;
+            }
+
+            .tab-btn {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--gray-900);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📧 Email Outreach Campaign Builder</h1>
+            <p>Create personalized cold email campaigns for geco.design</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('templates')">📝 Templates</button>
+            <button class="tab-btn" onclick="switchTab('prospects')">👥 Prospects</button>
+            <button class="tab-btn" onclick="switchTab('campaigns')">🚀 Campaigns</button>
+            <button class="tab-btn" onclick="switchTab('analytics')">📊 Analytics</button>
+            <button class="tab-btn" onclick="switchTab('guide')">💡 Best Practices</button>
+        </div>
+
+        <!-- TEMPLATES TAB -->
+        <div id="templates" class="tab-content active">
+            <div class="card">
+                <h2>Campaign Template Library</h2>
+                <p style="color: var(--gray-500); margin-bottom: 20px;">Select a template to start your campaign. Each template includes personalization merge fields and follow-up sequences.</p>
+                
+                <div class="grid grid-2" id="template-grid">
+                    <!-- Templates will be populated by JS -->
+                </div>
+            </div>
+
+            <div class="card" id="template-preview" style="display: none;">
+                <h2>Template Preview</h2>
+                <div id="preview-content"></div>
+                <div class="action-buttons" style="margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="useTemplate()">Use This Template</button>
+                    <button class="btn btn-secondary" onclick="copyTemplate()">Copy All Emails</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROSPECTS TAB -->
+        <div id="prospects" class="tab-content">
+            <div class="card">
+                <h2>Prospect List Manager</h2>
+                <div class="action-buttons" style="margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="openAddProspectModal()">➕ Add Prospect</button>
+                    <div class="file-input-wrapper">
+                        <button class="btn btn-secondary">📥 Import CSV</button>
+                        <input type="file" id="csv-import" accept=".csv" onchange="importCSV(event)">
+                    </div>
+                    <button class="btn btn-secondary" onclick="exportCSV()">📤 Export CSV</button>
+                    <button class="btn btn-secondary" onclick="clearProspects()">🗑️ Clear All</button>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table id="prospects-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Company</th>
+                                <th>Email</th>
+                                <th>Industry</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prospects-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- CAMPAIGNS TAB -->
+        <div id="campaigns" class="tab-content">
+            <div class="card">
+                <h2>Email Sequence Builder</h2>
+                <p style="color: var(--gray-500); margin-bottom: 20px;">Create personalized email sequences for your prospects.</p>
+
+                <div class="form-group">
+                    <label>Select Template</label>
+                    <select id="campaign-template" onchange="loadCampaignTemplate()">
+                        <option value="">-- Select a template --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Prospect</label>
+                    <select id="campaign-prospect" onchange="generatePersonalizedEmail()">
+                        <option value="">-- Select a prospect --</option>
+                    </select>
+                </div>
+
+                <div id="personalized-sequence" style="display: none;">
+                    <h3>Your Personalized Email Sequence</h3>
+                    <div id="sequence-emails"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS TAB -->
+        <div id="analytics" class="tab-content">
+            <div class="card">
+                <h2>Campaign Analytics Dashboard</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-total">0</div>
+                        <div class="stat-label">Total Prospects</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-value" id="stat-hot">0</div>
+                        <div class="stat-label">Hot Leads</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value" id="stat-warm">0</div>
+                        <div class="stat-label">Warm Leads</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-cold">0</div>
+                        <div class="stat-label">Cold Leads</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 16px;">Prospects by Industry</h3>
+                <div id="industry-breakdown"></div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 16px;">Campaign Activity Log</h3>
+                <div id="activity-log">
+                    <p style="color: var(--gray-500);">Activity tracking will appear here as you create campaigns and copy emails.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BEST PRACTICES TAB -->
+        <div id="guide" class="tab-content">
+            <div class="card">
+                <h2>📚 Cold Email Best Practices</h2>
+                
+                <h3>✅ Email Outreach Tips</h3>
+                <ul class="tips-list">
+                    <li><strong>Personalize every email:</strong> Reference their company, recent work, or specific challenges in their industry.</li>
+                    <li><strong>Keep it short:</strong> Aim for 50-125 words. Busy professionals don't read long emails.</li>
+                    <li><strong>Focus on value:</strong> What's in it for them? Lead with benefits, not features.</li>
+                    <li><strong>Clear CTA:</strong> One specific call-to-action. Make it easy to respond.</li>
+                    <li><strong>Follow up:</strong> 80% of sales require 5+ follow-ups. Don't give up after one email.</li>
+                    <li><strong>Timing matters:</strong> Send Tuesday-Thursday, 10AM-11AM or 2PM-3PM for best response rates.</li>
+                    <li><strong>A/B test subject lines:</strong> Try different angles to see what resonates.</li>
+                    <li><strong>Warm up your domain:</strong> Don't send 100 emails on day one. Ramp up gradually.</li>
+                </ul>
+
+                <h3 style="margin-top: 24px;">🔒 GDPR Compliance Checklist</h3>
+                <ul class="tips-list">
+                    <li><strong>Legitimate interest:</strong> You can email businesses without consent if you have a legitimate business interest.</li>
+                    <li><strong>Easy opt-out:</strong> Include clear unsubscribe language in every email.</li>
+                    <li><strong>Accurate data:</strong> Only contact people whose details you've obtained legally.</li>
+                    <li><strong>Respect objections:</strong> If someone asks not to be contacted, honor that immediately.</li>
+                    <li><strong>Data protection:</strong> Store prospect data securely (this tool uses local browser storage).</li>
+                    <li><strong>B2B exception:</strong> GDPR is more lenient for B2B emails to corporate email addresses.</li>
+                </ul>
+
+                <h3 style="margin-top: 24px;">⏰ Optimal Timing</h3>
+                <ul class="tips-list">
+                    <li><strong>Best days:</strong> Tuesday, Wednesday, Thursday</li>
+                    <li><strong>Worst days:</strong> Monday (inbox overload), Friday (weekend mode)</li>
+                    <li><strong>Best times:</strong> 10-11 AM (after morning email check), 2-3 PM (afternoon lull)</li>
+                    <li><strong>Follow-up cadence:</strong> Wait 3-4 days between emails, then 5-7 days for later follow-ups</li>
+                </ul>
+
+                <h3 style="margin-top: 24px;">💬 Response Templates</h3>
+                <div class="email-preview">
+                    <strong>If they're interested:</strong><br><br>
+                    "Thanks for getting back to me! I'd love to learn more about [specific challenge]. Are you free for a quick 15-minute call next week? Here's my calendar: [link]"
+                </div>
+                <br>
+                <div class="email-preview">
+                    <strong>If they need more info:</strong><br><br>
+                    "Happy to share more details. Here are a few recent projects we've done for [similar companies]: [portfolio link]. Would you like me to send over a case study specific to [their industry]?"
+                </div>
+                <br>
+                <div class="email-preview">
+                    <strong>If timing isn't right:</strong><br><br>
+                    "No problem at all. When would be a better time to reconnect? I'll put a reminder to follow up in [3 months/6 months]."
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Prospect Modal -->
+    <div id="prospect-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add Prospect</h2>
+                <button class="close-btn" onclick="closeProspectModal()">&times;</button>
+            </div>
+            <form id="prospect-form" onsubmit="saveProspect(event)">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" id="prospect-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Company *</label>
+                        <input type="text" id="prospect-company" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="prospect-email" required>
+                </div>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label>Industry *</label>
+                        <select id="prospect-industry" required>
+                            <option value="">-- Select --</option>
+                            <option value="Architecture">Architecture</option>
+                            <option value="Surveying">Surveying</option>
+                            <option value="Accounting">Accounting</option>
+                            <option value="Construction">Construction</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="prospect-status">
+                            <option value="cold">Cold</option>
+                            <option value="warm">Warm</option>
+                            <option value="hot">Hot</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Website</label>
+                    <input type="url" id="prospect-website" placeholder="https://">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="prospect-notes" rows="3"></textarea>
+                </div>
+                <input type="hidden" id="prospect-id">
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary">Save Prospect</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeProspectModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Email Templates Database
+        const templates = {
+            architects: {
+                name: "Architects",
+                icon: "🏛️",
+                description: "Professional email sequence for architectural firms",
+                subject: "Quick question about {{company}}'s upcoming projects",
+                subjectVariationB: "Love your work on {{recent_project}} — question for you",
+                emails: [
+                    {
+                        type: "Initial",
+                        subject: "Quick question about {{company}}'s upcoming projects",
+                        body: `Hi {{name}},
+
+I came across {{company}}'s work and was particularly impressed by {{recent_project}}. The attention to detail is outstanding.
+
+I'm Alex from geco.design. We help architectural firms streamline their project delivery through better digital workflows — everything from client presentations to construction documentation.
+
+I noticed many firms like yours are dealing with the challenge of coordinating between design tools, client feedback, and contractor communications. We've built solutions that cut project admin time by 30-40%.
+
+Would you be open to a brief 15-minute call to discuss how we might help {{company}}?
+
+Best regards,
+Alex
+geco.design`
+                    },
+                    {
+                        type: "Follow-up 1 (Day 3)",
+                        subject: "Re: Quick question about {{company}}'s upcoming projects",
+                        body: `Hi {{name}},
+
+Following up on my email from earlier this week. I know you're busy with projects, so I'll keep this brief.
+
+We recently helped a similar-sized firm reduce their CAD-to-client approval cycle by 50% using custom web tools. Happy to share the case study if it's relevant.
+
+Worth a quick chat?
+
+Best,
+Alex`
+                    },
+                    {
+                        type: "Follow-up 2 (Day 7)",
+                        subject: "One last try — streamlining {{company}}'s workflows",
+                        body: `Hi {{name}},
+
+I promise this is my last email! I completely understand if the timing isn't right.
+
+Just wanted to share this: we built a custom project portal for [similar firm] that their clients love — everything in one place, no more chasing email threads.
+
+If you're interested in seeing how it works, I'm happy to send over a quick demo video. No strings attached.
+
+All the best,
+Alex
+geco.design`
+                    },
+                    {
+                        type: "Follow-up 3 (Day 14)",
+                        subject: "Should I close your file?",
+                        body: `Hi {{name}},
+
+I haven't heard back, so I'm assuming this isn't a priority for {{company}} right now.
+
+Before I close your file, I wanted to check: is there a better time to reconnect? Happy to reach out in 3-6 months when project planning picks up.
+
+Thanks,
+Alex`
+                    }
+                ]
+            },
+            surveyors: {
+                name: "Surveyors",
+                icon: "📐",
+                description: "Targeted outreach for surveying companies",
+                subject: "Digital tools for {{company}}'s surveying workflow",
+                subjectVariationB: "Helping surveyors like {{company}} go paperless",
+                emails: [
+                    {
+                        type: "Initial",
+                        subject: "Digital tools for {{company}}'s surveying workflow",
+                        body: `Hi {{name}},
+
+I've been researching surveying firms in {{location}} and {{company}} stood out for your work in {{specialty}}.
+
+I'm Alex from geco.design. We build custom digital solutions for surveying companies — think client portals, automated reporting, and mobile-friendly survey delivery.
+
+Most firms we work with are frustrated with the disconnect between field data collection and client reporting. We've helped companies cut report turnaround time in half while improving client satisfaction.
+
+Would you be open to a quick 15-minute call to explore whether this could work for {{company}}?
+
+Best regards,
+Alex
+geco.design`
+                    },
+                    {
+                        type: "Follow-up 1 (Day 4)",
+                        subject: "Re: Digital tools for {{company}}'s surveying workflow",
+                        body: `Hi {{name}},
+
+Quick follow-up on my message from last week.
+
+We recently built a system for a surveying firm that lets their clients view survey results in real-time via a secure web portal. No more PDF email chains.
+
+Their clients love it, and it's become a competitive differentiator for them.
+
+Interested in learning more?
+
+Best,
+Alex`
+                    },
+                    {
+                        type: "Follow-up 2 (Day 8)",
+                        subject: "Client portal example for surveyors",
+                        body: `Hi {{name}},
+
+Haven't heard back, so I thought I'd share a quick example of what we build:
+
+[Link to portfolio/demo]
+
+It's a custom client portal that pulls in survey data, generates interactive maps, and lets clients download reports 24/7. Takes about 4 weeks to build and typically pays for itself in time saved within 6 months.
+
+Worth exploring for {{company}}?
+
+Cheers,
+Alex`
+                    },
+                    {
+                        type: "Follow-up 3 (Day 15)",
+                        subject: "Last check-in for {{company}}",
+                        body: `Hi {{name}},
+
+I'll stop bothering you after this! Just wanted to check one last time whether there's interest in modernizing your client delivery process.
+
+If not, no worries at all. And if the timing is just off, let me know when would be better to reconnect.
+
+Thanks for your time,
+Alex
+geco.design`
+                    }
+                ]
+            },
+            accountants: {
+                name: "Accountants",
+                icon: "💼",
+                description: "Professional outreach for accounting firms",
+                subject: "Web tools for {{company}}'s client experience",
+                subjectVariationB: "How {{company}} can modernize client onboarding",
+                emails: [
+                    {
+                        type: "Initial",
+                        subject: "Web tools for {{company}}'s client experience",
+                        body: `Hi {{name}},
+
+I came across {{company}} and noticed you specialize in {{specialty}}. Impressive client base.
+
+I'm Alex from geco.design. We help accounting firms build custom web tools that streamline client interactions — think secure document uploads, automated onboarding forms, and client portals.
+
+Most accountancy firms we talk to are drowning in email attachments and chasing clients for documents. We've built solutions that cut onboarding admin time by 50-60%.
+
+Would you be interested in a quick 15-minute chat about how this could work for {{company}}?
+
+Best regards,
+Alex
+geco.design`
+                    },
+                    {
+                        type: "Follow-up 1 (Day 3)",
+                        subject: "Re: Web tools for {{company}}'s client experience",
+                        body: `Hi {{name}},
+
+Following up on my email earlier this week.
+
+We recently built a secure client portal for an accounting firm similar to {{company}}. Their clients can now upload documents, track their tax return status, and schedule consultations — all in one place.
+
+The firm saved ~15 hours per week in admin time.
+
+Worth a conversation?
+
+Best,
+Alex`
+                    },
+                    {
+                        type: "Follow-up 2 (Day 7)",
+                        subject: "Example: Client onboarding automation",
+                        body: `Hi {{name}},
+
+Thought I'd share a specific example of what we build:
+
+Automated client onboarding system that collects all necessary documents, runs compliance checks, and populates your practice management system automatically. No more back-and-forth emails.
+
+One firm reduced their onboarding time from 2 weeks to 3 days.
+
+Interested in seeing a demo for {{company}}?
+
+Cheers,
+Alex`
+                    },
+                    {
+                        type: "Follow-up 3 (Day 14)",
+                        subject: "Final follow-up for {{company}}",
+                        body: `Hi {{name}},
+
+This will be my last email. I understand you're busy and this might not be a priority right now.
+
+If you'd ever like to explore how custom web tools could help {{company}} deliver a better client experience, I'm just an email away.
+
+All the best,
+Alex
+geco.design`
+                    }
+                ]
+            },
+            construction: {
+                name: "Construction Companies",
+                icon: "🏗️",
+                description: "Email sequence for construction firms",
+                subject: "Project management tools for {{company}}",
+                subjectVariationB: "Digital solutions for {{company}}'s project delivery",
+                emails: [
+                    {
+                        type: "Initial",
+                        subject: "Project management tools for {{company}}",
+                        body: `Hi {{name}},
+
+I've been following {{company}}'s work and was impressed by {{recent_project}}. Really quality construction.
+
+I'm Alex from geco.design. We build custom digital tools for construction companies — everything from client-facing project dashboards to subcontractor coordination systems.
+
+Most builders we work with struggle with keeping clients in the loop and coordinating trades. We've built solutions that improve communication and reduce those "where are we at?" phone calls by 70%.
+
+Would you be open to a quick 15-minute call to discuss how this might help {{company}}?
+
+Best regards,
+Alex
+geco.design`
+                    },
+                    {
+                        type: "Follow-up 1 (Day 4)",
+                        subject: "Re: Project management tools for {{company}}",
+                        body: `Hi {{name}},
+
+Quick follow-up from last week.
+
+We recently launched a custom project portal for a builder like you. Their clients can now see progress photos, schedules, and invoices in real-time. No more daily update calls.
+
+The builder says it's become their best sales tool — prospects love seeing this level of transparency.
+
+Worth exploring for {{company}}?
+
+Best,
+Alex`
+                    },
+                    {
+                        type: "Follow-up 2 (Day 8)",
+                        subject: "Client dashboard example",
+                        body: `Hi {{name}},
+
+Thought I'd share an example: [link to demo/portfolio]
+
+It's a client-facing project dashboard that shows real-time progress, upcoming milestones, change orders, and payment schedules. Everything in one place.
+
+Takes about 6 weeks to build and completely transforms the client experience.
+
+Interested in learning more?
+
+Cheers,
+Alex`
+                    },
+                    {
+                        type: "Follow-up 3 (Day 15)",
+                        subject: "Last check-in",
+                        body: `Hi {{name}},
+
+This is my last follow-up — I don't want to be a pest!
+
+If there's ever a time when you'd like to explore better digital tools for {{company}}'s projects, I'm happy to chat.
+
+Best of luck with your current builds.
+
+Cheers,
+Alex
+geco.design`
+                    }
+                ]
+            }
+        };
+
+        // State management
+        let prospects = JSON.parse(localStorage.getItem('prospects') || '[]');
+        let selectedTemplate = null;
+        let editingProspectId = null;
+        let activityLog = JSON.parse(localStorage.getItem('activityLog') || '[]');
+
+        // Initialize app
+        function init() {
+            renderTemplates();
+            renderProspects();
+            updateAnalytics();
+            populateCampaignSelects();
+            renderActivityLog();
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'analytics') {
+                updateAnalytics();
+            }
+        }
+
+        // Render template cards
+        function renderTemplates() {
+            const grid = document.getElementById('template-grid');
+            grid.innerHTML = '';
+
+            Object.keys(templates).forEach(key => {
+                const template = templates[key];
+                const card = document.createElement('div');
+                card.className = 'template-card';
+                card.innerHTML = `
+                    <div style="font-size: 48px; margin-bottom: 12px;">${template.icon}</div>
+                    <h3>${template.name}</h3>
+                    <p style="color: var(--gray-500); font-size: 14px; margin-top: 8px;">${template.description}</p>
+                    <p style="margin-top: 12px; font-size: 13px;"><strong>${template.emails.length} emails</strong> in sequence</p>
+                `;
+                card.onclick = () => selectTemplate(key);
+                grid.appendChild(card);
+            });
+        }
+
+        // Select template and show preview
+        function selectTemplate(key) {
+            selectedTemplate = key;
+            const template = templates[key];
+
+            document.querySelectorAll('.template-card').forEach(card => card.classList.remove('selected'));
+            event.target.closest('.template-card').classList.add('selected');
+
+            const preview = document.getElementById('template-preview');
+            const content = document.getElementById('preview-content');
+            
+            let html = `<h3>${template.icon} ${template.name}</h3>`;
+            html += `<p style="color: var(--gray-500); margin-bottom: 20px;">${template.description}</p>`;
+            
+            html += `<div class="alert alert-info">
+                <strong>A/B Test Subject Lines:</strong><br>
+                A: ${template.subject}<br>
+                B: ${template.subjectVariationB}
+            </div>`;
+
+            template.emails.forEach((email, index) => {
+                html += `
+                    <div class="sequence-step">
+                        <div class="step-header">
+                            <strong>${email.type}</strong>
+                            <button class="btn btn-sm btn-secondary" onclick="copyEmail('${key}', ${index})">📋 Copy</button>
+                        </div>
+                        <div class="email-preview">
+                            <div class="subject">Subject: ${email.subject}</div>
+                            <div>${email.body.replace(/\n/g, '<br>')}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div class="alert alert-info" style="margin-top: 20px;">
+                    <strong>Merge Fields Available:</strong><br>
+                    <span class="merge-field">{{name}}</span>
+                    <span class="merge-field">{{company}}</span>
+                    <span class="merge-field">{{industry}}</span>
+                    <span class="merge-field">{{location}}</span>
+                    <span class="merge-field">{{specialty}}</span>
+                    <span class="merge-field">{{recent_project}}</span>
+                </div>
+            `;
+
+            content.innerHTML = html;
+            preview.style.display = 'block';
+            preview.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Copy single email
+        function copyEmail(templateKey, emailIndex) {
+            const email = templates[templateKey].emails[emailIndex];
+            const text = `Subject: ${email.subject}\n\n${email.body}`;
+            copyToClipboard(text);
+            showToast('Email copied to clipboard! Remember to personalize merge fields.');
+        }
+
+        // Copy entire template
+        function copyTemplate() {
+            if (!selectedTemplate) return;
+            
+            const template = templates[selectedTemplate];
+            let text = `${template.name} Email Sequence\n${'='.repeat(50)}\n\n`;
+            
+            template.emails.forEach((email, index) => {
+                text += `${email.type}\n${'-'.repeat(50)}\n`;
+                text += `Subject: ${email.subject}\n\n${email.body}\n\n\n`;
+            });
+
+            copyToClipboard(text);
+            showToast('All emails copied to clipboard!');
+        }
+
+        // Use template (switch to campaigns tab)
+        function useTemplate() {
+            if (!selectedTemplate) return;
+            
+            document.getElementById('campaign-template').value = selectedTemplate;
+            switchTab('campaigns');
+            document.querySelectorAll('.tab-btn')[2].click();
+            loadCampaignTemplate();
+        }
+
+        // Prospect management
+        function openAddProspectModal() {
+            editingProspectId = null;
+            document.getElementById('modal-title').textContent = 'Add Prospect';
+            document.getElementById('prospect-form').reset();
+            document.getElementById('prospect-modal').classList.add('active');
+        }
+
+        function closeProspectModal() {
+            document.getElementById('prospect-modal').classList.remove('active');
+            editingProspectId = null;
+        }
+
+        function saveProspect(event) {
+            event.preventDefault();
+
+            const prospect = {
+                id: editingProspectId || Date.now().toString(),
+                name: document.getElementById('prospect-name').value,
+                company: document.getElementById('prospect-company').value,
+                email: document.getElementById('prospect-email').value,
+                industry: document.getElementById('prospect-industry').value,
+                status: document.getElementById('prospect-status').value,
+                website: document.getElementById('prospect-website').value,
+                notes: document.getElementById('prospect-notes').value,
+                createdAt: editingProspectId ? prospects.find(p => p.id === editingProspectId).createdAt : new Date().toISOString()
+            };
+
+            if (editingProspectId) {
+                const index = prospects.findIndex(p => p.id === editingProspectId);
+                prospects[index] = prospect;
+                logActivity('Updated prospect: ' + prospect.name);
+            } else {
+                prospects.push(prospect);
+                logActivity('Added prospect: ' + prospect.name);
+            }
+
+            localStorage.setItem('prospects', JSON.stringify(prospects));
+            renderProspects();
+            updateAnalytics();
+            populateCampaignSelects();
+            closeProspectModal();
+            showToast('Prospect saved successfully!');
+        }
+
+        function editProspect(id) {
+            const prospect = prospects.find(p => p.id === id);
+            if (!prospect) return;
+
+            editingProspectId = id;
+            document.getElementById('modal-title').textContent = 'Edit Prospect';
+            document.getElementById('prospect-name').value = prospect.name;
+            document.getElementById('prospect-company').value = prospect.company;
+            document.getElementById('prospect-email').value = prospect.email;
+            document.getElementById('prospect-industry').value = prospect.industry;
+            document.getElementById('prospect-status').value = prospect.status;
+            document.getElementById('prospect-website').value = prospect.website || '';
+            document.getElementById('prospect-notes').value = prospect.notes || '';
+            
+            document.getElementById('prospect-modal').classList.add('active');
+        }
+
+        function deleteProspect(id) {
+            if (!confirm('Are you sure you want to delete this prospect?')) return;
+            
+            const prospect = prospects.find(p => p.id === id);
+            prospects = prospects.filter(p => p.id !== id);
+            localStorage.setItem('prospects', JSON.stringify(prospects));
+            
+            logActivity('Deleted prospect: ' + prospect.name);
+            renderProspects();
+            updateAnalytics();
+            populateCampaignSelects();
+            showToast('Prospect deleted');
+        }
+
+        function clearProspects() {
+            if (!confirm('Are you sure you want to delete ALL prospects? This cannot be undone.')) return;
+            
+            prospects = [];
+            localStorage.setItem('prospects', JSON.stringify(prospects));
+            logActivity('Cleared all prospects');
+            renderProspects();
+            updateAnalytics();
+            populateCampaignSelects();
+            showToast('All prospects cleared');
+        }
+
+        function renderProspects() {
+            const tbody = document.getElementById('prospects-body');
+            
+            if (prospects.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--gray-500); padding: 40px;">No prospects yet. Add your first prospect to get started!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = prospects.map(p => `
+                <tr>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.company}</td>
+                    <td>${p.email}</td>
+                    <td>${p.industry}</td>
+                    <td><span class="badge badge-${p.status}">${p.status.toUpperCase()}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-secondary" onclick="editProspect('${p.id}')">✏️ Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteProspect('${p.id}')">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // CSV Import/Export
+        function importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                
+                // Skip header row
+                let imported = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+
+                    const [name, company, email, industry, status, website, notes] = line.split(',').map(s => s.trim());
+                    
+                    if (name && company && email) {
+                        prospects.push({
+                            id: Date.now().toString() + i,
+                            name,
+                            company,
+                            email,
+                            industry: industry || 'Other',
+                            status: status || 'cold',
+                            website: website || '',
+                            notes: notes || '',
+                            createdAt: new Date().toISOString()
+                        });
+                        imported++;
+                    }
+                }
+
+                localStorage.setItem('prospects', JSON.stringify(prospects));
+                renderProspects();
+                updateAnalytics();
+                populateCampaignSelects();
+                logActivity(`Imported ${imported} prospects from CSV`);
+                showToast(`Imported ${imported} prospects successfully!`);
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset input
+        }
+
+        function exportCSV() {
+            if (prospects.length === 0) {
+                showToast('No prospects to export');
+                return;
+            }
+
+            let csv = 'Name,Company,Email,Industry,Status,Website,Notes\n';
+            prospects.forEach(p => {
+                csv += `"${p.name}","${p.company}","${p.email}","${p.industry}","${p.status}","${p.website || ''}","${p.notes || ''}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `prospects-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            
+            logActivity('Exported prospects to CSV');
+            showToast('Prospects exported successfully!');
+        }
+
+        // Campaign builder
+        function populateCampaignSelects() {
+            const templateSelect = document.getElementById('campaign-template');
+            const prospectSelect = document.getElementById('campaign-prospect');
+
+            // Templates
+            templateSelect.innerHTML = '<option value="">-- Select a template --</option>';
+            Object.keys(templates).forEach(key => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = templates[key].icon + ' ' + templates[key].name;
+                templateSelect.appendChild(option);
+            });
+
+            // Prospects
+            prospectSelect.innerHTML = '<option value="">-- Select a prospect --</option>';
+            prospects.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.id;
+                option.textContent = `${p.name} (${p.company})`;
+                prospectSelect.appendChild(option);
+            });
+        }
+
+        function loadCampaignTemplate() {
+            const templateKey = document.getElementById('campaign-template').value;
+            if (templateKey) {
+                generatePersonalizedEmail();
+            }
+        }
+
+        function generatePersonalizedEmail() {
+            const templateKey = document.getElementById('campaign-template').value;
+            const prospectId = document.getElementById('campaign-prospect').value;
+
+            if (!templateKey || !prospectId) {
+                document.getElementById('personalized-sequence').style.display = 'none';
+                return;
+            }
+
+            const template = templates[templateKey];
+            const prospect = prospects.find(p => p.id === prospectId);
+
+            if (!template || !prospect) return;
+
+            // Personalization data
+            const data = {
+                name: prospect.name.split(' ')[0], // First name
+                company: prospect.company,
+                industry: prospect.industry,
+                location: 'your area', // Could be enhanced
+                specialty: prospect.industry.toLowerCase(),
+                recent_project: 'your recent work' // Could be enhanced with notes field
+            };
+
+            const container = document.getElementById('sequence-emails');
+            container.innerHTML = '';
+
+            template.emails.forEach((email, index) => {
+                const personalizedSubject = personalize(email.subject, data);
+                const personalizedBody = personalize(email.body, data);
+                
+                const followUpDate = new Date();
+                const daysToAdd = index === 0 ? 0 : (index === 1 ? 3 : index === 2 ? 7 : 14);
+                followUpDate.setDate(followUpDate.getDate() + daysToAdd);
+
+                const div = document.createElement('div');
+                div.className = 'sequence-step';
+                div.innerHTML = `
+                    <div class="step-header">
+                        <div>
+                            <strong>${email.type}</strong>
+                            <span style="color: var(--gray-500); margin-left: 12px;">Send on: ${followUpDate.toLocaleDateString()}</span>
+                        </div>
+                        <button class="btn btn-sm btn-success" onclick="copyPersonalizedEmail('${templateKey}', ${index}, '${prospectId}')">
+                            📋 Copy Email
+                        </button>
+                    </div>
+                    <div class="email-preview">
+                        <div class="subject">Subject: ${personalizedSubject}</div>
+                        <div>${personalizedBody.replace(/\n/g, '<br>')}</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('personalized-sequence').style.display = 'block';
+        }
+
+        function personalize(text, data) {
+            let result = text;
+            Object.keys(data).forEach(key => {
+                const regex = new RegExp(`{{${key}}}`, 'g');
+                result = result.replace(regex, data[key]);
+            });
+            return result;
+        }
+
+        function copyPersonalizedEmail(templateKey, emailIndex, prospectId) {
+            const template = templates[templateKey];
+            const prospect = prospects.find(p => p.id === prospectId);
+            const email = template.emails[emailIndex];
+
+            const data = {
+                name: prospect.name.split(' ')[0],
+                company: prospect.company,
+                industry: prospect.industry,
+                location: 'your area',
+                specialty: prospect.industry.toLowerCase(),
+                recent_project: 'your recent work'
+            };
+
+            const subject = personalize(email.subject, data);
+            const body = personalize(email.body, data);
+            const text = `Subject: ${subject}\n\n${body}`;
+
+            copyToClipboard(text);
+            
+            const followUpDate = new Date();
+            const daysToAdd = emailIndex === 0 ? 0 : (emailIndex === 1 ? 3 : emailIndex === 2 ? 7 : 14);
+            followUpDate.setDate(followUpDate.getDate() + daysToAdd);
+
+            logActivity(`Copied ${email.type} for ${prospect.name} (${prospect.company})`);
+            showToast(`Email copied! Ready to paste into Gmail. Follow up on ${followUpDate.toLocaleDateString()}`);
+        }
+
+        // Analytics
+        function updateAnalytics() {
+            // Stats
+            document.getElementById('stat-total').textContent = prospects.length;
+            document.getElementById('stat-hot').textContent = prospects.filter(p => p.status === 'hot').length;
+            document.getElementById('stat-warm').textContent = prospects.filter(p => p.status === 'warm').length;
+            document.getElementById('stat-cold').textContent = prospects.filter(p => p.status === 'cold').length;
+
+            // Industry breakdown
+            const industries = {};
+            prospects.forEach(p => {
+                industries[p.industry] = (industries[p.industry] || 0) + 1;
+            });
+
+            const breakdown = document.getElementById('industry-breakdown');
+            if (Object.keys(industries).length === 0) {
+                breakdown.innerHTML = '<p style="color: var(--gray-500);">No data yet</p>';
+            } else {
+                breakdown.innerHTML = Object.entries(industries)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([industry, count]) => {
+                        const percentage = (count / prospects.length * 100).toFixed(0);
+                        return `
+                            <div style="margin-bottom: 12px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                    <span><strong>${industry}</strong></span>
+                                    <span>${count} prospects (${percentage}%)</span>
+                                </div>
+                                <div style="background: var(--gray-200); height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div style="background: var(--primary); height: 100%; width: ${percentage}%;"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+            }
+        }
+
+        // Activity log
+        function logActivity(message) {
+            const entry = {
+                timestamp: new Date().toISOString(),
+                message
+            };
+            activityLog.unshift(entry);
+            
+            // Keep last 50 entries
+            if (activityLog.length > 50) {
+                activityLog = activityLog.slice(0, 50);
+            }
+            
+            localStorage.setItem('activityLog', JSON.stringify(activityLog));
+            renderActivityLog();
+        }
+
+        function renderActivityLog() {
+            const container = document.getElementById('activity-log');
+            
+            if (activityLog.length === 0) {
+                container.innerHTML = '<p style="color: var(--gray-500);">Activity tracking will appear here as you create campaigns and copy emails.</p>';
+                return;
+            }
+
+            container.innerHTML = activityLog.slice(0, 20).map(entry => {
+                const date = new Date(entry.timestamp);
+                return `
+                    <div style="padding: 12px; background: var(--gray-50); border-radius: 8px; margin-bottom: 8px;">
+                        <div style="font-size: 13px; color: var(--gray-500);">${date.toLocaleDateString()} ${date.toLocaleTimeString()}</div>
+                        <div style="margin-top: 4px;">${entry.message}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Utilities
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>

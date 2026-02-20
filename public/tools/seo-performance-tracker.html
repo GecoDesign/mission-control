@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Performance Tracker - Geco Design</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: var(--surface);
+            padding: 24px;
+            margin-bottom: 32px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            border-color: var(--primary);
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--surface);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--text-muted);
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-change {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-change.up {
+            color: #86efac;
+        }
+
+        .stat-change.down {
+            color: #fca5a5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg);
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: var(--bg);
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .rank-badge.top-3 {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .rank-badge.top-10 {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .rank-badge.top-30 {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .rank-badge.low {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .trend-arrow {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .trend-up {
+            color: var(--success);
+        }
+
+        .trend-down {
+            color: var(--danger);
+        }
+
+        .trend-stable {
+            color: var(--text-muted);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            padding: 32px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            color: var(--primary);
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 13px;
+            font-weight: normal;
+            line-height: 1.4;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+
+            .tab {
+                white-space: nowrap;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 SEO Performance Tracker</h1>
+            <p class="subtitle">Monitor geco.design's search performance and competitive positioning</p>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('dashboard')">📊 Dashboard</div>
+            <div class="tab" onclick="switchTab('keywords')">🎯 Keywords</div>
+            <div class="tab" onclick="switchTab('traffic')">📈 Traffic</div>
+            <div class="tab" onclick="switchTab('backlinks')">🔗 Backlinks</div>
+            <div class="tab" onclick="switchTab('competitors')">⚔️ Competitors</div>
+            <div class="tab" onclick="switchTab('pages')">📄 Pages</div>
+            <div class="tab" onclick="switchTab('settings')">⚙️ Settings</div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="grid grid-4">
+                <div class="stat-card">
+                    <div class="stat-label">Avg. Keyword Rank</div>
+                    <div class="stat-value" id="avgRank">-</div>
+                    <div class="stat-change" id="avgRankChange"></div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <div class="stat-label">Monthly Visitors</div>
+                    <div class="stat-value" id="monthlyVisitors">-</div>
+                    <div class="stat-change" id="visitorsChange"></div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <div class="stat-label">Total Backlinks</div>
+                    <div class="stat-value" id="totalBacklinks">-</div>
+                    <div class="stat-change" id="backlinksChange"></div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                    <div class="stat-label">Referring Domains</div>
+                    <div class="stat-value" id="referringDomains">-</div>
+                    <div class="stat-change" id="domainsChange"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Keyword Performance Trends</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="keywordTrendChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Traffic Overview</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trafficChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Top Performing Pages</h2>
+                    </div>
+                    <div id="topPages"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keywords Tab -->
+        <div id="keywords" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Keyword Rank Tracking</h2>
+                    <button class="btn" onclick="openAddKeywordModal()">+ Add Keyword</button>
+                </div>
+                <div id="keywordsTable"></div>
+            </div>
+        </div>
+
+        <!-- Traffic Tab -->
+        <div id="traffic" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Traffic Metrics</h2>
+                    <button class="btn" onclick="openAddTrafficModal()">+ Add Month</button>
+                </div>
+                <div id="trafficTable"></div>
+            </div>
+        </div>
+
+        <!-- Backlinks Tab -->
+        <div id="backlinks" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Backlink Monitoring</h2>
+                    <button class="btn" onclick="openAddBacklinkModal()">+ Add Entry</button>
+                </div>
+                <div id="backlinksTable"></div>
+            </div>
+        </div>
+
+        <!-- Competitors Tab -->
+        <div id="competitors" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Competitor Analysis</h2>
+                    <button class="btn" onclick="openAddCompetitorModal()">+ Add Competitor</button>
+                </div>
+                <div id="competitorsTable"></div>
+            </div>
+        </div>
+
+        <!-- Pages Tab -->
+        <div id="pages" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Page Performance</h2>
+                    <button class="btn" onclick="openAddPageModal()">+ Add Page</button>
+                </div>
+                <div id="pagesTable"></div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">Data Management</h2>
+                <div class="form-group">
+                    <label>Export Data</label>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="exportData('keywords')">Export Keywords</button>
+                        <button class="btn btn-secondary" onclick="exportData('traffic')">Export Traffic</button>
+                        <button class="btn btn-secondary" onclick="exportData('backlinks')">Export Backlinks</button>
+                        <button class="btn btn-secondary" onclick="exportData('all')">Export All Data</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Import Data</label>
+                    <input type="file" id="importFile" accept=".json">
+                    <button class="btn" onclick="importData()" style="margin-top: 10px;">Import JSON</button>
+                </div>
+                <div class="form-group">
+                    <label>Snapshots</label>
+                    <button class="btn btn-success" onclick="createSnapshot()">Create Weekly Snapshot</button>
+                </div>
+                <div class="form-group">
+                    <label>Reset Data</label>
+                    <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Keyword Modal -->
+    <div id="keywordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-modal" onclick="closeModal('keywordModal')">&times;</span>
+                <h2 class="modal-title">Add/Update Keyword</h2>
+            </div>
+            <form onsubmit="saveKeyword(event)">
+                <div class="form-group">
+                    <label>Keyword <span class="tooltip">?<span class="tooltiptext">Target keyword phrase (e.g., "website design london")</span></span></label>
+                    <input type="text" id="keywordText" required placeholder="e.g., website design london">
+                </div>
+                <div class="form-group">
+                    <label>Current Position <span class="tooltip">?<span class="tooltiptext">Enter 1-100 for ranking position, or 0 for "not ranking"</span></span></label>
+                    <input type="number" id="keywordPosition" min="0" max="100" required placeholder="e.g., 15">
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="keywordDate" required>
+                </div>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('keywordModal')">Cancel</button>
+                    <button type="submit" class="btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Traffic Modal -->
+    <div id="trafficModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-modal" onclick="closeModal('trafficModal')">&times;</span>
+                <h2 class="modal-title">Add Traffic Data</h2>
+            </div>
+            <form onsubmit="saveTraffic(event)">
+                <div class="form-group">
+                    <label>Month</label>
+                    <input type="month" id="trafficMonth" required>
+                </div>
+                <div class="form-group">
+                    <label>Organic Visitors <span class="tooltip">?<span class="tooltiptext">Total organic visitors from Google Analytics</span></span></label>
+                    <input type="number" id="trafficVisitors" required placeholder="e.g., 1250">
+                </div>
+                <div class="form-group">
+                    <label>Sessions</label>
+                    <input type="number" id="trafficSessions" required placeholder="e.g., 1500">
+                </div>
+                <div class="form-group">
+                    <label>Bounce Rate (%)</label>
+                    <input type="number" id="trafficBounce" step="0.1" min="0" max="100" required placeholder="e.g., 45.5">
+                </div>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('trafficModal')">Cancel</button>
+                    <button type="submit" class="btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Backlink Modal -->
+    <div id="backlinkModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-modal" onclick="closeModal('backlinkModal')">&times;</span>
+                <h2 class="modal-title">Add Backlink Data</h2>
+            </div>
+            <form onsubmit="saveBacklink(event)">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="backlinkDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Total Backlinks</label>
+                    <input type="number" id="backlinkTotal" required placeholder="e.g., 250">
+                </div>
+                <div class="form-group">
+                    <label>Referring Domains</label>
+                    <input type="number" id="backlinkDomains" required placeholder="e.g., 85">
+                </div>
+                <div class="form-group">
+                    <label>Domain Authority (DA) <span class="tooltip">?<span class="tooltiptext">Optional: Your site's DA score from Moz (0-100)</span></span></label>
+                    <input type="number" id="backlinkDA" min="0" max="100" placeholder="e.g., 35">
+                </div>
+                <div class="form-group">
+                    <label>Domain Rating (DR) <span class="tooltip">?<span class="tooltiptext">Optional: Your site's DR score from Ahrefs (0-100)</span></span></label>
+                    <input type="number" id="backlinkDR" min="0" max="100" placeholder="e.g., 42">
+                </div>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('backlinkModal')">Cancel</button>
+                    <button type="submit" class="btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Competitor Modal -->
+    <div id="competitorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-modal" onclick="closeModal('competitorModal')">&times;</span>
+                <h2 class="modal-title">Add Competitor</h2>
+            </div>
+            <form onsubmit="saveCompetitor(event)">
+                <div class="form-group">
+                    <label>Competitor Name</label>
+                    <input type="text" id="competitorName" required placeholder="e.g., Example Agency">
+                </div>
+                <div class="form-group">
+                    <label>Website</label>
+                    <input type="url" id="competitorWebsite" required placeholder="https://example.com">
+                </div>
+                <div class="form-group">
+                    <label>Visibility Score <span class="tooltip">?<span class="tooltiptext">Estimated visibility score (0-100)</span></span></label>
+                    <input type="number" id="competitorVisibility" min="0" max="100" placeholder="e.g., 65">
+                </div>
+                <div class="form-group">
+                    <label>Estimated Monthly Traffic</label>
+                    <input type="number" id="competitorTraffic" placeholder="e.g., 5000">
+                </div>
+                <div class="form-group">
+                    <label>Keyword Overlap <span class="tooltip">?<span class="tooltiptext">Number of shared keywords you both rank for</span></span></label>
+                    <input type="number" id="competitorOverlap" placeholder="e.g., 12">
+                </div>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('competitorModal')">Cancel</button>
+                    <button type="submit" class="btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Page Modal -->
+    <div id="pageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-modal" onclick="closeModal('pageModal')">&times;</span>
+                <h2 class="modal-title">Add Page Performance</h2>
+            </div>
+            <form onsubmit="savePage(event)">
+                <div class="form-group">
+                    <label>Page Name</label>
+                    <input type="text" id="pageName" required placeholder="e.g., Architects">
+                </div>
+                <div class="form-group">
+                    <label>URL</label>
+                    <input type="url" id="pageUrl" required placeholder="https://geco.design/architects">
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="pageDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Impressions <span class="tooltip">?<span class="tooltiptext">From Google Search Console</span></span></label>
+                    <input type="number" id="pageImpressions" required placeholder="e.g., 1500">
+                </div>
+                <div class="form-group">
+                    <label>Clicks</label>
+                    <input type="number" id="pageClicks" required placeholder="e.g., 75">
+                </div>
+                <div class="form-group">
+                    <label>CTR (%)</label>
+                    <input type="number" id="pageCTR" step="0.01" min="0" max="100" required placeholder="e.g., 5.0">
+                </div>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('pageModal')">Cancel</button>
+                    <button type="submit" class="btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let data = {
+            keywords: [],
+            traffic: [],
+            backlinks: [],
+            competitors: [],
+            pages: [],
+            snapshots: []
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            document.getElementById('keywordDate').valueAsDate = new Date();
+            document.getElementById('backlinkDate').valueAsDate = new Date();
+            document.getElementById('pageDate').valueAsDate = new Date();
+            renderDashboard();
+        });
+
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            
+            if (tabName === 'dashboard') renderDashboard();
+            if (tabName === 'keywords') renderKeywords();
+            if (tabName === 'traffic') renderTraffic();
+            if (tabName === 'backlinks') renderBacklinks();
+            if (tabName === 'competitors') renderCompetitors();
+            if (tabName === 'pages') renderPages();
+        }
+
+        // Modal Functions
+        function openAddKeywordModal() {
+            document.getElementById('keywordModal').classList.add('active');
+        }
+
+        function openAddTrafficModal() {
+            document.getElementById('trafficModal').classList.add('active');
+        }
+
+        function openAddBacklinkModal() {
+            document.getElementById('backlinkModal').classList.add('active');
+        }
+
+        function openAddCompetitorModal() {
+            document.getElementById('competitorModal').classList.add('active');
+        }
+
+        function openAddPageModal() {
+            document.getElementById('pageModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Save Functions
+        function saveKeyword(event) {
+            event.preventDefault();
+            const keyword = document.getElementById('keywordText').value;
+            const position = parseInt(document.getElementById('keywordPosition').value);
+            const date = document.getElementById('keywordDate').value;
+
+            let keywordObj = data.keywords.find(k => k.keyword === keyword);
+            if (!keywordObj) {
+                keywordObj = { keyword: keyword, history: [] };
+                data.keywords.push(keywordObj);
+            }
+
+            keywordObj.history.push({ date, position });
+            keywordObj.history.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            saveData();
+            closeModal('keywordModal');
+            renderKeywords();
+            renderDashboard();
+            event.target.reset();
+        }
+
+        function saveTraffic(event) {
+            event.preventDefault();
+            const month = document.getElementById('trafficMonth').value;
+            const visitors = parseInt(document.getElementById('trafficVisitors').value);
+            const sessions = parseInt(document.getElementById('trafficSessions').value);
+            const bounce = parseFloat(document.getElementById('trafficBounce').value);
+
+            const index = data.traffic.findIndex(t => t.month === month);
+            const entry = { month, visitors, sessions, bounce };
+
+            if (index >= 0) {
+                data.traffic[index] = entry;
+            } else {
+                data.traffic.push(entry);
+            }
+
+            data.traffic.sort((a, b) => new Date(a.month) - new Date(b.month));
+
+            saveData();
+            closeModal('trafficModal');
+            renderTraffic();
+            renderDashboard();
+            event.target.reset();
+        }
+
+        function saveBacklink(event) {
+            event.preventDefault();
+            const date = document.getElementById('backlinkDate').value;
+            const total = parseInt(document.getElementById('backlinkTotal').value);
+            const domains = parseInt(document.getElementById('backlinkDomains').value);
+            const da = document.getElementById('backlinkDA').value ? parseInt(document.getElementById('backlinkDA').value) : null;
+            const dr = document.getElementById('backlinkDR').value ? parseInt(document.getElementById('backlinkDR').value) : null;
+
+            data.backlinks.push({ date, total, domains, da, dr });
+            data.backlinks.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            saveData();
+            closeModal('backlinkModal');
+            renderBacklinks();
+            renderDashboard();
+            event.target.reset();
+        }
+
+        function saveCompetitor(event) {
+            event.preventDefault();
+            const name = document.getElementById('competitorName').value;
+            const website = document.getElementById('competitorWebsite').value;
+            const visibility = document.getElementById('competitorVisibility').value ? parseInt(document.getElementById('competitorVisibility').value) : null;
+            const traffic = document.getElementById('competitorTraffic').value ? parseInt(document.getElementById('competitorTraffic').value) : null;
+            const overlap = document.getElementById('competitorOverlap').value ? parseInt(document.getElementById('competitorOverlap').value) : null;
+
+            data.competitors.push({ name, website, visibility, traffic, overlap });
+
+            saveData();
+            closeModal('competitorModal');
+            renderCompetitors();
+            event.target.reset();
+        }
+
+        function savePage(event) {
+            event.preventDefault();
+            const name = document.getElementById('pageName').value;
+            const url = document.getElementById('pageUrl').value;
+            const date = document.getElementById('pageDate').value;
+            const impressions = parseInt(document.getElementById('pageImpressions').value);
+            const clicks = parseInt(document.getElementById('pageClicks').value);
+            const ctr = parseFloat(document.getElementById('pageCTR').value);
+
+            let pageObj = data.pages.find(p => p.url === url);
+            if (!pageObj) {
+                pageObj = { name, url, history: [] };
+                data.pages.push(pageObj);
+            }
+
+            pageObj.history.push({ date, impressions, clicks, ctr });
+            pageObj.history.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            saveData();
+            closeModal('pageModal');
+            renderPages();
+            renderDashboard();
+            event.target.reset();
+        }
+
+        // Render Functions
+        function renderDashboard() {
+            // Calculate stats
+            const avgRank = calculateAvgRank();
+            const latestTraffic = data.traffic.length > 0 ? data.traffic[data.traffic.length - 1] : null;
+            const latestBacklink = data.backlinks.length > 0 ? data.backlinks[data.backlinks.length - 1] : null;
+
+            // Update stat cards
+            document.getElementById('avgRank').textContent = avgRank ? avgRank.toFixed(1) : '-';
+            document.getElementById('monthlyVisitors').textContent = latestTraffic ? latestTraffic.visitors.toLocaleString() : '-';
+            document.getElementById('totalBacklinks').textContent = latestBacklink ? latestBacklink.total.toLocaleString() : '-';
+            document.getElementById('referringDomains').textContent = latestBacklink ? latestBacklink.domains.toLocaleString() : '-';
+
+            // Calculate changes
+            if (data.keywords.length > 0) {
+                const prevAvgRank = calculateAvgRank(1);
+                if (prevAvgRank && avgRank) {
+                    const change = prevAvgRank - avgRank;
+                    const changeEl = document.getElementById('avgRankChange');
+                    if (change > 0) {
+                        changeEl.innerHTML = `<span class="trend-arrow trend-up">↑</span> +${change.toFixed(1)} positions`;
+                        changeEl.className = 'stat-change up';
+                    } else if (change < 0) {
+                        changeEl.innerHTML = `<span class="trend-arrow trend-down">↓</span> ${change.toFixed(1)} positions`;
+                        changeEl.className = 'stat-change down';
+                    } else {
+                        changeEl.innerHTML = `<span class="trend-arrow trend-stable">→</span> No change`;
+                        changeEl.className = 'stat-change';
+                    }
+                }
+            }
+
+            if (data.traffic.length > 1) {
+                const prev = data.traffic[data.traffic.length - 2];
+                const curr = latestTraffic;
+                const change = ((curr.visitors - prev.visitors) / prev.visitors * 100).toFixed(1);
+                const changeEl = document.getElementById('visitorsChange');
+                if (change > 0) {
+                    changeEl.innerHTML = `<span class="trend-arrow trend-up">↑</span> +${change}%`;
+                    changeEl.className = 'stat-change up';
+                } else if (change < 0) {
+                    changeEl.innerHTML = `<span class="trend-arrow trend-down">↓</span> ${change}%`;
+                    changeEl.className = 'stat-change down';
+                } else {
+                    changeEl.innerHTML = `<span class="trend-arrow trend-stable">→</span> No change`;
+                    changeEl.className = 'stat-change';
+                }
+            }
+
+            if (data.backlinks.length > 1) {
+                const prev = data.backlinks[data.backlinks.length - 2];
+                const curr = latestBacklink;
+                const change = curr.total - prev.total;
+                const changeEl = document.getElementById('backlinksChange');
+                if (change > 0) {
+                    changeEl.innerHTML = `<span class="trend-arrow trend-up">↑</span> +${change}`;
+                    changeEl.className = 'stat-change up';
+                } else if (change < 0) {
+                    changeEl.innerHTML = `<span class="trend-arrow trend-down">↓</span> ${change}`;
+                    changeEl.className = 'stat-change down';
+                } else {
+                    changeEl.innerHTML = `<span class="trend-arrow trend-stable">→</span> No change`;
+                    changeEl.className = 'stat-change';
+                }
+
+                const domainChange = curr.domains - prev.domains;
+                const domainChangeEl = document.getElementById('domainsChange');
+                if (domainChange > 0) {
+                    domainChangeEl.innerHTML = `<span class="trend-arrow trend-up">↑</span> +${domainChange}`;
+                    domainChangeEl.className = 'stat-change up';
+                } else if (domainChange < 0) {
+                    domainChangeEl.innerHTML = `<span class="trend-arrow trend-down">↓</span> ${domainChange}`;
+                    domainChangeEl.className = 'stat-change down';
+                } else {
+                    domainChangeEl.innerHTML = `<span class="trend-arrow trend-stable">→</span> No change`;
+                    domainChangeEl.className = 'stat-change';
+                }
+            }
+
+            // Render charts
+            renderKeywordTrendChart();
+            renderTrafficChart();
+            renderTopPages();
+        }
+
+        function calculateAvgRank(offset = 0) {
+            if (data.keywords.length === 0) return null;
+            
+            let totalRank = 0;
+            let count = 0;
+
+            data.keywords.forEach(keyword => {
+                if (keyword.history.length > offset) {
+                    const index = keyword.history.length - 1 - offset;
+                    const position = keyword.history[index].position;
+                    if (position > 0) {
+                        totalRank += position;
+                        count++;
+                    }
+                }
+            });
+
+            return count > 0 ? totalRank / count : null;
+        }
+
+        function renderKeywordTrendChart() {
+            const ctx = document.getElementById('keywordTrendChart');
+            if (!ctx) return;
+
+            // Get all unique dates
+            const dates = new Set();
+            data.keywords.forEach(k => {
+                k.history.forEach(h => dates.add(h.date));
+            });
+            const sortedDates = Array.from(dates).sort();
+
+            // Calculate average rank for each date
+            const avgRanks = sortedDates.map(date => {
+                let total = 0, count = 0;
+                data.keywords.forEach(k => {
+                    const entry = k.history.find(h => h.date === date);
+                    if (entry && entry.position > 0) {
+                        total += entry.position;
+                        count++;
+                    }
+                });
+                return count > 0 ? total / count : null;
+            });
+
+            if (window.keywordChart) {
+                window.keywordChart.destroy();
+            }
+
+            window.keywordChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedDates.map(d => new Date(d).toLocaleDateString()),
+                    datasets: [{
+                        label: 'Average Keyword Position',
+                        data: avgRanks,
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            reverse: true,
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Position (lower is better)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTrafficChart() {
+            const ctx = document.getElementById('trafficChart');
+            if (!ctx) return;
+
+            if (window.trafficChart) {
+                window.trafficChart.destroy();
+            }
+
+            window.trafficChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.traffic.map(t => new Date(t.month).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })),
+                    datasets: [{
+                        label: 'Visitors',
+                        data: data.traffic.map(t => t.visitors),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function renderTopPages() {
+            const container = document.getElementById('topPages');
+            if (!container) return;
+
+            if (data.pages.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📄</div><p>No page data yet</p></div>';
+                return;
+            }
+
+            // Get latest data for each page
+            const pageStats = data.pages.map(page => {
+                const latest = page.history[page.history.length - 1];
+                return {
+                    name: page.name,
+                    url: page.url,
+                    clicks: latest.clicks,
+                    impressions: latest.impressions,
+                    ctr: latest.ctr
+                };
+            }).sort((a, b) => b.clicks - a.clicks).slice(0, 5);
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Page</th>
+                            <th>Clicks</th>
+                            <th>CTR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${pageStats.map(p => `
+                            <tr>
+                                <td><strong>${p.name}</strong></td>
+                                <td>${p.clicks.toLocaleString()}</td>
+                                <td>${p.ctr.toFixed(2)}%</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function renderKeywords() {
+            const container = document.getElementById('keywordsTable');
+            if (!container) return;
+
+            if (data.keywords.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><p>No keywords tracked yet. Click "Add Keyword" to get started!</p></div>';
+                return;
+            }
+
+            const keywordStats = data.keywords.map(k => {
+                const latest = k.history[k.history.length - 1];
+                const previous = k.history.length > 1 ? k.history[k.history.length - 2] : null;
+                const change = previous ? previous.position - latest.position : 0;
+                
+                return {
+                    keyword: k.keyword,
+                    position: latest.position,
+                    date: latest.date,
+                    change: change
+                };
+            });
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Keyword</th>
+                            <th>Position</th>
+                            <th>Change</th>
+                            <th>Last Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${keywordStats.map(k => `
+                            <tr>
+                                <td><strong>${k.keyword}</strong></td>
+                                <td>${getRankBadge(k.position)}</td>
+                                <td>${getTrendIndicator(k.change)}</td>
+                                <td>${new Date(k.date).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="btn btn-small btn-danger" onclick="deleteKeyword('${k.keyword}')">Delete</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function getRankBadge(position) {
+            if (position === 0) return '<span class="rank-badge low">Not Ranking</span>';
+            if (position <= 3) return `<span class="rank-badge top-3">#${position}</span>`;
+            if (position <= 10) return `<span class="rank-badge top-10">#${position}</span>`;
+            if (position <= 30) return `<span class="rank-badge top-30">#${position}</span>`;
+            return `<span class="rank-badge low">#${position}</span>`;
+        }
+
+        function getTrendIndicator(change) {
+            if (change > 0) return `<span class="trend-arrow trend-up">↑</span> +${change}`;
+            if (change < 0) return `<span class="trend-arrow trend-down">↓</span> ${change}`;
+            return `<span class="trend-arrow trend-stable">→</span> 0`;
+        }
+
+        function renderTraffic() {
+            const container = document.getElementById('trafficTable');
+            if (!container) return;
+
+            if (data.traffic.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📈</div><p>No traffic data yet. Click "Add Month" to get started!</p></div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Visitors</th>
+                            <th>Sessions</th>
+                            <th>Bounce Rate</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.traffic.slice().reverse().map((t, index) => `
+                            <tr>
+                                <td><strong>${new Date(t.month).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</strong></td>
+                                <td>${t.visitors.toLocaleString()}</td>
+                                <td>${t.sessions.toLocaleString()}</td>
+                                <td>${t.bounce.toFixed(1)}%</td>
+                                <td>
+                                    <button class="btn btn-small btn-danger" onclick="deleteTraffic('${t.month}')">Delete</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function renderBacklinks() {
+            const container = document.getElementById('backlinksTable');
+            if (!container) return;
+
+            if (data.backlinks.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔗</div><p>No backlink data yet. Click "Add Entry" to get started!</p></div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Total Backlinks</th>
+                            <th>Referring Domains</th>
+                            <th>DA</th>
+                            <th>DR</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.backlinks.slice().reverse().map((b, index) => `
+                            <tr>
+                                <td><strong>${new Date(b.date).toLocaleDateString()}</strong></td>
+                                <td>${b.total.toLocaleString()}</td>
+                                <td>${b.domains.toLocaleString()}</td>
+                                <td>${b.da !== null ? b.da : '-'}</td>
+                                <td>${b.dr !== null ? b.dr : '-'}</td>
+                                <td>
+                                    <button class="btn btn-small btn-danger" onclick="deleteBacklink(${data.backlinks.length - 1 - index})">Delete</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function renderCompetitors() {
+            const container = document.getElementById('competitorsTable');
+            if (!container) return;
+
+            if (data.competitors.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚔️</div><p>No competitors tracked yet. Click "Add Competitor" to get started!</p></div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Competitor</th>
+                            <th>Website</th>
+                            <th>Visibility Score</th>
+                            <th>Est. Traffic</th>
+                            <th>Keyword Overlap</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.competitors.map((c, index) => `
+                            <tr>
+                                <td><strong>${c.name}</strong></td>
+                                <td><a href="${c.website}" target="_blank">${c.website}</a></td>
+                                <td>${c.visibility !== null ? c.visibility : '-'}</td>
+                                <td>${c.traffic !== null ? c.traffic.toLocaleString() : '-'}</td>
+                                <td>${c.overlap !== null ? c.overlap : '-'}</td>
+                                <td>
+                                    <button class="btn btn-small btn-danger" onclick="deleteCompetitor(${index})">Delete</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function renderPages() {
+            const container = document.getElementById('pagesTable');
+            if (!container) return;
+
+            if (data.pages.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📄</div><p>No pages tracked yet. Click "Add Page" to get started!</p></div>';
+                return;
+            }
+
+            const pageStats = data.pages.map(page => {
+                const latest = page.history[page.history.length - 1];
+                return {
+                    name: page.name,
+                    url: page.url,
+                    clicks: latest.clicks,
+                    impressions: latest.impressions,
+                    ctr: latest.ctr,
+                    date: latest.date
+                };
+            });
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Page</th>
+                            <th>URL</th>
+                            <th>Impressions</th>
+                            <th>Clicks</th>
+                            <th>CTR</th>
+                            <th>Last Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${pageStats.map((p, index) => `
+                            <tr>
+                                <td><strong>${p.name}</strong></td>
+                                <td><a href="${p.url}" target="_blank">${p.url}</a></td>
+                                <td>${p.impressions.toLocaleString()}</td>
+                                <td>${p.clicks.toLocaleString()}</td>
+                                <td>${p.ctr.toFixed(2)}%</td>
+                                <td>${new Date(p.date).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="btn btn-small btn-danger" onclick="deletePage('${p.url}')">Delete</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Delete Functions
+        function deleteKeyword(keyword) {
+            if (confirm(`Delete keyword "${keyword}"?`)) {
+                data.keywords = data.keywords.filter(k => k.keyword !== keyword);
+                saveData();
+                renderKeywords();
+                renderDashboard();
+            }
+        }
+
+        function deleteTraffic(month) {
+            if (confirm(`Delete traffic data for ${month}?`)) {
+                data.traffic = data.traffic.filter(t => t.month !== month);
+                saveData();
+                renderTraffic();
+                renderDashboard();
+            }
+        }
+
+        function deleteBacklink(index) {
+            if (confirm('Delete this backlink entry?')) {
+                data.backlinks.splice(index, 1);
+                saveData();
+                renderBacklinks();
+                renderDashboard();
+            }
+        }
+
+        function deleteCompetitor(index) {
+            if (confirm('Delete this competitor?')) {
+                data.competitors.splice(index, 1);
+                saveData();
+                renderCompetitors();
+            }
+        }
+
+        function deletePage(url) {
+            if (confirm('Delete this page?')) {
+                data.pages = data.pages.filter(p => p.url !== url);
+                saveData();
+                renderPages();
+                renderDashboard();
+            }
+        }
+
+        // Data Management
+        function saveData() {
+            localStorage.setItem('seoTrackerData', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const stored = localStorage.getItem('seoTrackerData');
+            if (stored) {
+                data = JSON.parse(stored);
+            }
+        }
+
+        function exportData(type) {
+            let exportData, filename;
+
+            if (type === 'all') {
+                exportData = data;
+                filename = 'seo-tracker-all-data.json';
+            } else {
+                exportData = data[type];
+                filename = `seo-tracker-${type}.json`;
+            }
+
+            // JSON export
+            const jsonStr = JSON.stringify(exportData, null, 2);
+            downloadFile(jsonStr, filename, 'application/json');
+
+            // CSV export
+            if (type !== 'all') {
+                const csv = convertToCSV(type);
+                if (csv) {
+                    downloadFile(csv, filename.replace('.json', '.csv'), 'text/csv');
+                }
+            }
+        }
+
+        function convertToCSV(type) {
+            let csv = '';
+            
+            if (type === 'keywords') {
+                csv = 'Keyword,Date,Position\n';
+                data.keywords.forEach(k => {
+                    k.history.forEach(h => {
+                        csv += `"${k.keyword}",${h.date},${h.position}\n`;
+                    });
+                });
+            } else if (type === 'traffic') {
+                csv = 'Month,Visitors,Sessions,Bounce Rate\n';
+                data.traffic.forEach(t => {
+                    csv += `${t.month},${t.visitors},${t.sessions},${t.bounce}\n`;
+                });
+            } else if (type === 'backlinks') {
+                csv = 'Date,Total Backlinks,Referring Domains,DA,DR\n';
+                data.backlinks.forEach(b => {
+                    csv += `${b.date},${b.total},${b.domains},${b.da || ''},${b.dr || ''}\n`;
+                });
+            }
+
+            return csv;
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData() {
+            const file = document.getElementById('importFile').files[0];
+            if (!file) {
+                alert('Please select a file to import');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (confirm('This will replace all current data. Continue?')) {
+                        data = imported;
+                        saveData();
+                        renderDashboard();
+                        renderKeywords();
+                        renderTraffic();
+                        renderBacklinks();
+                        renderCompetitors();
+                        renderPages();
+                        alert('Data imported successfully!');
+                    }
+                } catch (error) {
+                    alert('Error importing data: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function createSnapshot() {
+            const snapshot = {
+                date: new Date().toISOString(),
+                data: JSON.parse(JSON.stringify(data))
+            };
+            data.snapshots.push(snapshot);
+            saveData();
+            alert('Snapshot created successfully!');
+        }
+
+        function clearAllData() {
+            if (confirm('This will delete ALL data. Are you absolutely sure?')) {
+                if (confirm('Last chance! This cannot be undone.')) {
+                    data = {
+                        keywords: [],
+                        traffic: [],
+                        backlinks: [],
+                        competitors: [],
+                        pages: [],
+                        snapshots: []
+                    };
+                    saveData();
+                    location.reload();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

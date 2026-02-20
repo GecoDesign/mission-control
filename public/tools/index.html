@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geco Design - Business Toolkit Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --border: #e5e7eb;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --shadow-lg: rgba(0, 0, 0, 0.15);
+        }
+
+        [data-theme="dark"] {
+            --primary: #818cf8;
+            --primary-dark: #6366f1;
+            --secondary: #a78bfa;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --bg-tertiary: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --text-tertiary: #9ca3af;
+            --border: #374151;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --shadow-lg: rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .controls {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 1rem;
+            flex: 1;
+            min-width: 300px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .theme-toggle {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .stats-bar {
+            max-width: 1400px;
+            margin: 0 auto 2rem;
+            padding: 0 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 200px;
+            background: var(--bg-primary);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px var(--shadow-lg);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+        }
+
+        .stat-info h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .stat-info p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .quick-access {
+            max-width: 1400px;
+            margin: 0 auto 2rem;
+            padding: 0 1rem;
+        }
+
+        .quick-access h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tools-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem;
+        }
+
+        .category-section {
+            margin-bottom: 3rem;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .category-icon {
+            font-size: 2rem;
+        }
+
+        .category-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .category-count {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .tool-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .tool-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .tool-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.pinned {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        [data-theme="dark"] .badge.pinned {
+            background: #78350f;
+            color: #fef3c7;
+        }
+
+        .badge.status {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        [data-theme="dark"] .badge.status {
+            background: #064e3b;
+            color: #d1fae5;
+        }
+
+        .badge.empty {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        [data-theme="dark"] .badge.empty {
+            background: #7f1d1d;
+            color: #fee2e2;
+        }
+
+        .tool-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .tool-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .tool-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .pin-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.3;
+            transition: all 0.3s ease;
+            padding: 0.25rem;
+        }
+
+        .pin-btn:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .pin-btn.pinned {
+            opacity: 1;
+        }
+
+        .keyboard-hint {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: var(--primary);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tool-card:hover .keyboard-hint {
+            opacity: 1;
+        }
+
+        .guide-section {
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+            padding: 0 1rem;
+        }
+
+        .guide-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+        }
+
+        .guide-card h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .guide-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .guide-item h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .guide-item p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .shortcuts-panel {
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+            padding: 0 1rem;
+        }
+
+        .shortcuts-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .shortcuts-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .shortcut-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .shortcut-key {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-weight: 700;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .shortcut-action {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-tertiary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-tertiary);
+            border-top: 2px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .search-filter {
+                width: 100%;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-filter {
+                width: 100%;
+            }
+
+            .filter-btn {
+                flex: 1;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px var(--shadow-lg);
+            transform: translateY(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🦎 Geco Design Business Toolkit</h1>
+        <p>Your complete suite of business tools in one place</p>
+    </div>
+
+    <div class="controls">
+        <div class="search-filter">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search tools..." autocomplete="off">
+            </div>
+            <div class="category-filter">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="client">👥 Clients</button>
+                <button class="filter-btn" data-category="project">📊 Projects</button>
+                <button class="filter-btn" data-category="financial">💰 Financial</button>
+                <button class="filter-btn" data-category="marketing">📈 Marketing</button>
+                <button class="filter-btn" data-category="operations">⚙️ Operations</button>
+            </div>
+        </div>
+        <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">🌓</button>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-icon">🛠️</div>
+            <div class="stat-info">
+                <h3 id="totalTools">24</h3>
+                <p>Total Tools</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-info">
+                <h3 id="pinnedCount">0</h3>
+                <p>Pinned</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-info">
+                <h3 id="mostUsed">-</h3>
+                <p>Most Used</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-info">
+                <h3 id="lastOpened">Never</h3>
+                <p>Last Opened</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="guide-section">
+        <div class="guide-card">
+            <h2>🚀 Getting Started</h2>
+            <p>Welcome to your Business Toolkit Hub! Here's how to get the most out of your tools:</p>
+            <div class="guide-grid">
+                <div class="guide-item">
+                    <h3>⭐ Pin Your Favorites</h3>
+                    <p>Click the pin icon on any tool card to keep it at the top for quick access</p>
+                </div>
+                <div class="guide-item">
+                    <h3>⌨️ Keyboard Shortcuts</h3>
+                    <p>Press 1-9 to instantly launch your top 9 pinned tools</p>
+                </div>
+                <div class="guide-item">
+                    <h3>🔍 Search & Filter</h3>
+                    <p>Use the search bar or category filters to quickly find the right tool</p>
+                </div>
+                <div class="guide-item">
+                    <h3>📊 Track Usage</h3>
+                    <p>The system automatically tracks which tools you use most frequently</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tools-container" id="toolsContainer">
+        <!-- Tools will be dynamically inserted here -->
+    </div>
+
+    <div class="shortcuts-panel">
+        <div class="shortcuts-card">
+            <h2>⌨️ Keyboard Shortcuts</h2>
+            <div class="shortcuts-grid">
+                <div class="shortcut-item">
+                    <div class="shortcut-key">1-9</div>
+                    <div class="shortcut-action">Launch top 9 pinned tools</div>
+                </div>
+                <div class="shortcut-item">
+                    <div class="shortcut-key">/</div>
+                    <div class="shortcut-action">Focus search</div>
+                </div>
+                <div class="shortcut-item">
+                    <div class="shortcut-key">ESC</div>
+                    <div class="shortcut-action">Clear search</div>
+                </div>
+                <div class="shortcut-item">
+                    <div class="shortcut-key">D</div>
+                    <div class="shortcut-action">Toggle dark mode</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>🦎 Geco Design Business Toolkit Hub • Built with ❤️ by MiniMe</p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem;">Last updated: February 2026</p>
+    </footer>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Tool definitions
+        const tools = [
+            // Client Management
+            {
+                id: 'lead-crm',
+                name: 'Lead CRM',
+                file: 'lead-crm.html',
+                icon: '👥',
+                category: 'client',
+                description: 'Manage your leads, track conversations, and move prospects through your sales pipeline',
+                keywords: ['crm', 'leads', 'contacts', 'sales', 'pipeline']
+            },
+            {
+                id: 'client-meeting-tracker',
+                name: 'Meeting Tracker',
+                file: 'client-meeting-tracker.html',
+                icon: '📅',
+                category: 'client',
+                description: 'Schedule, track, and document client meetings with notes and follow-ups',
+                keywords: ['meetings', 'calendar', 'schedule', 'notes']
+            },
+            {
+                id: 'client-onboarding',
+                name: 'Client Onboarding',
+                file: 'client-onboarding.html',
+                icon: '🎯',
+                category: 'client',
+                description: 'Streamline your client onboarding process with checklists and templates',
+                keywords: ['onboarding', 'clients', 'checklist', 'welcome']
+            },
+            {
+                id: 'testimonial-manager',
+                name: 'Testimonial Manager',
+                file: 'testimonial-manager.html',
+                icon: '⭐',
+                category: 'client',
+                description: 'Collect, organize, and showcase client testimonials and reviews',
+                keywords: ['testimonials', 'reviews', 'feedback', 'social proof']
+            },
+            {
+                id: 'lead-qualifier',
+                name: 'Lead Qualifier',
+                file: 'lead-qualifier.html',
+                icon: '🎯',
+                category: 'client',
+                description: 'Score and qualify leads to focus on the best opportunities',
+                keywords: ['leads', 'qualification', 'scoring', 'sales']
+            },
+
+            // Project Management
+            {
+                id: 'project-time-tracker',
+                name: 'Project Time Tracker',
+                file: 'project-time-tracker.html',
+                icon: '⏱️',
+                category: 'project',
+                description: 'Track time spent on projects and tasks for accurate billing',
+                keywords: ['time', 'tracking', 'projects', 'hours', 'billing']
+            },
+            {
+                id: 'time-tracker',
+                name: 'Time Tracker',
+                file: 'time-tracker.html',
+                icon: '⏰',
+                category: 'project',
+                description: 'Simple time tracking for tasks and activities',
+                keywords: ['time', 'tracking', 'productivity']
+            },
+            {
+                id: 'proposal-builder',
+                name: 'Proposal Builder',
+                file: 'proposal-builder.html',
+                icon: '📝',
+                category: 'project',
+                description: 'Build professional project proposals quickly',
+                keywords: ['proposals', 'quotes', 'projects', 'contracts']
+            },
+            {
+                id: 'proposal-generator',
+                name: 'Proposal Generator',
+                file: 'proposal-generator.html',
+                icon: '📋',
+                category: 'project',
+                description: 'Generate customized proposals from templates',
+                keywords: ['proposals', 'generation', 'templates']
+            },
+            {
+                id: 'proposal-template',
+                name: 'Proposal Template',
+                file: 'proposal-template.html',
+                icon: '📄',
+                category: 'project',
+                description: 'Professional proposal templates ready to customize',
+                keywords: ['proposals', 'templates', 'documents']
+            },
+            {
+                id: 'kanban',
+                name: 'Project Kanban',
+                file: 'kanban.html',
+                icon: '📊',
+                category: 'project',
+                description: 'Visual project management with kanban boards',
+                keywords: ['kanban', 'projects', 'tasks', 'workflow']
+            },
+
+            // Financial
+            {
+                id: 'invoice-tracker',
+                name: 'Invoice Tracker',
+                file: 'invoice-tracker.html',
+                icon: '💰',
+                category: 'financial',
+                description: 'Create, send, and track invoices and payments',
+                keywords: ['invoices', 'billing', 'payments', 'accounting']
+            },
+            {
+                id: 'pricing-calculator',
+                name: 'Pricing Calculator',
+                file: 'pricing-calculator.html',
+                icon: '🧮',
+                category: 'financial',
+                description: 'Calculate project pricing based on time, materials, and margins',
+                keywords: ['pricing', 'calculator', 'quotes', 'estimates']
+            },
+            {
+                id: 'roi-calculator',
+                name: 'ROI Calculator',
+                file: 'roi-calculator.html',
+                icon: '📈',
+                category: 'financial',
+                description: 'Calculate return on investment for projects and marketing',
+                keywords: ['roi', 'calculator', 'investment', 'returns']
+            },
+            {
+                id: 'service-pricing-database',
+                name: 'Service Pricing Database',
+                file: 'service-pricing-database.html',
+                icon: '💵',
+                category: 'financial',
+                description: 'Maintain a database of your service packages and pricing',
+                keywords: ['pricing', 'services', 'packages', 'database']
+            },
+
+            // Marketing & Sales
+            {
+                id: 'seo-tracker',
+                name: 'SEO Tracker',
+                file: 'seo-tracker.html',
+                icon: '🔍',
+                category: 'marketing',
+                description: 'Track SEO metrics, keywords, and rankings',
+                keywords: ['seo', 'keywords', 'rankings', 'analytics']
+            },
+            {
+                id: 'content-calendar',
+                name: 'Content Calendar',
+                file: 'content-calendar.html',
+                icon: '📅',
+                category: 'marketing',
+                description: 'Plan and schedule your content marketing strategy',
+                keywords: ['content', 'calendar', 'planning', 'marketing']
+            },
+            {
+                id: 'backlink-outreach',
+                name: 'Backlink Outreach',
+                file: 'backlink-outreach.html',
+                icon: '🔗',
+                category: 'marketing',
+                description: 'Manage backlink building and outreach campaigns',
+                keywords: ['backlinks', 'outreach', 'seo', 'linkbuilding']
+            },
+            {
+                id: 'local-business-prospecting',
+                name: 'Local Business Prospecting',
+                file: 'local-business-prospecting.html',
+                icon: '🎯',
+                category: 'marketing',
+                description: 'Find and track local business prospects',
+                keywords: ['prospecting', 'leads', 'local', 'business']
+            },
+            {
+                id: 'email-sequence-generator',
+                name: 'Email Sequence Generator',
+                file: 'email-sequence-generator.html',
+                icon: '✉️',
+                category: 'marketing',
+                description: 'Create email sequences and campaigns',
+                keywords: ['email', 'sequences', 'campaigns', 'automation']
+            },
+            {
+                id: 'lead-magnet-landing-page',
+                name: 'Lead Magnet Landing Page',
+                file: 'lead-magnet-landing-page.html',
+                icon: '🧲',
+                category: 'marketing',
+                description: 'Build landing pages for lead magnets',
+                keywords: ['landing page', 'leads', 'conversion', 'marketing']
+            },
+            {
+                id: 'social-media-repurposer',
+                name: 'Social Media Repurposer',
+                file: 'social-media-repurposer.html',
+                icon: '📱',
+                category: 'marketing',
+                description: 'Repurpose content across social media platforms',
+                keywords: ['social media', 'content', 'repurpose', 'automation']
+            },
+
+            // Operations
+            {
+                id: 'competitor-intelligence',
+                name: 'Competitor Intelligence Dashboard',
+                file: 'competitor-intelligence.html',
+                icon: '🎯',
+                category: 'operations',
+                description: 'Monitor competitors with SWOT analysis, pricing comparison, market insights, and strategic positioning opportunities',
+                keywords: ['competitors', 'analysis', 'intelligence', 'swot', 'pricing', 'strategy', 'market research']
+            },
+            {
+                id: 'competitor-intelligence-tracker',
+                name: 'Competitor Tracker',
+                file: 'Competitor-Intelligence-Tracker.html',
+                icon: '📊',
+                category: 'operations',
+                description: 'Monitor competitor activities and market position',
+                keywords: ['competitors', 'tracking', 'monitoring', 'market']
+            },
+            {
+                id: 'daily-briefing-assistant',
+                name: 'Daily Briefing Assistant',
+                file: 'daily-briefing-assistant.html',
+                icon: '📋',
+                category: 'operations',
+                description: 'Prepare comprehensive morning briefings with crypto data, news, business ideas, and daily updates',
+                keywords: ['briefing', 'daily', 'crypto', 'news', 'morning', 'updates', 'discord']
+            }
+        ];
+
+        // State management
+        let state = {
+            pinnedTools: JSON.parse(localStorage.getItem('pinnedTools') || '[]'),
+            toolUsage: JSON.parse(localStorage.getItem('toolUsage') || '{}'),
+            theme: localStorage.getItem('theme') || 'light',
+            currentFilter: 'all',
+            searchQuery: ''
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            applyTheme();
+            renderTools();
+            updateStats();
+            setupEventListeners();
+        });
+
+        // Theme management
+        function applyTheme() {
+            document.documentElement.setAttribute('data-theme', state.theme);
+        }
+
+        function toggleTheme() {
+            state.theme = state.theme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', state.theme);
+            applyTheme();
+            showNotification(`Switched to ${state.theme} mode`);
+        }
+
+        // Render tools
+        function renderTools() {
+            const container = document.getElementById('toolsContainer');
+            let filteredTools = tools.filter(tool => {
+                const matchesCategory = state.currentFilter === 'all' || tool.category === state.currentFilter;
+                const matchesSearch = !state.searchQuery || 
+                    tool.name.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+                    tool.description.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+                    tool.keywords.some(k => k.toLowerCase().includes(state.searchQuery.toLowerCase()));
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filteredTools.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <h3>No tools found</h3>
+                        <p>Try adjusting your search or filter criteria</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Separate pinned and unpinned tools
+            const pinnedTools = filteredTools.filter(t => state.pinnedTools.includes(t.id));
+            const unpinnedTools = filteredTools.filter(t => !state.pinnedTools.includes(t.id));
+
+            // Group by category
+            const categories = {
+                client: { name: 'Client Management', icon: '👥', tools: [] },
+                project: { name: 'Project Management', icon: '📊', tools: [] },
+                financial: { name: 'Financial', icon: '💰', tools: [] },
+                marketing: { name: 'Marketing & Sales', icon: '📈', tools: [] },
+                operations: { name: 'Operations', icon: '⚙️', tools: [] }
+            };
+
+            // Add pinned section if there are pinned tools
+            let html = '';
+            if (pinnedTools.length > 0) {
+                html += `
+                    <div class="category-section">
+                        <div class="category-header">
+                            <div class="category-icon">📌</div>
+                            <div class="category-title">Pinned Tools</div>
+                            <div class="category-count">${pinnedTools.length}</div>
+                        </div>
+                        <div class="tools-grid">
+                            ${pinnedTools.map((tool, index) => createToolCard(tool, index + 1)).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Group unpinned tools by category
+            unpinnedTools.forEach(tool => {
+                if (categories[tool.category]) {
+                    categories[tool.category].tools.push(tool);
+                }
+            });
+
+            // Render each category
+            Object.entries(categories).forEach(([key, cat]) => {
+                if (cat.tools.length > 0) {
+                    html += `
+                        <div class="category-section" data-category="${key}">
+                            <div class="category-header">
+                                <div class="category-icon">${cat.icon}</div>
+                                <div class="category-title">${cat.name}</div>
+                                <div class="category-count">${cat.tools.length}</div>
+                            </div>
+                            <div class="tools-grid">
+                                ${cat.tools.map(tool => createToolCard(tool)).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        function createToolCard(tool, keyboardShortcut = null) {
+            const isPinned = state.pinnedTools.includes(tool.id);
+            const usageCount = state.toolUsage[tool.id] || 0;
+            const hasData = usageCount > 0;
+
+            return `
+                <div class="tool-card" data-tool-id="${tool.id}" onclick="openTool('${tool.id}', '${tool.file}')">
+                    ${keyboardShortcut ? `<div class="keyboard-hint">${keyboardShortcut}</div>` : ''}
+                    <button class="pin-btn ${isPinned ? 'pinned' : ''}" onclick="event.stopPropagation(); togglePin('${tool.id}')" title="${isPinned ? 'Unpin' : 'Pin'} tool">
+                        ${isPinned ? '📌' : '📍'}
+                    </button>
+                    <div class="tool-header">
+                        <div class="tool-icon">${tool.icon}</div>
+                        <div class="tool-badges">
+                            ${isPinned ? '<div class="badge pinned">Pinned</div>' : ''}
+                            ${hasData ? '<div class="badge status">Active</div>' : '<div class="badge empty">New</div>'}
+                        </div>
+                    </div>
+                    <div class="tool-title">${tool.name}</div>
+                    <div class="tool-description">${tool.description}</div>
+                    <div class="tool-meta">
+                        <div class="tool-meta-item">
+                            <span>🔥</span>
+                            <span>${usageCount} ${usageCount === 1 ? 'use' : 'uses'}</span>
+                        </div>
+                        <div class="tool-meta-item">
+                            <span>📂</span>
+                            <span>${getCategoryName(tool.category)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                client: 'Clients',
+                project: 'Projects',
+                financial: 'Financial',
+                marketing: 'Marketing',
+                operations: 'Operations'
+            };
+            return names[category] || category;
+        }
+
+        // Tool actions
+        function openTool(toolId, fileName) {
+            // Track usage
+            state.toolUsage[toolId] = (state.toolUsage[toolId] || 0) + 1;
+            localStorage.setItem('toolUsage', JSON.stringify(state.toolUsage));
+            localStorage.setItem('lastOpened', new Date().toISOString());
+
+            // Open tool
+            window.open(fileName, '_blank');
+
+            // Update UI
+            updateStats();
+            showNotification(`Opening ${tools.find(t => t.id === toolId).name}...`);
+        }
+
+        function togglePin(toolId) {
+            const index = state.pinnedTools.indexOf(toolId);
+            if (index > -1) {
+                state.pinnedTools.splice(index, 1);
+            } else {
+                state.pinnedTools.push(toolId);
+            }
+            localStorage.setItem('pinnedTools', JSON.stringify(state.pinnedTools));
+            renderTools();
+            updateStats();
+        }
+
+        // Stats
+        function updateStats() {
+            document.getElementById('totalTools').textContent = tools.length;
+            document.getElementById('pinnedCount').textContent = state.pinnedTools.length;
+
+            // Most used tool
+            let mostUsedTool = null;
+            let maxUsage = 0;
+            Object.entries(state.toolUsage).forEach(([toolId, count]) => {
+                if (count > maxUsage) {
+                    maxUsage = count;
+                    mostUsedTool = toolId;
+                }
+            });
+            const mostUsedName = mostUsedTool ? tools.find(t => t.id === mostUsedTool)?.name : '-';
+            document.getElementById('mostUsed').textContent = mostUsedName;
+
+            // Last opened
+            const lastOpened = localStorage.getItem('lastOpened');
+            if (lastOpened) {
+                const date = new Date(lastOpened);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+
+                let timeAgo;
+                if (diffMins < 1) timeAgo = 'Just now';
+                else if (diffMins < 60) timeAgo = `${diffMins}m ago`;
+                else if (diffHours < 24) timeAgo = `${diffHours}h ago`;
+                else timeAgo = `${diffDays}d ago`;
+
+                document.getElementById('lastOpened').textContent = timeAgo;
+            }
+        }
+
+        // Event listeners
+        function setupEventListeners() {
+            // Theme toggle
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+            // Search
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                state.searchQuery = e.target.value;
+                renderTools();
+            });
+
+            // Category filters
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.currentFilter = btn.dataset.category;
+                    renderTools();
+                });
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Number keys 1-9 for pinned tools
+                if (e.key >= '1' && e.key <= '9' && !e.target.matches('input')) {
+                    const index = parseInt(e.key) - 1;
+                    if (index < state.pinnedTools.length) {
+                        const toolId = state.pinnedTools[index];
+                        const tool = tools.find(t => t.id === toolId);
+                        if (tool) {
+                            openTool(tool.id, tool.file);
+                        }
+                    }
+                }
+
+                // / to focus search
+                if (e.key === '/' && !e.target.matches('input')) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+
+                // ESC to clear search
+                if (e.key === 'Escape') {
+                    searchInput.value = '';
+                    state.searchQuery = '';
+                    searchInput.blur();
+                    renderTools();
+                }
+
+                // D to toggle dark mode
+                if (e.key === 'd' && !e.target.matches('input')) {
+                    toggleTheme();
+                }
+            });
+        }
+
+        // Notifications
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

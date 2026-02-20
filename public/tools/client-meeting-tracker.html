@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Meeting Tracker - geco.design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--gray-900);
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .brand {
+            color: var(--primary);
+            font-weight: 400;
+            font-size: 18px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            background: white;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--gray-600);
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--gray-900);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--gray-700);
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .meeting-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .meeting-item {
+            background: var(--gray-50);
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .meeting-item:hover {
+            background: var(--gray-100);
+            transform: translateX(4px);
+        }
+
+        .meeting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .meeting-client {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--gray-900);
+        }
+
+        .meeting-date {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .meeting-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background: var(--gray-200);
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .tag-priority-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .tag-priority-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .tag-priority-low {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray-400);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+
+        .close-btn:hover {
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .action-item {
+            background: var(--gray-50);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-item.completed {
+            opacity: 0.6;
+        }
+
+        .action-item.completed .action-task {
+            text-decoration: line-through;
+        }
+
+        .action-task {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .action-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--gray-600);
+            align-items: center;
+        }
+
+        .decision-item {
+            background: #eff6ff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .checkbox-label input {
+            width: auto;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-500);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .template-card {
+            background: var(--gray-50);
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .template-card:hover {
+            background: var(--gray-100);
+            border-color: var(--primary);
+        }
+
+        .template-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gray-900);
+        }
+
+        .template-desc {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Client Meeting Tracker</h1>
+                <div class="brand">geco.design</div>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-secondary" onclick="exportData('markdown')">📄 Export MD</button>
+                <button class="btn btn-secondary" onclick="exportData('csv')">📊 Export CSV</button>
+                <button class="btn btn-primary" onclick="openMeetingModal()">+ New Meeting</button>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="tab" onclick="switchTab('meetings')">All Meetings</button>
+            <button class="tab" onclick="switchTab('actions')">Action Items</button>
+            <button class="tab" onclick="switchTab('templates')">Templates</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard-tab" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-total-meetings">0</div>
+                    <div class="stat-label">Total Meetings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-this-week">0</div>
+                    <div class="stat-label">This Week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-this-month">0</div>
+                    <div class="stat-label">This Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-pending-actions">0</div>
+                    <div class="stat-label">Pending Actions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-overdue-followups">0</div>
+                    <div class="stat-label">Overdue Follow-ups</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Recent Meetings</div>
+                <div id="recent-meetings" class="meeting-list"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Upcoming Follow-ups</div>
+                <div id="upcoming-followups" class="meeting-list"></div>
+            </div>
+        </div>
+
+        <!-- Meetings Tab -->
+        <div id="meetings-tab" class="tab-content">
+            <div class="card">
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search meetings..." oninput="filterMeetings()">
+                    <select id="filter-type" onchange="filterMeetings()">
+                        <option value="">All Types</option>
+                        <option value="discovery">Discovery Call</option>
+                        <option value="review">Review</option>
+                        <option value="followup">Follow-up</option>
+                        <option value="kickoff">Project Kickoff</option>
+                        <option value="checkin">Check-in</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <select id="filter-client" onchange="filterMeetings()">
+                        <option value="">All Clients</option>
+                    </select>
+                </div>
+                <div id="all-meetings" class="meeting-list"></div>
+            </div>
+        </div>
+
+        <!-- Action Items Tab -->
+        <div id="actions-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">Action Items</div>
+                <div style="margin-bottom: 16px;">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show-completed" onchange="renderActionItems()"> Show Completed
+                    </label>
+                </div>
+                <div id="action-items-list"></div>
+            </div>
+        </div>
+
+        <!-- Templates Tab -->
+        <div id="templates-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">Meeting Templates</div>
+                <p style="color: var(--gray-600); margin-bottom: 20px;">Quick-start your meetings with pre-filled templates</p>
+                <div class="template-grid" id="templates-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Meeting Modal -->
+    <div id="meeting-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">New Meeting</h2>
+                <button class="close-btn" onclick="closeMeetingModal()">×</button>
+            </div>
+
+            <form id="meeting-form" onsubmit="saveMeeting(event)">
+                <input type="hidden" id="meeting-id">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" id="meeting-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" id="meeting-time">
+                    </div>
+                    <div class="form-group">
+                        <label>Duration (minutes)</label>
+                        <input type="number" id="meeting-duration" min="0" placeholder="60">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Client Name *</label>
+                        <input type="text" id="meeting-client" required list="client-list">
+                        <datalist id="client-list"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>Meeting Type *</label>
+                        <select id="meeting-type" required>
+                            <option value="">Select type...</option>
+                            <option value="discovery">Discovery Call</option>
+                            <option value="review">Review</option>
+                            <option value="followup">Follow-up</option>
+                            <option value="kickoff">Project Kickoff</option>
+                            <option value="checkin">Check-in</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Attendees (comma-separated)</label>
+                    <input type="text" id="meeting-attendees" placeholder="John Doe, Jane Smith">
+                </div>
+
+                <div class="form-group">
+                    <label>Tags (comma-separated)</label>
+                    <input type="text" id="meeting-tags" placeholder="branding, website, urgent">
+                </div>
+
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="meeting-priority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Meeting Notes</label>
+                    <textarea id="meeting-notes" placeholder="Enter your meeting notes here... Supports **bold**, *italic*, - bullet points"></textarea>
+                </div>
+
+                <div class="card" style="background: var(--gray-50); margin-bottom: 16px;">
+                    <div style="font-weight: 600; margin-bottom: 12px; display: flex; justify-content: space-between;">
+                        <span>Action Items</span>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="addActionItem()">+ Add Action</button>
+                    </div>
+                    <div id="action-items-container"></div>
+                </div>
+
+                <div class="card" style="background: var(--gray-50); margin-bottom: 16px;">
+                    <div style="font-weight: 600; margin-bottom: 12px; display: flex; justify-content: space-between;">
+                        <span>Decisions</span>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="addDecision()">+ Add Decision</button>
+                    </div>
+                    <div id="decisions-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="needs-followup">
+                        Needs Follow-up
+                    </label>
+                </div>
+
+                <div class="form-group" id="followup-date-group" style="display: none;">
+                    <label>Follow-up Date</label>
+                    <input type="date" id="followup-date">
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeMeetingModal()">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="delete-btn" onclick="deleteMeeting()" style="display: none;">Delete</button>
+                    <button type="submit" class="btn btn-primary">Save Meeting</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let meetings = JSON.parse(localStorage.getItem('meetings') || '[]');
+        let currentEditingId = null;
+
+        // Templates
+        const templates = [
+            {
+                name: 'Discovery Call',
+                type: 'discovery',
+                notes: `# Discovery Call
+
+## Client Background
+- 
+
+## Project Goals
+- 
+
+## Timeline & Budget
+- 
+
+## Next Steps
+- `,
+                actionItems: [
+                    { task: 'Send project proposal', owner: 'Team', dueDate: '', status: 'pending' },
+                    { task: 'Schedule follow-up call', owner: 'Team', dueDate: '', status: 'pending' }
+                ]
+            },
+            {
+                name: 'Project Review',
+                type: 'review',
+                notes: `# Project Review
+
+## What We've Completed
+- 
+
+## Client Feedback
+- 
+
+## Revisions Needed
+- 
+
+## Timeline Update
+- `,
+                actionItems: [
+                    { task: 'Implement feedback', owner: 'Team', dueDate: '', status: 'pending' }
+                ]
+            },
+            {
+                name: 'Project Kickoff',
+                type: 'kickoff',
+                notes: `# Project Kickoff
+
+## Project Scope
+- 
+
+## Deliverables
+- 
+
+## Timeline & Milestones
+- 
+
+## Communication Plan
+- 
+
+## Access & Resources Needed
+- `,
+                actionItems: [
+                    { task: 'Set up project files', owner: 'Team', dueDate: '', status: 'pending' },
+                    { task: 'Schedule regular check-ins', owner: 'Team', dueDate: '', status: 'pending' }
+                ]
+            },
+            {
+                name: 'Quick Check-in',
+                type: 'checkin',
+                notes: `# Quick Check-in
+
+## Updates
+- 
+
+## Questions/Concerns
+- 
+
+## Next Steps
+- `
+            }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('meeting-date').valueAsDate = new Date();
+            document.getElementById('needs-followup').addEventListener('change', (e) => {
+                document.getElementById('followup-date-group').style.display = e.target.checked ? 'block' : 'none';
+            });
+            
+            renderDashboard();
+            renderAllMeetings();
+            renderActionItems();
+            renderTemplates();
+            updateClientFilter();
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            if (tabName === 'dashboard') renderDashboard();
+            if (tabName === 'meetings') renderAllMeetings();
+            if (tabName === 'actions') renderActionItems();
+        }
+
+        // Modal functions
+        function openMeetingModal(meetingId = null, template = null) {
+            currentEditingId = meetingId;
+            const modal = document.getElementById('meeting-modal');
+            const form = document.getElementById('meeting-form');
+            
+            form.reset();
+            document.getElementById('action-items-container').innerHTML = '';
+            document.getElementById('decisions-container').innerHTML = '';
+            document.getElementById('meeting-date').valueAsDate = new Date();
+            
+            if (meetingId) {
+                const meeting = meetings.find(m => m.id === meetingId);
+                if (meeting) {
+                    document.getElementById('modal-title').textContent = 'Edit Meeting';
+                    document.getElementById('meeting-id').value = meeting.id;
+                    document.getElementById('meeting-date').value = meeting.date;
+                    document.getElementById('meeting-time').value = meeting.time || '';
+                    document.getElementById('meeting-duration').value = meeting.duration || '';
+                    document.getElementById('meeting-client').value = meeting.client;
+                    document.getElementById('meeting-type').value = meeting.type;
+                    document.getElementById('meeting-attendees').value = (meeting.attendees || []).join(', ');
+                    document.getElementById('meeting-tags').value = (meeting.tags || []).join(', ');
+                    document.getElementById('meeting-priority').value = meeting.priority || 'medium';
+                    document.getElementById('meeting-notes').value = meeting.notes || '';
+                    document.getElementById('needs-followup').checked = meeting.needsFollowup || false;
+                    document.getElementById('followup-date').value = meeting.followupDate || '';
+                    document.getElementById('followup-date-group').style.display = meeting.needsFollowup ? 'block' : 'none';
+                    
+                    (meeting.actionItems || []).forEach(item => addActionItem(item));
+                    (meeting.decisions || []).forEach(decision => addDecision(decision));
+                    
+                    document.getElementById('delete-btn').style.display = 'block';
+                }
+            } else if (template) {
+                document.getElementById('modal-title').textContent = 'New Meeting (Template)';
+                document.getElementById('meeting-type').value = template.type;
+                document.getElementById('meeting-notes').value = template.notes;
+                (template.actionItems || []).forEach(item => addActionItem(item));
+                document.getElementById('delete-btn').style.display = 'none';
+            } else {
+                document.getElementById('modal-title').textContent = 'New Meeting';
+                document.getElementById('delete-btn').style.display = 'none';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeMeetingModal() {
+            document.getElementById('meeting-modal').classList.remove('active');
+            currentEditingId = null;
+        }
+
+        // Action items
+        function addActionItem(data = null) {
+            const container = document.getElementById('action-items-container');
+            const id = Date.now() + Math.random();
+            const div = document.createElement('div');
+            div.className = 'action-item';
+            div.innerHTML = `
+                <div style="flex: 1; display: grid; grid-template-columns: 2fr 1fr 1fr 100px 40px; gap: 8px; align-items: center;">
+                    <input type="text" placeholder="Task description" value="${data?.task || ''}" data-action-task="${id}" style="margin: 0;">
+                    <input type="text" placeholder="Owner" value="${data?.owner || ''}" data-action-owner="${id}" style="margin: 0;">
+                    <input type="date" value="${data?.dueDate || ''}" data-action-due="${id}" style="margin: 0;">
+                    <select data-action-status="${id}" style="margin: 0;">
+                        <option value="pending" ${data?.status === 'pending' ? 'selected' : ''}>Pending</option>
+                        <option value="completed" ${data?.status === 'completed' ? 'selected' : ''}>Completed</option>
+                    </select>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        // Decisions
+        function addDecision(text = '') {
+            const container = document.getElementById('decisions-container');
+            const id = Date.now() + Math.random();
+            const div = document.createElement('div');
+            div.className = 'decision-item';
+            div.innerHTML = `
+                <div style="display: flex; gap: 8px; align-items: start;">
+                    <input type="text" placeholder="Decision or important note" value="${text}" data-decision="${id}" style="flex: 1; margin: 0;">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        // Save meeting
+        function saveMeeting(event) {
+            event.preventDefault();
+            
+            const actionItems = Array.from(document.querySelectorAll('[data-action-task]')).map(el => {
+                const id = el.dataset.actionTask;
+                return {
+                    task: el.value,
+                    owner: document.querySelector(`[data-action-owner="${id}"]`).value,
+                    dueDate: document.querySelector(`[data-action-due="${id}"]`).value,
+                    status: document.querySelector(`[data-action-status="${id}"]`).value
+                };
+            }).filter(item => item.task.trim());
+
+            const decisions = Array.from(document.querySelectorAll('[data-decision]')).map(el => el.value).filter(d => d.trim());
+
+            const attendees = document.getElementById('meeting-attendees').value
+                .split(',')
+                .map(a => a.trim())
+                .filter(a => a);
+
+            const tags = document.getElementById('meeting-tags').value
+                .split(',')
+                .map(t => t.trim())
+                .filter(t => t);
+
+            const meeting = {
+                id: currentEditingId || Date.now().toString(),
+                date: document.getElementById('meeting-date').value,
+                time: document.getElementById('meeting-time').value,
+                duration: document.getElementById('meeting-duration').value,
+                client: document.getElementById('meeting-client').value,
+                type: document.getElementById('meeting-type').value,
+                attendees,
+                tags,
+                priority: document.getElementById('meeting-priority').value,
+                notes: document.getElementById('meeting-notes').value,
+                actionItems,
+                decisions,
+                needsFollowup: document.getElementById('needs-followup').checked,
+                followupDate: document.getElementById('followup-date').value,
+                createdAt: currentEditingId ? meetings.find(m => m.id === currentEditingId)?.createdAt : new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            if (currentEditingId) {
+                const index = meetings.findIndex(m => m.id === currentEditingId);
+                meetings[index] = meeting;
+            } else {
+                meetings.push(meeting);
+            }
+
+            localStorage.setItem('meetings', JSON.stringify(meetings));
+            closeMeetingModal();
+            renderDashboard();
+            renderAllMeetings();
+            renderActionItems();
+            updateClientFilter();
+        }
+
+        // Delete meeting
+        function deleteMeeting() {
+            if (!confirm('Are you sure you want to delete this meeting?')) return;
+            
+            meetings = meetings.filter(m => m.id !== currentEditingId);
+            localStorage.setItem('meetings', JSON.stringify(meetings));
+            closeMeetingModal();
+            renderDashboard();
+            renderAllMeetings();
+            renderActionItems();
+            updateClientFilter();
+        }
+
+        // Render dashboard
+        function renderDashboard() {
+            const now = new Date();
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+            const thisWeek = meetings.filter(m => new Date(m.date) >= weekAgo).length;
+            const thisMonth = meetings.filter(m => new Date(m.date) >= monthAgo).length;
+            
+            const pendingActions = meetings.reduce((sum, m) => 
+                sum + (m.actionItems || []).filter(a => a.status === 'pending').length, 0
+            );
+
+            const overdueFollowups = meetings.filter(m => 
+                m.needsFollowup && m.followupDate && new Date(m.followupDate) < now
+            ).length;
+
+            document.getElementById('stat-total-meetings').textContent = meetings.length;
+            document.getElementById('stat-this-week').textContent = thisWeek;
+            document.getElementById('stat-this-month').textContent = thisMonth;
+            document.getElementById('stat-pending-actions').textContent = pendingActions;
+            document.getElementById('stat-overdue-followups').textContent = overdueFollowups;
+
+            // Recent meetings
+            const recent = [...meetings]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+            renderMeetingList('recent-meetings', recent);
+
+            // Upcoming follow-ups
+            const followups = meetings
+                .filter(m => m.needsFollowup && m.followupDate)
+                .sort((a, b) => new Date(a.followupDate) - new Date(b.followupDate))
+                .slice(0, 5);
+            renderMeetingList('upcoming-followups', followups, true);
+        }
+
+        // Render meeting list
+        function renderMeetingList(containerId, meetingList, showFollowup = false) {
+            const container = document.getElementById(containerId);
+            
+            if (meetingList.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div>No meetings found</div></div>';
+                return;
+            }
+
+            container.innerHTML = meetingList.map(meeting => {
+                const isOverdue = showFollowup && new Date(meeting.followupDate) < new Date();
+                return `
+                    <div class="meeting-item" onclick="openMeetingModal('${meeting.id}')">
+                        <div class="meeting-header">
+                            <div>
+                                <div class="meeting-client">${escapeHtml(meeting.client)}</div>
+                                <div class="meeting-meta">
+                                    <span>📅 ${formatDate(meeting.date)}</span>
+                                    ${meeting.time ? `<span>🕐 ${meeting.time}</span>` : ''}
+                                    <span>${getMeetingTypeLabel(meeting.type)}</span>
+                                    ${meeting.priority !== 'medium' ? `<span class="tag tag-priority-${meeting.priority}">${meeting.priority}</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="meeting-date">
+                                ${showFollowup ? `
+                                    <span class="badge ${isOverdue ? 'badge-danger' : 'badge-success'}">
+                                        Follow-up: ${formatDate(meeting.followupDate)}
+                                    </span>
+                                ` : formatDate(meeting.date)}
+                            </div>
+                        </div>
+                        ${(meeting.tags || []).length > 0 ? `
+                            <div style="margin-top: 8px;">
+                                ${meeting.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join(' ')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render all meetings
+        function renderAllMeetings() {
+            const sorted = [...meetings].sort((a, b) => new Date(b.date) - new Date(a.date));
+            renderMeetingList('all-meetings', sorted);
+        }
+
+        // Filter meetings
+        function filterMeetings() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const typeFilter = document.getElementById('filter-type').value;
+            const clientFilter = document.getElementById('filter-client').value.toLowerCase();
+
+            const filtered = meetings.filter(m => {
+                const matchesSearch = !searchTerm || 
+                    m.client.toLowerCase().includes(searchTerm) ||
+                    (m.notes || '').toLowerCase().includes(searchTerm) ||
+                    (m.tags || []).some(tag => tag.toLowerCase().includes(searchTerm));
+                
+                const matchesType = !typeFilter || m.type === typeFilter;
+                const matchesClient = !clientFilter || m.client.toLowerCase() === clientFilter;
+
+                return matchesSearch && matchesType && matchesClient;
+            });
+
+            const sorted = filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+            renderMeetingList('all-meetings', sorted);
+        }
+
+        // Update client filter
+        function updateClientFilter() {
+            const clients = [...new Set(meetings.map(m => m.client))].sort();
+            const select = document.getElementById('filter-client');
+            const currentValue = select.value;
+            
+            select.innerHTML = '<option value="">All Clients</option>' + 
+                clients.map(c => `<option value="${escapeHtml(c.toLowerCase())}">${escapeHtml(c)}</option>`).join('');
+            
+            select.value = currentValue;
+
+            // Update datalist
+            const datalist = document.getElementById('client-list');
+            datalist.innerHTML = clients.map(c => `<option value="${escapeHtml(c)}">`).join('');
+        }
+
+        // Render action items
+        function renderActionItems() {
+            const showCompleted = document.getElementById('show-completed')?.checked || false;
+            const container = document.getElementById('action-items-list');
+            
+            const allActions = meetings.flatMap(m => 
+                (m.actionItems || []).map(action => ({
+                    ...action,
+                    meetingId: m.id,
+                    client: m.client,
+                    meetingDate: m.date
+                }))
+            );
+
+            const filtered = showCompleted ? allActions : allActions.filter(a => a.status === 'pending');
+            const sorted = filtered.sort((a, b) => {
+                if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
+                if (a.dueDate) return -1;
+                if (b.dueDate) return 1;
+                return 0;
+            });
+
+            if (sorted.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✅</div><div>No action items</div></div>';
+                return;
+            }
+
+            const now = new Date();
+            container.innerHTML = sorted.map(action => {
+                const isOverdue = action.dueDate && new Date(action.dueDate) < now && action.status === 'pending';
+                return `
+                    <div class="action-item ${action.status === 'completed' ? 'completed' : ''}" onclick="openMeetingModal('${action.meetingId}')">
+                        <div style="flex: 1;">
+                            <div class="action-task">${escapeHtml(action.task)}</div>
+                            <div class="action-meta">
+                                <span>👤 ${escapeHtml(action.owner)}</span>
+                                <span>📌 ${escapeHtml(action.client)}</span>
+                                ${action.dueDate ? `
+                                    <span class="badge ${isOverdue ? 'badge-danger' : 'badge-success'}">
+                                        Due: ${formatDate(action.dueDate)}
+                                    </span>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div>
+                            <span class="tag">${action.status}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render templates
+        function renderTemplates() {
+            const container = document.getElementById('templates-grid');
+            container.innerHTML = templates.map((template, index) => `
+                <div class="template-card" onclick="openMeetingModal(null, templates[${index}])">
+                    <div class="template-name">${template.name}</div>
+                    <div class="template-desc">Quick-start with ${template.name.toLowerCase()} template</div>
+                </div>
+            `).join('');
+        }
+
+        // Export functions
+        function exportData(format) {
+            if (meetings.length === 0) {
+                alert('No meetings to export');
+                return;
+            }
+
+            if (format === 'markdown') {
+                exportMarkdown();
+            } else if (format === 'csv') {
+                exportCSV();
+            }
+        }
+
+        function exportMarkdown() {
+            let md = '# Client Meeting Tracker - geco.design\n\n';
+            md += `Exported: ${new Date().toLocaleDateString()}\n\n`;
+            md += `Total Meetings: ${meetings.length}\n\n---\n\n`;
+
+            const sorted = [...meetings].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            sorted.forEach(meeting => {
+                md += `## ${meeting.client} - ${getMeetingTypeLabel(meeting.type)}\n\n`;
+                md += `**Date:** ${formatDate(meeting.date)}`;
+                if (meeting.time) md += ` at ${meeting.time}`;
+                md += `\n`;
+                if (meeting.duration) md += `**Duration:** ${meeting.duration} minutes\n`;
+                if (meeting.attendees?.length) md += `**Attendees:** ${meeting.attendees.join(', ')}\n`;
+                if (meeting.tags?.length) md += `**Tags:** ${meeting.tags.join(', ')}\n`;
+                md += `**Priority:** ${meeting.priority}\n\n`;
+                
+                if (meeting.notes) {
+                    md += `### Notes\n\n${meeting.notes}\n\n`;
+                }
+
+                if (meeting.actionItems?.length) {
+                    md += `### Action Items\n\n`;
+                    meeting.actionItems.forEach(action => {
+                        md += `- [${action.status === 'completed' ? 'x' : ' '}] ${action.task}`;
+                        if (action.owner) md += ` (${action.owner})`;
+                        if (action.dueDate) md += ` - Due: ${formatDate(action.dueDate)}`;
+                        md += '\n';
+                    });
+                    md += '\n';
+                }
+
+                if (meeting.decisions?.length) {
+                    md += `### Decisions\n\n`;
+                    meeting.decisions.forEach(decision => {
+                        md += `- ${decision}\n`;
+                    });
+                    md += '\n';
+                }
+
+                if (meeting.needsFollowup && meeting.followupDate) {
+                    md += `**Follow-up needed by:** ${formatDate(meeting.followupDate)}\n\n`;
+                }
+
+                md += '---\n\n';
+            });
+
+            downloadFile('meeting-tracker-export.md', md, 'text/markdown');
+        }
+
+        function exportCSV() {
+            const headers = ['Date', 'Time', 'Client', 'Type', 'Duration', 'Attendees', 'Tags', 'Priority', 'Notes', 'Action Items', 'Decisions', 'Follow-up Date'];
+            const rows = meetings.map(m => [
+                m.date,
+                m.time || '',
+                m.client,
+                getMeetingTypeLabel(m.type),
+                m.duration || '',
+                (m.attendees || []).join('; '),
+                (m.tags || []).join('; '),
+                m.priority,
+                (m.notes || '').replace(/\n/g, ' '),
+                (m.actionItems || []).map(a => `${a.task} (${a.owner})`).join('; '),
+                (m.decisions || []).join('; '),
+                m.followupDate || ''
+            ]);
+
+            const csv = [headers, ...rows].map(row => 
+                row.map(cell => `"${(cell || '').toString().replace(/"/g, '""')}"`).join(',')
+            ).join('\n');
+
+            downloadFile('meeting-tracker-export.csv', csv, 'text/csv');
+        }
+
+        function downloadFile(filename, content, type) {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Utility functions
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr + 'T00:00:00');
+            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        function getMeetingTypeLabel(type) {
+            const types = {
+                discovery: '🔍 Discovery',
+                review: '📊 Review',
+                followup: '↩️ Follow-up',
+                kickoff: '🚀 Kickoff',
+                checkin: '✓ Check-in',
+                other: '📝 Other'
+            };
+            return types[type] || type;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Close modal on outside click
+        document.getElementById('meeting-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'meeting-modal') {
+                closeMeetingModal();
+            }
+        });
+    </script>
+</body>
+</html>

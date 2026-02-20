@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Magnet Generator - geco.design</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --geco-primary: #00A86B;
+            --geco-secondary: #1E3A8A;
+            --geco-accent: #F59E0B;
+            --geco-dark: #1F2937;
+            --geco-light: #F3F4F6;
+            --geco-white: #FFFFFF;
+            --geco-border: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--geco-dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--geco-primary) 0%, var(--geco-secondary) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--geco-light);
+            border-bottom: 3px solid var(--geco-border);
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 20px 30px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--geco-dark);
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -3px;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: rgba(0, 168, 107, 0.1);
+        }
+
+        .tab.active {
+            background: white;
+            color: var(--geco-primary);
+            border-bottom-color: var(--geco-primary);
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: grid;
+        }
+
+        .editor, .preview {
+            background: var(--geco-light);
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid var(--geco-border);
+        }
+
+        .preview {
+            background: white;
+            position: relative;
+            min-height: 600px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--geco-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--geco-dark);
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--geco-border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--geco-primary);
+            box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--geco-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #008f5a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 168, 107, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--geco-secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+        }
+
+        .btn-accent {
+            background: var(--geco-accent);
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--geco-border);
+        }
+
+        .checklist-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+
+        .checklist-item input[type="text"] {
+            flex: 1;
+        }
+
+        .btn-remove {
+            background: #EF4444;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .btn-remove:hover {
+            background: #DC2626;
+        }
+
+        .btn-add {
+            background: var(--geco-primary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            background: #008f5a;
+        }
+
+        /* Preview Styles */
+        .preview-checklist {
+            font-family: 'Georgia', serif;
+        }
+
+        .preview-checklist h1 {
+            color: var(--geco-primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            border-bottom: 3px solid var(--geco-primary);
+            padding-bottom: 10px;
+        }
+
+        .preview-checklist .subtitle {
+            color: var(--geco-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .preview-checklist .checklist-items {
+            margin: 20px 0;
+        }
+
+        .preview-checklist .item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--geco-border);
+            align-items: flex-start;
+        }
+
+        .preview-checklist .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--geco-primary);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .preview-checklist .footer {
+            margin-top: 40px;
+            padding: 20px;
+            background: var(--geco-light);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .preview-checklist .footer h3 {
+            color: var(--geco-secondary);
+            margin-bottom: 10px;
+        }
+
+        .preview-checklist .branding {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid var(--geco-border);
+            color: var(--geco-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Calculator Preview */
+        .preview-calculator {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .preview-calculator h1 {
+            color: var(--geco-primary);
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .calc-section {
+            background: var(--geco-light);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .calc-field {
+            margin-bottom: 15px;
+        }
+
+        .calc-field label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .calc-field input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--geco-border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .calc-result {
+            background: linear-gradient(135deg, var(--geco-primary), var(--geco-secondary));
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .calc-result h2 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .calc-result .amount {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        /* Template Preview */
+        .preview-template {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .preview-template h1 {
+            color: var(--geco-primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            border-bottom: 3px solid var(--geco-primary);
+            padding-bottom: 10px;
+        }
+
+        .template-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--geco-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--geco-primary);
+        }
+
+        .template-section h3 {
+            color: var(--geco-secondary);
+            margin-bottom: 15px;
+        }
+
+        .template-field {
+            margin-bottom: 15px;
+        }
+
+        .template-field label {
+            display: block;
+            font-weight: 600;
+            color: var(--geco-dark);
+            margin-bottom: 5px;
+        }
+
+        .template-field .field-line {
+            border-bottom: 1px solid var(--geco-border);
+            min-height: 30px;
+            padding: 5px 0;
+        }
+
+        /* Code Display */
+        .code-display {
+            background: #1F2937;
+            color: #10B981;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .code-display pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--geco-primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .copy-btn:hover {
+            background: #008f5a;
+        }
+
+        .branding-controls {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid var(--geco-border);
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .color-picker input[type="color"] {
+            width: 60px;
+            height: 40px;
+            border: 2px solid var(--geco-border);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .color-picker input[type="text"] {
+            width: 100px;
+        }
+
+        .success-message {
+            background: #10B981;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .tab {
+                padding: 15px 20px;
+                font-size: 0.9rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+
+        .template-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .template-option {
+            padding: 15px;
+            background: white;
+            border: 2px solid var(--geco-border);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .template-option:hover {
+            border-color: var(--geco-primary);
+            transform: translateY(-2px);
+        }
+
+        .template-option.selected {
+            border-color: var(--geco-primary);
+            background: rgba(0, 168, 107, 0.1);
+        }
+
+        .field-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .field-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Lead Magnet Generator</h1>
+            <p>Create professional lead magnets in minutes - by geco.design</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('checklist')">📋 Checklist Generator</button>
+            <button class="tab" onclick="switchTab('calculator')">🧮 Calculator Builder</button>
+            <button class="tab" onclick="switchTab('template')">📄 Template Creator</button>
+        </div>
+
+        <!-- Checklist Panel -->
+        <div class="content panel active" id="panel-checklist">
+            <div class="editor">
+                <h2>🛠️ Build Your Checklist</h2>
+                
+                <div class="branding-controls">
+                    <h3 style="margin-bottom: 15px;">Branding</h3>
+                    <div class="form-group">
+                        <label>Primary Color</label>
+                        <div class="color-picker">
+                            <input type="color" id="checklist-color" value="#00A86B" onchange="updateChecklistColor()">
+                            <input type="text" id="checklist-color-text" value="#00A86B" onchange="updateChecklistColorFromText()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Business Name</label>
+                        <input type="text" id="checklist-business" value="geco.design" oninput="updateChecklistPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Email</label>
+                        <input type="text" id="checklist-email" value="hello@geco.design" oninput="updateChecklistPreview()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Checklist Title</label>
+                    <input type="text" id="checklist-title" placeholder="e.g., Website Launch Checklist for Architects" value="Website Launch Checklist for Architects" oninput="updateChecklistPreview()">
+                </div>
+
+                <div class="form-group">
+                    <label>Target Audience</label>
+                    <input type="text" id="checklist-audience" placeholder="e.g., Architecture firms & design studios" value="Architecture firms & design studios" oninput="updateChecklistPreview()">
+                </div>
+
+                <div class="form-group">
+                    <label>Checklist Items</label>
+                    <div id="checklist-items-container">
+                        <!-- Items will be added here -->
+                    </div>
+                    <button class="btn-add" onclick="addChecklistItem()">+ Add Item</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Call-to-Action Message</label>
+                    <textarea id="checklist-cta" oninput="updateChecklistPreview()">Want more resources like this? Visit geco.design for expert web design services tailored for architects and design professionals.</textarea>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="downloadChecklistPDF()">📥 Download PDF</button>
+                    <button class="btn btn-secondary" onclick="generateChecklistHTML()">🔗 Get HTML Code</button>
+                </div>
+
+                <div class="success-message" id="checklist-success"></div>
+            </div>
+
+            <div class="preview">
+                <h2>👁️ Preview</h2>
+                <div id="checklist-preview" class="preview-checklist">
+                    <!-- Preview will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Calculator Panel -->
+        <div class="content panel" id="panel-calculator">
+            <div class="editor">
+                <h2>🛠️ Build Your Calculator</h2>
+
+                <div class="branding-controls">
+                    <h3 style="margin-bottom: 15px;">Branding</h3>
+                    <div class="form-group">
+                        <label>Primary Color</label>
+                        <div class="color-picker">
+                            <input type="color" id="calc-color" value="#00A86B" onchange="updateCalcColor()">
+                            <input type="text" id="calc-color-text" value="#00A86B">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Business Name</label>
+                        <input type="text" id="calc-business" value="geco.design" oninput="updateCalcPreview()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Calculator Type</label>
+                    <select id="calc-type" onchange="updateCalcType()">
+                        <option value="roi">ROI Calculator (Website Redesign)</option>
+                        <option value="savings">Cost Savings Calculator</option>
+                        <option value="pricing">Project Pricing Estimator</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Calculator Title</label>
+                    <input type="text" id="calc-title" value="Website Redesign ROI Calculator" oninput="updateCalcPreview()">
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="calc-description" oninput="updateCalcPreview()">Calculate the potential return on investment for your website redesign project.</textarea>
+                </div>
+
+                <div id="calc-fields-container">
+                    <!-- Calculator fields will be added here based on type -->
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="generateCalcHTML()">🔗 Get Embed Code</button>
+                    <button class="btn btn-secondary" onclick="downloadCalcPDF()">📥 Download PDF</button>
+                </div>
+
+                <div class="success-message" id="calc-success"></div>
+            </div>
+
+            <div class="preview">
+                <h2>👁️ Live Calculator</h2>
+                <div id="calc-preview" class="preview-calculator">
+                    <!-- Preview will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Template Panel -->
+        <div class="content panel" id="panel-template">
+            <div class="editor">
+                <h2>🛠️ Create Your Template</h2>
+
+                <div class="branding-controls">
+                    <h3 style="margin-bottom: 15px;">Branding</h3>
+                    <div class="form-group">
+                        <label>Primary Color</label>
+                        <div class="color-picker">
+                            <input type="color" id="template-color" value="#00A86B" onchange="updateTemplateColor()">
+                            <input type="text" id="template-color-text" value="#00A86B">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Business Name</label>
+                        <input type="text" id="template-business" value="geco.design" oninput="updateTemplatePreview()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Template Type</label>
+                    <div class="template-selector">
+                        <div class="template-option selected" onclick="selectTemplate('marketing')">
+                            <strong>📊 Marketing Plan</strong>
+                        </div>
+                        <div class="template-option" onclick="selectTemplate('content')">
+                            <strong>📅 Content Calendar</strong>
+                        </div>
+                        <div class="template-option" onclick="selectTemplate('brand')">
+                            <strong>🎨 Brand Strategy</strong>
+                        </div>
+                        <div class="template-option" onclick="selectTemplate('project')">
+                            <strong>📋 Project Brief</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Template Title</label>
+                    <input type="text" id="template-title" value="Marketing Plan Template" oninput="updateTemplatePreview()">
+                </div>
+
+                <div class="form-group">
+                    <label>Subtitle/Description</label>
+                    <input type="text" id="template-subtitle" value="Strategic marketing framework for design professionals" oninput="updateTemplatePreview()">
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="downloadTemplatePDF()">📥 Download PDF</button>
+                    <button class="btn btn-secondary" onclick="generateTemplateHTML()">🔗 Get HTML Code</button>
+                </div>
+
+                <div class="success-message" id="template-success"></div>
+            </div>
+
+            <div class="preview">
+                <h2>👁️ Preview</h2>
+                <div id="template-preview" class="preview-template">
+                    <!-- Preview will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentTab = 'checklist';
+        let checklistItems = [
+            "Define target audience and user personas",
+            "Create sitemap and information architecture",
+            "Design wireframes for key pages",
+            "Develop brand guidelines and visual identity",
+            "Write compelling copy and content",
+            "Optimize images and media for web",
+            "Implement responsive design for all devices",
+            "Set up analytics and tracking",
+            "Test across browsers and devices",
+            "Launch and monitor performance"
+        ];
+        let currentTemplate = 'marketing';
+
+        // Tab switching
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update panels
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel-' + tab).classList.add('active');
+            
+            // Initialize the tab if needed
+            if (tab === 'checklist') {
+                initChecklist();
+            } else if (tab === 'calculator') {
+                initCalculator();
+            } else if (tab === 'template') {
+                initTemplate();
+            }
+        }
+
+        // Checklist Functions
+        function initChecklist() {
+            renderChecklistItems();
+            updateChecklistPreview();
+        }
+
+        function renderChecklistItems() {
+            const container = document.getElementById('checklist-items-container');
+            container.innerHTML = '';
+            
+            checklistItems.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'checklist-item';
+                div.innerHTML = `
+                    <input type="text" value="${item}" oninput="updateChecklistItem(${index}, this.value)">
+                    <button class="btn-remove" onclick="removeChecklistItem(${index})">Remove</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function addChecklistItem() {
+            checklistItems.push('New item');
+            renderChecklistItems();
+            updateChecklistPreview();
+        }
+
+        function removeChecklistItem(index) {
+            checklistItems.splice(index, 1);
+            renderChecklistItems();
+            updateChecklistPreview();
+        }
+
+        function updateChecklistItem(index, value) {
+            checklistItems[index] = value;
+            updateChecklistPreview();
+        }
+
+        function updateChecklistPreview() {
+            const title = document.getElementById('checklist-title').value;
+            const audience = document.getElementById('checklist-audience').value;
+            const cta = document.getElementById('checklist-cta').value;
+            const business = document.getElementById('checklist-business').value;
+            const email = document.getElementById('checklist-email').value;
+            const color = document.getElementById('checklist-color').value;
+            
+            const preview = document.getElementById('checklist-preview');
+            
+            let itemsHTML = checklistItems.map(item => `
+                <div class="item">
+                    <div class="checkbox"></div>
+                    <div>${item}</div>
+                </div>
+            `).join('');
+            
+            preview.innerHTML = `
+                <h1 style="color: ${color}; border-bottom-color: ${color};">${title}</h1>
+                <div class="subtitle">For ${audience}</div>
+                <div class="checklist-items">
+                    ${itemsHTML}
+                </div>
+                <div class="footer">
+                    <h3>Want More Resources?</h3>
+                    <p>${cta}</p>
+                </div>
+                <div class="branding">
+                    <strong>${business}</strong> | ${email}
+                </div>
+            `;
+        }
+
+        function updateChecklistColor() {
+            const color = document.getElementById('checklist-color').value;
+            document.getElementById('checklist-color-text').value = color;
+            updateChecklistPreview();
+        }
+
+        function updateChecklistColorFromText() {
+            const color = document.getElementById('checklist-color-text').value;
+            document.getElementById('checklist-color').value = color;
+            updateChecklistPreview();
+        }
+
+        function downloadChecklistPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const title = document.getElementById('checklist-title').value;
+            const audience = document.getElementById('checklist-audience').value;
+            const cta = document.getElementById('checklist-cta').value;
+            const business = document.getElementById('checklist-business').value;
+            const email = document.getElementById('checklist-email').value;
+            
+            // Header
+            doc.setFillColor(0, 168, 107);
+            doc.rect(0, 0, 210, 30, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.text(title, 105, 15, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text(`For ${audience}`, 105, 23, { align: 'center' });
+            
+            // Checklist items
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            let yPos = 45;
+            
+            checklistItems.forEach((item, index) => {
+                if (yPos > 270) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                // Checkbox
+                doc.rect(15, yPos - 3, 5, 5);
+                
+                // Text (wrapped)
+                const lines = doc.splitTextToSize(item, 170);
+                doc.text(lines, 25, yPos);
+                yPos += (lines.length * 6) + 8;
+            });
+            
+            // Footer CTA
+            if (yPos > 230) {
+                doc.addPage();
+                yPos = 20;
+            }
+            yPos += 10;
+            doc.setFillColor(243, 244, 246);
+            doc.rect(15, yPos, 180, 30, 'F');
+            doc.setFontSize(14);
+            doc.setTextColor(30, 58, 138);
+            doc.text('Want More Resources?', 105, yPos + 10, { align: 'center' });
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            const ctaLines = doc.splitTextToSize(cta, 160);
+            doc.text(ctaLines, 105, yPos + 18, { align: 'center' });
+            
+            // Branding
+            yPos += 40;
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`${business} | ${email}`, 105, yPos, { align: 'center' });
+            
+            doc.save(`${title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.pdf`);
+            
+            showSuccess('checklist-success', 'PDF downloaded successfully!');
+        }
+
+        function generateChecklistHTML() {
+            const title = document.getElementById('checklist-title').value;
+            const audience = document.getElementById('checklist-audience').value;
+            const business = document.getElementById('checklist-business').value;
+            const email = document.getElementById('checklist-email').value;
+            const color = document.getElementById('checklist-color').value;
+            
+            let itemsHTML = checklistItems.map(item => `
+            <div class="checklist-item">
+                <input type="checkbox" id="item-${checklistItems.indexOf(item)}">
+                <label for="item-${checklistItems.indexOf(item)}">${item}</label>
+            </div>`).join('\n');
+            
+            const html = `<!-- Lead Magnet Checklist - ${business} -->
+<div class="lead-magnet-checklist" style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px;">
+    <h1 style="color: ${color}; font-size: 2rem; margin-bottom: 10px; border-bottom: 3px solid ${color}; padding-bottom: 10px;">${title}</h1>
+    <p style="color: #1E3A8A; font-style: italic; margin-bottom: 30px;">For ${audience}</p>
+    
+    <div class="checklist-items">
+        ${itemsHTML}
+    </div>
+    
+    <div class="lead-capture" style="margin-top: 40px; padding: 30px; background: #F3F4F6; border-radius: 8px; text-align: center;">
+        <h3 style="color: #1E3A8A; margin-bottom: 15px;">Get More Free Resources</h3>
+        <p style="margin-bottom: 20px;">Enter your email to receive exclusive design tips and templates.</p>
+        <form style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <input type="email" placeholder="your@email.com" required style="padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem; flex: 1; min-width: 200px;">
+            <button type="submit" style="padding: 12px 24px; background: ${color}; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Subscribe</button>
+        </form>
+    </div>
+    
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #E5E7EB; color: #6B7280; font-size: 0.9rem; text-align: center;">
+        ${business} | ${email}
+    </div>
+</div>
+
+<style>
+.checklist-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #E5E7EB;
+    align-items: flex-start;
+}
+.checklist-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+}
+.checklist-item label {
+    flex: 1;
+    cursor: pointer;
+}
+</style>`;
+            
+            showCodeModal('Checklist HTML Code', html);
+        }
+
+        // Calculator Functions
+        function initCalculator() {
+            updateCalcType();
+            updateCalcPreview();
+        }
+
+        function updateCalcType() {
+            const type = document.getElementById('calc-type').value;
+            const container = document.getElementById('calc-fields-container');
+            
+            if (type === 'roi') {
+                document.getElementById('calc-title').value = 'Website Redesign ROI Calculator';
+                document.getElementById('calc-description').value = 'Calculate the potential return on investment for your website redesign project.';
+            } else if (type === 'savings') {
+                document.getElementById('calc-title').value = 'Cost Savings Calculator';
+                document.getElementById('calc-description').value = 'Estimate how much you could save with our services.';
+            } else if (type === 'pricing') {
+                document.getElementById('calc-title').value = 'Project Pricing Estimator';
+                document.getElementById('calc-description').value = 'Get an estimate for your design project.';
+            }
+            
+            updateCalcPreview();
+        }
+
+        function updateCalcColor() {
+            const color = document.getElementById('calc-color').value;
+            document.getElementById('calc-color-text').value = color;
+            updateCalcPreview();
+        }
+
+        function updateCalcPreview() {
+            const title = document.getElementById('calc-title').value;
+            const description = document.getElementById('calc-description').value;
+            const business = document.getElementById('calc-business').value;
+            const color = document.getElementById('calc-color').value;
+            const type = document.getElementById('calc-type').value;
+            
+            const preview = document.getElementById('calc-preview');
+            
+            let fieldsHTML = '';
+            if (type === 'roi') {
+                fieldsHTML = `
+                    <div class="calc-section">
+                        <div class="calc-field">
+                            <label>Current Monthly Website Traffic</label>
+                            <input type="number" id="calc-traffic" value="5000" oninput="calculateROI()" placeholder="e.g., 5000">
+                        </div>
+                        <div class="calc-field">
+                            <label>Current Conversion Rate (%)</label>
+                            <input type="number" id="calc-current-rate" value="2" step="0.1" oninput="calculateROI()" placeholder="e.g., 2">
+                        </div>
+                        <div class="calc-field">
+                            <label>Expected Conversion Rate After Redesign (%)</label>
+                            <input type="number" id="calc-new-rate" value="4" step="0.1" oninput="calculateROI()" placeholder="e.g., 4">
+                        </div>
+                        <div class="calc-field">
+                            <label>Average Customer Value ($)</label>
+                            <input type="number" id="calc-customer-value" value="1000" oninput="calculateROI()" placeholder="e.g., 1000">
+                        </div>
+                        <div class="calc-field">
+                            <label>Redesign Investment ($)</label>
+                            <input type="number" id="calc-investment" value="15000" oninput="calculateROI()" placeholder="e.g., 15000">
+                        </div>
+                    </div>
+                    <div class="calc-result" style="background: linear-gradient(135deg, ${color}, #1E3A8A);">
+                        <h2>Estimated Annual ROI</h2>
+                        <div class="amount" id="calc-result-amount">$0</div>
+                        <p id="calc-result-text">Enter values to calculate</p>
+                    </div>
+                `;
+            }
+            
+            preview.innerHTML = `
+                <h1 style="color: ${color};">${title}</h1>
+                <p style="margin-bottom: 20px; color: #6B7280;">${description}</p>
+                ${fieldsHTML}
+                <div style="margin-top: 30px; padding: 20px; background: #F3F4F6; border-radius: 8px; text-align: center;">
+                    <h3 style="color: #1E3A8A; margin-bottom: 10px;">Get Your Free Consultation</h3>
+                    <p style="margin-bottom: 15px;">Enter your email to receive a detailed ROI report</p>
+                    <input type="email" placeholder="your@email.com" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 6px; width: 80%; margin-bottom: 10px;">
+                    <br>
+                    <button style="padding: 10px 20px; background: ${color}; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Get My Report</button>
+                </div>
+                <div style="margin-top: 20px; text-align: center; color: #6B7280; font-size: 0.9rem;">
+                    ${business}
+                </div>
+            `;
+            
+            if (type === 'roi') {
+                calculateROI();
+            }
+        }
+
+        function calculateROI() {
+            const traffic = parseFloat(document.getElementById('calc-traffic')?.value || 0);
+            const currentRate = parseFloat(document.getElementById('calc-current-rate')?.value || 0) / 100;
+            const newRate = parseFloat(document.getElementById('calc-new-rate')?.value || 0) / 100;
+            const customerValue = parseFloat(document.getElementById('calc-customer-value')?.value || 0);
+            const investment = parseFloat(document.getElementById('calc-investment')?.value || 0);
+            
+            const currentRevenue = traffic * 12 * currentRate * customerValue;
+            const newRevenue = traffic * 12 * newRate * customerValue;
+            const additionalRevenue = newRevenue - currentRevenue;
+            const roi = additionalRevenue - investment;
+            const roiPercent = ((roi / investment) * 100).toFixed(1);
+            
+            const resultAmount = document.getElementById('calc-result-amount');
+            const resultText = document.getElementById('calc-result-text');
+            
+            if (resultAmount && resultText) {
+                resultAmount.textContent = '$' + roi.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                resultText.textContent = `${roiPercent}% return on investment in year one`;
+            }
+        }
+
+        function generateCalcHTML() {
+            const title = document.getElementById('calc-title').value;
+            const description = document.getElementById('calc-description').value;
+            const business = document.getElementById('calc-business').value;
+            const color = document.getElementById('calc-color').value;
+            
+            const html = `<!-- Lead Magnet Calculator - ${business} -->
+<div class="lead-magnet-calculator" style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px;">
+    <h1 style="color: ${color}; font-size: 2rem; margin-bottom: 10px;">${title}</h1>
+    <p style="color: #6B7280; margin-bottom: 30px;">${description}</p>
+    
+    <div style="background: #F3F4F6; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Current Monthly Traffic</label>
+            <input type="number" id="traffic" placeholder="5000" style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 6px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Current Conversion Rate (%)</label>
+            <input type="number" id="current-rate" placeholder="2" step="0.1" style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 6px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Expected New Rate (%)</label>
+            <input type="number" id="new-rate" placeholder="4" step="0.1" style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 6px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Avg Customer Value ($)</label>
+            <input type="number" id="customer-value" placeholder="1000" style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 6px;">
+        </div>
+        <button onclick="calculate()" style="width: 100%; padding: 12px; background: ${color}; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Calculate ROI</button>
+    </div>
+    
+    <div id="result" style="background: linear-gradient(135deg, ${color}, #1E3A8A); color: white; padding: 30px; border-radius: 12px; text-align: center; display: none;">
+        <h2 style="color: white; margin-bottom: 10px;">Your Potential ROI</h2>
+        <div style="font-size: 3rem; font-weight: 700; margin: 10px 0;" id="roi-amount">$0</div>
+        <p id="roi-text">Additional annual revenue</p>
+    </div>
+    
+    <div style="margin-top: 30px; padding: 20px; background: #F3F4F6; border-radius: 8px; text-align: center;">
+        <h3 style="color: #1E3A8A; margin-bottom: 10px;">Want a Detailed Analysis?</h3>
+        <input type="email" placeholder="your@email.com" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 6px; width: 80%; margin-bottom: 10px;">
+        <br>
+        <button style="padding: 10px 20px; background: ${color}; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Get Free Report</button>
+    </div>
+    
+    <div style="margin-top: 20px; text-align: center; color: #6B7280; font-size: 0.9rem;">
+        ${business}
+    </div>
+</div>
+
+<script>
+function calculate() {
+    const traffic = parseFloat(document.getElementById('traffic').value || 0);
+    const currentRate = parseFloat(document.getElementById('current-rate').value || 0) / 100;
+    const newRate = parseFloat(document.getElementById('new-rate').value || 0) / 100;
+    const customerValue = parseFloat(document.getElementById('customer-value').value || 0);
+    
+    const currentRevenue = traffic * 12 * currentRate * customerValue;
+    const newRevenue = traffic * 12 * newRate * customerValue;
+    const additionalRevenue = newRevenue - currentRevenue;
+    
+    document.getElementById('roi-amount').textContent = '$' + additionalRevenue.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    document.getElementById('roi-text').textContent = 'Additional annual revenue from improved conversion';
+    document.getElementById('result').style.display = 'block';
+}
+</script>`;
+            
+            showCodeModal('Calculator Embed Code', html);
+        }
+
+        function downloadCalcPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const title = document.getElementById('calc-title').value;
+            const description = document.getElementById('calc-description').value;
+            const business = document.getElementById('calc-business').value;
+            
+            // Header
+            doc.setFillColor(0, 168, 107);
+            doc.rect(0, 0, 210, 30, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.text(title, 105, 15, { align: 'center' });
+            doc.setFontSize(11);
+            doc.text(description, 105, 23, { align: 'center' });
+            
+            // Content
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(12);
+            let yPos = 50;
+            
+            doc.text('This calculator helps you understand the potential ROI', 105, yPos, { align: 'center' });
+            yPos += 8;
+            doc.text('of investing in a professional website redesign.', 105, yPos, { align: 'center' });
+            yPos += 20;
+            
+            // Instructions
+            doc.setFontSize(14);
+            doc.text('How to Use:', 20, yPos);
+            yPos += 10;
+            doc.setFontSize(11);
+            const instructions = [
+                '1. Enter your current monthly website traffic',
+                '2. Input your current conversion rate',
+                '3. Estimate your improved conversion rate after redesign',
+                '4. Add your average customer lifetime value',
+                '5. Calculate your potential annual ROI'
+            ];
+            
+            instructions.forEach(inst => {
+                doc.text(inst, 25, yPos);
+                yPos += 8;
+            });
+            
+            yPos += 10;
+            doc.setFillColor(243, 244, 246);
+            doc.rect(20, yPos, 170, 40, 'F');
+            doc.setFontSize(14);
+            doc.setTextColor(30, 58, 138);
+            doc.text('Ready to Maximize Your ROI?', 105, yPos + 12, { align: 'center' });
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Visit our website or contact us for a free consultation', 105, yPos + 22, { align: 'center' });
+            doc.text(business, 105, yPos + 30, { align: 'center' });
+            
+            doc.save(`${title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.pdf`);
+            showSuccess('calc-success', 'PDF downloaded successfully!');
+        }
+
+        // Template Functions
+        function initTemplate() {
+            updateTemplatePreview();
+        }
+
+        function selectTemplate(type) {
+            currentTemplate = type;
+            document.querySelectorAll('.template-option').forEach(opt => opt.classList.remove('selected'));
+            event.target.closest('.template-option').classList.add('selected');
+            
+            const titles = {
+                'marketing': 'Marketing Plan Template',
+                'content': 'Content Calendar Template',
+                'brand': 'Brand Strategy Template',
+                'project': 'Project Brief Template'
+            };
+            
+            const subtitles = {
+                'marketing': 'Strategic marketing framework for design professionals',
+                'content': 'Organize and plan your content strategy',
+                'brand': 'Define your brand identity and positioning',
+                'project': 'Comprehensive project planning and requirements'
+            };
+            
+            document.getElementById('template-title').value = titles[type];
+            document.getElementById('template-subtitle').value = subtitles[type];
+            
+            updateTemplatePreview();
+        }
+
+        function updateTemplateColor() {
+            const color = document.getElementById('template-color').value;
+            document.getElementById('template-color-text').value = color;
+            updateTemplatePreview();
+        }
+
+        function updateTemplatePreview() {
+            const title = document.getElementById('template-title').value;
+            const subtitle = document.getElementById('template-subtitle').value;
+            const business = document.getElementById('template-business').value;
+            const color = document.getElementById('template-color').value;
+            
+            const preview = document.getElementById('template-preview');
+            
+            let sectionsHTML = '';
+            
+            if (currentTemplate === 'marketing') {
+                sectionsHTML = `
+                    <div class="template-section" style="border-left-color: ${color};">
+                        <h3>Business Objectives</h3>
+                        <div class="template-field">
+                            <label>Primary Goal:</label>
+                            <div class="field-line"></div>
+                        </div>
+                        <div class="template-field">
+                            <label>Target Metrics:</label>
+                            <div class="field-line"></div>
+                        </div>
+                    </div>
+                    <div class="template-section" style="border-left-color: ${color};">
+                        <h3>Target Audience</h3>
+                        <div class="template-field">
+                            <label>Primary Audience:</label>
+                            <div class="field-line"></div>
+                        </div>
+                        <div class="template-field">
+                            <label>Pain Points:</label>
+                            <div class="field-line"></div>
+                        </div>
+                    </div>
+                    <div class="template-section" style="border-left-color: ${color};">
+                        <h3>Marketing Channels</h3>
+                        <div class="template-field">
+                            <label>Primary Channels:</label>
+                            <div class="field-line"></div>
+                        </div>
+                        <div class="template-field">
+                            <label>Budget Allocation:</label>
+                            <div class="field-line"></div>
+                        </div>
+                    </div>
+                `;
+            } else if (currentTemplate === 'content') {
+                sectionsHTML = `
+                    <div class="template-section" style="border-left-color: ${color};">
+                        <h3>Content Pillars</h3>
+                        <div class="template-field">
+                            <label>Pillar 1:</label>
+                            <div class="field-line"></div>
+                        </div>
+                        <div class="template-field">
+                            <label>Pillar 2:</label>
+                            <div class="field-line"></div>
+                        </div>
+                        <div class="template-field">
+                            <label>Pillar 3:</label>
+                            <div class="field-line"></div>
+                        </div>
+                    </div>
+                    <div class="template-section" style="border-left-color: ${color};">
+                        <h3>Publishing Schedule</h3>
+                        <div class="template-field">
+                            <label>Blog Posts (per week):</label>
+                            <div class="field-line"></div>
+                        </div>
+                        <div class="template-field">
+                            <label>Social Media (per day):</label>
+                            <div class="field-line"></div>
+                        </div>
+                    </div>
+                `;
+            } else if (currentTemplate === 'brand') {
+                sectionsHTML = `
+                    <div class="template-section" style="border-left-color: ${color};">
+                        <h3>Brand Identity</h3>
+                        <div class="template-field">
+                            <label>Brand Mission:</label>
+                            <div class="field-line"></div>
+                        </div>
+                        <div class="template-field">
+                            <label>Brand Values:</label>
+                            <div class="field-line"></div>
+                        </div>
+                    </div>
+                    <div class="template-section" style="border-left-color: ${color};">
+                        <h3>Brand Positioning</h3>
+                        <div class="template-field">
+                            <label>Unique Value Proposition:</label>
+                            <div class="field-line"></div>
+                        </div>
+                        <div class="template-field">
+                            <label>Brand Personality:</label>
+                            <div class="field-line"></div>
+                        </div>
+                    </div>
+                `;
+            } else if (currentTemplate === 'project') {
+                sectionsHTML = `
+                    <div class="template-section" style="border-left-color: ${color};">
+                        <h3>Project Overview</h3>
+                        <div class="template-field">
+                            <label>Project Name:</label>
+                            <div class="field-line"></div>
+                        </div>
+                        <div class="template-field">
+                            <label>Objectives:</label>
+                            <div class="field-line"></div>
+                        </div>
+                    </div>
+                    <div class="template-section" style="border-left-color: ${color};">
+                        <h3>Requirements</h3>
+                        <div class="template-field">
+                            <label>Key Deliverables:</label>
+                            <div class="field-line"></div>
+                        </div>
+                        <div class="template-field">
+                            <label>Timeline:</label>
+                            <div class="field-line"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            preview.innerHTML = `
+                <h1 style="color: ${color}; border-bottom-color: ${color};">${title}</h1>
+                <p style="color: #6B7280; margin-bottom: 30px;">${subtitle}</p>
+                ${sectionsHTML}
+                <div style="margin-top: 30px; padding: 20px; background: #F3F4F6; border-radius: 8px; text-align: center;">
+                    <h3 style="color: #1E3A8A; margin-bottom: 10px;">Need Expert Help?</h3>
+                    <p style="margin-bottom: 15px;">Get personalized guidance from our team</p>
+                    <button style="padding: 10px 20px; background: ${color}; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Book Free Consultation</button>
+                </div>
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #E5E7EB; text-align: center; color: #6B7280; font-size: 0.9rem;">
+                    ${business}
+                </div>
+            `;
+        }
+
+        function downloadTemplatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const title = document.getElementById('template-title').value;
+            const subtitle = document.getElementById('template-subtitle').value;
+            const business = document.getElementById('template-business').value;
+            
+            // Header
+            doc.setFillColor(0, 168, 107);
+            doc.rect(0, 0, 210, 30, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.text(title, 105, 15, { align: 'center' });
+            doc.setFontSize(11);
+            doc.text(subtitle, 105, 23, { align: 'center' });
+            
+            // Content based on template type
+            doc.setTextColor(0, 0, 0);
+            let yPos = 50;
+            
+            const templates = {
+                'marketing': [
+                    { title: 'Business Objectives', fields: ['Primary Goal:', 'Target Metrics:', 'Timeline:'] },
+                    { title: 'Target Audience', fields: ['Primary Audience:', 'Pain Points:', 'Demographics:'] },
+                    { title: 'Marketing Channels', fields: ['Primary Channels:', 'Budget Allocation:', 'KPIs:'] }
+                ],
+                'content': [
+                    { title: 'Content Pillars', fields: ['Pillar 1:', 'Pillar 2:', 'Pillar 3:'] },
+                    { title: 'Publishing Schedule', fields: ['Blog Posts:', 'Social Media:', 'Newsletter:'] }
+                ],
+                'brand': [
+                    { title: 'Brand Identity', fields: ['Brand Mission:', 'Brand Values:', 'Brand Voice:'] },
+                    { title: 'Brand Positioning', fields: ['UVP:', 'Brand Personality:', 'Target Market:'] }
+                ],
+                'project': [
+                    { title: 'Project Overview', fields: ['Project Name:', 'Objectives:', 'Scope:'] },
+                    { title: 'Requirements', fields: ['Deliverables:', 'Timeline:', 'Budget:'] }
+                ]
+            };
+            
+            const sections = templates[currentTemplate];
+            
+            sections.forEach(section => {
+                doc.setFontSize(14);
+                doc.setFillColor(243, 244, 246);
+                doc.rect(15, yPos, 180, 10, 'F');
+                doc.setTextColor(30, 58, 138);
+                doc.text(section.title, 20, yPos + 7);
+                yPos += 15;
+                
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(11);
+                
+                section.fields.forEach(field => {
+                    doc.text(field, 20, yPos);
+                    doc.line(20, yPos + 2, 190, yPos + 2);
+                    yPos += 15;
+                });
+                
+                yPos += 10;
+            });
+            
+            // Footer
+            doc.setFillColor(243, 244, 246);
+            doc.rect(15, yPos, 180, 30, 'F');
+            doc.setFontSize(14);
+            doc.setTextColor(30, 58, 138);
+            doc.text('Need Expert Guidance?', 105, yPos + 12, { align: 'center' });
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Contact ${business} for personalized support`, 105, yPos + 22, { align: 'center' });
+            
+            doc.save(`${title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.pdf`);
+            showSuccess('template-success', 'PDF downloaded successfully!');
+        }
+
+        function generateTemplateHTML() {
+            const title = document.getElementById('template-title').value;
+            const subtitle = document.getElementById('template-subtitle').value;
+            const business = document.getElementById('template-business').value;
+            const color = document.getElementById('template-color').value;
+            
+            const html = `<!-- Lead Magnet Template - ${business} -->
+<div class="lead-magnet-template" style="max-width: 800px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px;">
+    <h1 style="color: ${color}; font-size: 2rem; border-bottom: 3px solid ${color}; padding-bottom: 10px; margin-bottom: 10px;">${title}</h1>
+    <p style="color: #6B7280; margin-bottom: 30px;">${subtitle}</p>
+    
+    <div style="margin: 20px 0; padding: 20px; background: #F3F4F6; border-radius: 8px; border-left: 4px solid ${color};">
+        <h3 style="color: #1E3A8A; margin-bottom: 15px;">Section 1</h3>
+        <label style="display: block; font-weight: 600; margin-bottom: 5px;">Field:</label>
+        <input type="text" style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 6px; margin-bottom: 15px;">
+    </div>
+    
+    <div style="margin-top: 30px; padding: 20px; background: #F3F4F6; border-radius: 8px; text-align: center;">
+        <h3 style="color: #1E3A8A; margin-bottom: 10px;">Download Your Completed Template</h3>
+        <input type="email" placeholder="your@email.com" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 6px; width: 80%; margin-bottom: 10px;">
+        <br>
+        <button style="padding: 10px 20px; background: ${color}; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Get PDF</button>
+    </div>
+    
+    <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #E5E7EB; text-align: center; color: #6B7280; font-size: 0.9rem;">
+        ${business}
+    </div>
+</div>`;
+            
+            showCodeModal('Template HTML Code', html);
+        }
+
+        // Utility Functions
+        function showSuccess(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.classList.add('show');
+            setTimeout(() => {
+                element.classList.remove('show');
+            }, 3000);
+        }
+
+        function showCodeModal(title, code) {
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px;';
+            
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 12px; max-width: 800px; width: 100%; max-height: 90vh; overflow: auto; padding: 30px;">
+                    <h2 style="margin-bottom: 20px; color: var(--geco-secondary);">${title}</h2>
+                    <p style="margin-bottom: 15px; color: #6B7280;">Copy this code and paste it into your website:</p>
+                    <div class="code-display">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre>${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+                    </div>
+                    <button class="btn btn-primary" onclick="this.closest('div').parentElement.remove()" style="margin-top: 20px;">Close</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+        }
+
+        function copyCode(btn) {
+            const code = btn.nextElementSibling.textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initChecklist();
+        });
+    </script>
+</body>
+</html>

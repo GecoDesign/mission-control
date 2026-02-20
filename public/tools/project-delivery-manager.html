@@ -1,0 +1,2129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Delivery Manager - Geco Design</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-light: #f8fafc;
+            --bg-white: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            
+            --phase-discovery: #8b5cf6;
+            --phase-design: #3b82f6;
+            --phase-review: #f59e0b;
+            --phase-launch: #10b981;
+            --phase-followup: #ec4899;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+        
+        .tabs {
+            background: white;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+            padding: 0 2rem;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .tab:hover {
+            color: var(--primary);
+            background: var(--bg-light);
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .project-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .project-card.on-hold {
+            opacity: 0.7;
+            border-left-color: var(--secondary);
+        }
+        
+        .project-card.completed {
+            border-left-color: var(--success);
+        }
+        
+        .project-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .project-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        
+        .progress-bar {
+            background: var(--bg-light);
+            height: 0.5rem;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            background: var(--primary);
+            height: 100%;
+            border-radius: 1rem;
+            transition: width 0.3s;
+        }
+        
+        .phase-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background: #dbeafe;
+            color: var(--primary);
+        }
+        
+        .status-completed {
+            background: #d1fae5;
+            color: var(--success);
+        }
+        
+        .status-on-hold {
+            background: #f1f5f9;
+            color: var(--secondary);
+        }
+        
+        .checklist {
+            list-style: none;
+        }
+        
+        .checklist-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+        }
+        
+        .checklist-item.completed {
+            opacity: 0.6;
+        }
+        
+        .checklist-item.completed label {
+            text-decoration: line-through;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 0.5rem;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .template-preview {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            white-space: pre-wrap;
+        }
+        
+        .merge-fields {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+        
+        .merge-fields p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+        
+        .merge-tag {
+            display: inline-block;
+            background: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin: 0.25rem;
+            border: 1px solid var(--border);
+        }
+        
+        .timeline {
+            position: relative;
+            padding: 1rem 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .timeline-marker {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+        
+        .timeline-content {
+            flex: 1;
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-dates {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-duration {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        
+        .timeline-duration input {
+            width: 80px;
+            padding: 0.25rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.25rem;
+        }
+        
+        .gantt-chart {
+            overflow-x: auto;
+            margin-top: 2rem;
+        }
+        
+        .gantt-header {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        
+        .gantt-day {
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .gantt-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .gantt-label {
+            width: 200px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+        
+        .gantt-bars {
+            display: flex;
+            gap: 1px;
+            flex: 1;
+        }
+        
+        .gantt-bar {
+            height: 30px;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-light);
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+        
+        .template-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .template-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .template-item:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateX(4px);
+        }
+        
+        .template-item h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .template-item p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .tone-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .tone-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .tone-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .tabs {
+                padding: 0 1rem;
+            }
+            
+            .tab {
+                padding: 0.75rem 1rem;
+            }
+            
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                margin: 1rem;
+            }
+            
+            .gantt-label {
+                width: 120px;
+                font-size: 0.75rem;
+            }
+        }
+        
+        @media print {
+            .header,
+            .tabs,
+            .btn,
+            .modal,
+            .filter-buttons {
+                display: none !important;
+            }
+            
+            .card {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎨 Geco Design - Project Delivery Manager</h1>
+        <p>Professional project management for exceptional client experiences</p>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab active" data-tab="dashboard">📊 Dashboard</button>
+        <button class="tab" data-tab="projects">📁 Projects</button>
+        <button class="tab" data-tab="templates">✉️ Templates</button>
+        <button class="tab" data-tab="timeline">📅 Timeline</button>
+    </div>
+    
+    <div class="container">
+        <!-- Dashboard Tab -->
+        <div class="tab-content active" id="dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-active">0</div>
+                    <div class="stat-label">Active Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-completed">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-onhold">0</div>
+                    <div class="stat-label">On Hold</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <span>Active Projects</span>
+                    <button class="btn btn-primary" onclick="showNewProjectModal()">+ New Project</button>
+                </div>
+                <div id="dashboard-projects"></div>
+            </div>
+        </div>
+        
+        <!-- Projects Tab -->
+        <div class="tab-content" id="projects">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="active">Active</button>
+                    <button class="filter-btn" data-filter="completed">Completed</button>
+                    <button class="filter-btn" data-filter="on-hold">On Hold</button>
+                </div>
+                <button class="btn btn-primary" onclick="showNewProjectModal()">+ New Project</button>
+            </div>
+            <div class="project-grid" id="projects-list"></div>
+        </div>
+        
+        <!-- Templates Tab -->
+        <div class="tab-content" id="templates">
+            <div class="card">
+                <div class="card-header">
+                    <span>Email Templates</span>
+                </div>
+                <div class="template-list" id="templates-list"></div>
+            </div>
+        </div>
+        
+        <!-- Timeline Tab -->
+        <div class="tab-content" id="timeline">
+            <div class="card">
+                <div class="card-header">
+                    <span>Project Timeline</span>
+                </div>
+                <div class="form-group">
+                    <label>Select Project:</label>
+                    <select id="timeline-project-select" onchange="renderTimeline()">
+                        <option value="">Choose a project...</option>
+                    </select>
+                </div>
+                <div id="timeline-view"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- New Project Modal -->
+    <div class="modal" id="new-project-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Project</h2>
+                <button class="close-btn" onclick="closeModal('new-project-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Project Name:</label>
+                    <input type="text" id="project-name" placeholder="e.g., Smith Co. Website Redesign">
+                </div>
+                <div class="form-group">
+                    <label>Client Name:</label>
+                    <input type="text" id="client-name" placeholder="e.g., John Smith">
+                </div>
+                <div class="form-group">
+                    <label>Client Email:</label>
+                    <input type="email" id="client-email" placeholder="e.g., john@smithco.com">
+                </div>
+                <div class="form-group">
+                    <label>Project Type:</label>
+                    <select id="project-type">
+                        <option value="website-design">Website Design</option>
+                        <option value="website-redesign">Website Redesign</option>
+                        <option value="marketing-campaign">Digital Marketing Campaign</option>
+                        <option value="landing-page">Landing Page Build</option>
+                        <option value="brand-refresh">Brand Refresh</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Start Date:</label>
+                    <input type="date" id="project-start-date">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('new-project-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="createProject()">Create Project</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Project Detail Modal -->
+    <div class="modal" id="project-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="detail-project-name"></h2>
+                <button class="close-btn" onclick="closeModal('project-detail-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="project-detail-content"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="deleteProject()">Delete Project</button>
+                <button class="btn btn-secondary" onclick="updateProjectStatus('on-hold')">Put On Hold</button>
+                <button class="btn btn-success" onclick="updateProjectStatus('completed')">Mark Complete</button>
+                <button class="btn btn-primary" onclick="closeModal('project-detail-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Template Detail Modal -->
+    <div class="modal" id="template-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="template-title"></h2>
+                <button class="close-btn" onclick="closeModal('template-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="merge-fields">
+                    <p><strong>Available merge fields:</strong></p>
+                    <span class="merge-tag">{CLIENT_NAME}</span>
+                    <span class="merge-tag">{PROJECT_NAME}</span>
+                    <span class="merge-tag">{YOUR_NAME}</span>
+                    <span class="merge-tag">{COMPANY_NAME}</span>
+                    <span class="merge-tag">{PHASE_NAME}</span>
+                    <span class="merge-tag">{NEXT_STEPS}</span>
+                    <span class="merge-tag">{DUE_DATE}</span>
+                </div>
+                <div class="form-group">
+                    <label>Tone:</label>
+                    <div class="tone-selector">
+                        <button class="tone-btn active" data-tone="professional" onclick="changeTone('professional')">Professional</button>
+                        <button class="tone-btn" data-tone="friendly" onclick="changeTone('friendly')">Friendly</button>
+                        <button class="tone-btn" data-tone="casual" onclick="changeTone('casual')">Casual</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Template Content:</label>
+                    <textarea id="template-content"></textarea>
+                </div>
+                <div class="template-preview" id="template-preview"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="saveCustomTemplate()">Save Custom Version</button>
+                <button class="btn btn-success" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+                <button class="btn btn-primary" onclick="closeModal('template-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Project Templates with Checklists
+        const projectTemplates = {
+            'website-design': {
+                name: 'Website Design',
+                phases: [
+                    {
+                        name: 'Discovery & Planning',
+                        color: 'var(--phase-discovery)',
+                        duration: 7,
+                        tasks: [
+                            'Send project kickoff email',
+                            'Schedule discovery call',
+                            'Send client questionnaire',
+                            'Research competitors and industry',
+                            'Define project scope and deliverables',
+                            'Create project timeline',
+                            'Gather brand assets and content'
+                        ]
+                    },
+                    {
+                        name: 'Design & Development',
+                        color: 'var(--phase-design)',
+                        duration: 14,
+                        tasks: [
+                            'Create site architecture/sitemap',
+                            'Design wireframes for key pages',
+                            'Present wireframes to client',
+                            'Design high-fidelity mockups',
+                            'Client review round 1',
+                            'Implement feedback and revisions',
+                            'Client review round 2 (final)',
+                            'Begin development/build',
+                            'Integrate content',
+                            'Add functionality and interactions'
+                        ]
+                    },
+                    {
+                        name: 'Review & Revisions',
+                        color: 'var(--phase-review)',
+                        duration: 7,
+                        tasks: [
+                            'Internal QA testing',
+                            'Send preview link to client',
+                            'Collect client feedback',
+                            'Make requested revisions',
+                            'Second review round if needed',
+                            'Final client approval',
+                            'Cross-browser testing',
+                            'Mobile responsiveness check'
+                        ]
+                    },
+                    {
+                        name: 'Launch & Delivery',
+                        color: 'var(--phase-launch)',
+                        duration: 3,
+                        tasks: [
+                            'Final pre-launch checklist',
+                            'Set up hosting and domain',
+                            'Deploy to production',
+                            'Configure SSL and security',
+                            'Set up analytics and tracking',
+                            'Submit sitemap to search engines',
+                            'Client training session',
+                            'Provide documentation',
+                            'Send delivery email with credentials'
+                        ]
+                    },
+                    {
+                        name: 'Follow-up & Support',
+                        color: 'var(--phase-followup)',
+                        duration: 14,
+                        tasks: [
+                            '1-week check-in email',
+                            'Address any post-launch issues',
+                            '30-day performance review',
+                            'Request testimonial/review',
+                            'Send upsell proposal (maintenance, marketing, etc.)',
+                            'Add to portfolio (with permission)',
+                            'Schedule 3-month follow-up'
+                        ]
+                    }
+                ]
+            },
+            'website-redesign': {
+                name: 'Website Redesign',
+                phases: [
+                    {
+                        name: 'Discovery & Planning',
+                        color: 'var(--phase-discovery)',
+                        duration: 5,
+                        tasks: [
+                            'Send project kickoff email',
+                            'Audit existing website',
+                            'Review analytics and user data',
+                            'Identify pain points and goals',
+                            'Send redesign questionnaire',
+                            'Define what to keep vs. change',
+                            'Create project timeline'
+                        ]
+                    },
+                    {
+                        name: 'Design & Development',
+                        color: 'var(--phase-design)',
+                        duration: 12,
+                        tasks: [
+                            'Review existing content for reuse',
+                            'Design new wireframes',
+                            'Present redesign concepts',
+                            'Create high-fidelity designs',
+                            'Client review round 1',
+                            'Revisions and refinements',
+                            'Begin rebuild/development',
+                            'Migrate content',
+                            'Set up redirects from old URLs'
+                        ]
+                    },
+                    {
+                        name: 'Review & Revisions',
+                        color: 'var(--phase-review)',
+                        duration: 5,
+                        tasks: [
+                            'Internal testing',
+                            'Share staging site with client',
+                            'Collect feedback',
+                            'Make revisions',
+                            'Final approval',
+                            'Test all redirects',
+                            'Verify SEO elements maintained'
+                        ]
+                    },
+                    {
+                        name: 'Launch & Delivery',
+                        color: 'var(--phase-launch)',
+                        duration: 2,
+                        tasks: [
+                            'Backup old site',
+                            'Deploy redesigned site',
+                            'Monitor for issues',
+                            'Update analytics tracking',
+                            'Submit updated sitemap',
+                            'Client training on changes',
+                            'Send launch announcement email'
+                        ]
+                    },
+                    {
+                        name: 'Follow-up & Support',
+                        color: 'var(--phase-followup)',
+                        duration: 14,
+                        tasks: [
+                            '1-week check-in',
+                            'Monitor traffic and engagement',
+                            'Address any issues',
+                            '30-day performance comparison',
+                            'Request testimonial',
+                            'Discuss ongoing maintenance',
+                            'Propose next improvements'
+                        ]
+                    }
+                ]
+            },
+            'marketing-campaign': {
+                name: 'Digital Marketing Campaign',
+                phases: [
+                    {
+                        name: 'Discovery & Planning',
+                        color: 'var(--phase-discovery)',
+                        duration: 5,
+                        tasks: [
+                            'Define campaign objectives',
+                            'Identify target audience',
+                            'Research competitors',
+                            'Set KPIs and success metrics',
+                            'Determine budget allocation',
+                            'Choose platforms and channels',
+                            'Create campaign timeline'
+                        ]
+                    },
+                    {
+                        name: 'Design & Development',
+                        color: 'var(--phase-design)',
+                        duration: 10,
+                        tasks: [
+                            'Develop campaign messaging',
+                            'Create content calendar',
+                            'Design ad creatives',
+                            'Write copy for all assets',
+                            'Client review of concepts',
+                            'Revise based on feedback',
+                            'Set up tracking pixels',
+                            'Configure campaign settings',
+                            'Create landing pages if needed'
+                        ]
+                    },
+                    {
+                        name: 'Review & Revisions',
+                        color: 'var(--phase-review)',
+                        duration: 3,
+                        tasks: [
+                            'Review all campaign assets',
+                            'Test all tracking links',
+                            'Final client approval',
+                            'Schedule campaign launch',
+                            'Prepare reporting dashboard'
+                        ]
+                    },
+                    {
+                        name: 'Launch & Delivery',
+                        color: 'var(--phase-launch)',
+                        duration: 30,
+                        tasks: [
+                            'Launch campaign',
+                            'Monitor initial performance',
+                            'Daily performance checks',
+                            'Weekly reporting to client',
+                            'Optimize based on data',
+                            'A/B test variations',
+                            'Adjust budget allocation',
+                            'Scale what\'s working'
+                        ]
+                    },
+                    {
+                        name: 'Follow-up & Support',
+                        color: 'var(--phase-followup)',
+                        duration: 7,
+                        tasks: [
+                            'Create final performance report',
+                            'Analyze ROI and learnings',
+                            'Present results to client',
+                            'Identify next opportunities',
+                            'Propose follow-up campaigns',
+                            'Request testimonial',
+                            'Archive campaign assets'
+                        ]
+                    }
+                ]
+            },
+            'landing-page': {
+                name: 'Landing Page Build',
+                phases: [
+                    {
+                        name: 'Discovery & Planning',
+                        color: 'var(--phase-discovery)',
+                        duration: 3,
+                        tasks: [
+                            'Define landing page goal',
+                            'Identify target audience',
+                            'Determine key message',
+                            'Plan conversion funnel',
+                            'Gather necessary content',
+                            'Review brand guidelines'
+                        ]
+                    },
+                    {
+                        name: 'Design & Development',
+                        color: 'var(--phase-design)',
+                        duration: 7,
+                        tasks: [
+                            'Create wireframe layout',
+                            'Write compelling copy',
+                            'Design high-fidelity mockup',
+                            'Client review',
+                            'Implement feedback',
+                            'Build landing page',
+                            'Add forms and CTAs',
+                            'Set up tracking and analytics'
+                        ]
+                    },
+                    {
+                        name: 'Review & Revisions',
+                        color: 'var(--phase-review)',
+                        duration: 3,
+                        tasks: [
+                            'Test all forms and functionality',
+                            'Check mobile responsiveness',
+                            'Send preview to client',
+                            'Make requested changes',
+                            'Final approval',
+                            'Test conversion tracking'
+                        ]
+                    },
+                    {
+                        name: 'Launch & Delivery',
+                        color: 'var(--phase-launch)',
+                        duration: 1,
+                        tasks: [
+                            'Deploy to production',
+                            'Configure domain/subdomain',
+                            'Set up SSL certificate',
+                            'Final testing',
+                            'Send launch notification',
+                            'Provide client access'
+                        ]
+                    },
+                    {
+                        name: 'Follow-up & Support',
+                        color: 'var(--phase-followup)',
+                        duration: 14,
+                        tasks: [
+                            'Monitor conversion rates',
+                            '1-week performance check',
+                            'Suggest optimization tweaks',
+                            '30-day performance report',
+                            'Discuss A/B testing opportunities',
+                            'Request testimonial'
+                        ]
+                    }
+                ]
+            },
+            'brand-refresh': {
+                name: 'Brand Refresh',
+                phases: [
+                    {
+                        name: 'Discovery & Planning',
+                        color: 'var(--phase-discovery)',
+                        duration: 5,
+                        tasks: [
+                            'Audit current brand assets',
+                            'Conduct stakeholder interviews',
+                            'Analyze market positioning',
+                            'Define brand goals',
+                            'Research competitors',
+                            'Create mood boards',
+                            'Establish project scope'
+                        ]
+                    },
+                    {
+                        name: 'Design & Development',
+                        color: 'var(--phase-design)',
+                        duration: 14,
+                        tasks: [
+                            'Develop logo concepts',
+                            'Create color palette options',
+                            'Design typography system',
+                            'Present initial concepts',
+                            'Refine chosen direction',
+                            'Design brand collateral',
+                            'Create brand guidelines document',
+                            'Design templates and assets'
+                        ]
+                    },
+                    {
+                        name: 'Review & Revisions',
+                        color: 'var(--phase-review)',
+                        duration: 7,
+                        tasks: [
+                            'Client review of full brand package',
+                            'Gather stakeholder feedback',
+                            'Make revisions',
+                            'Second review round',
+                            'Final refinements',
+                            'Prepare all file formats',
+                            'Final approval'
+                        ]
+                    },
+                    {
+                        name: 'Launch & Delivery',
+                        color: 'var(--phase-launch)',
+                        duration: 3,
+                        tasks: [
+                            'Package all brand files',
+                            'Create brand guidelines PDF',
+                            'Deliver asset library',
+                            'Provide file organization guide',
+                            'Schedule brand training session',
+                            'Send delivery email',
+                            'Discuss implementation plan'
+                        ]
+                    },
+                    {
+                        name: 'Follow-up & Support',
+                        color: 'var(--phase-followup)',
+                        duration: 30,
+                        tasks: [
+                            'Support with rollout questions',
+                            'Provide additional asset variations',
+                            'Monitor brand implementation',
+                            '30-day check-in',
+                            'Request feedback and testimonial',
+                            'Discuss website/marketing updates',
+                            'Propose ongoing support package'
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // Email Templates
+        const emailTemplates = {
+            'kickoff': {
+                name: 'Project Kick-off',
+                description: 'Welcome email to start the project',
+                professional: `Subject: Welcome to Your {PROJECT_NAME} Project! 🎉
+
+Dear {CLIENT_NAME},
+
+Thank you for choosing {COMPANY_NAME} for your {PROJECT_NAME}. We're excited to work with you!
+
+This email confirms that we're officially starting your project. Here's what to expect:
+
+**Timeline:** Your project is scheduled to complete by {DUE_DATE}
+
+**Next Steps:**
+{NEXT_STEPS}
+
+**What We Need From You:**
+- Completed questionnaire (attached)
+- Brand assets and content materials
+- Any reference sites or examples you love
+
+**How We'll Communicate:**
+I'll send you regular updates throughout the project. You can always reach me directly by replying to this email.
+
+Looking forward to creating something amazing together!
+
+Best regards,
+{YOUR_NAME}
+{COMPANY_NAME}`,
+                friendly: `Subject: Let's get started on your {PROJECT_NAME}! 🚀
+
+Hi {CLIENT_NAME},
+
+I'm so excited to kick off your {PROJECT_NAME} project!
+
+Here's what happens next:
+
+We'll be done by: {DUE_DATE}
+
+**Your quick to-do list:**
+{NEXT_STEPS}
+
+I'll keep you updated every step of the way. Just reply to this email anytime you have questions!
+
+Can't wait to show you what we create!
+
+Cheers,
+{YOUR_NAME}`,
+                casual: `Subject: Your {PROJECT_NAME} is officially underway! 🎨
+
+Hey {CLIENT_NAME}!
+
+Awesome - let's do this!
+
+**The plan:**
+{NEXT_STEPS}
+
+**When you'll see it:**
+{DUE_DATE}
+
+Hit reply anytime if you have questions. This is going to be great!
+
+{YOUR_NAME}`
+            },
+            'progress-update': {
+                name: 'Progress Update',
+                description: 'Milestone achievement notification',
+                professional: `Subject: {PROJECT_NAME} Update - {PHASE_NAME} Complete ✓
+
+Dear {CLIENT_NAME},
+
+I wanted to update you on the progress of your {PROJECT_NAME}.
+
+**Completed This Week:**
+We've successfully completed the {PHASE_NAME} phase.
+
+**What's Next:**
+{NEXT_STEPS}
+
+**Timeline:**
+We're on track to complete by {DUE_DATE}.
+
+Please let me know if you have any questions or concerns.
+
+Best regards,
+{YOUR_NAME}
+{COMPANY_NAME}`,
+                friendly: `Subject: Great progress on your {PROJECT_NAME}! 🎯
+
+Hi {CLIENT_NAME},
+
+Quick update: We've just wrapped up {PHASE_NAME}!
+
+**What's happening next:**
+{NEXT_STEPS}
+
+Still on track for {DUE_DATE}. Everything's going smoothly!
+
+Let me know if you have any questions!
+
+Cheers,
+{YOUR_NAME}`,
+                casual: `Subject: {PHASE_NAME} is done! ✨
+
+Hey {CLIENT_NAME}!
+
+{PHASE_NAME} is in the books!
+
+Next up: {NEXT_STEPS}
+
+Right on schedule for {DUE_DATE} 👍
+
+{YOUR_NAME}`
+            },
+            'feedback-request': {
+                name: 'Feedback Request',
+                description: 'How to provide effective feedback',
+                professional: `Subject: Your Feedback Needed - {PROJECT_NAME}
+
+Dear {CLIENT_NAME},
+
+Your {PROJECT_NAME} is ready for review! Please take a look and share your thoughts.
+
+**Review Link:** [Insert link here]
+
+**How to Provide Helpful Feedback:**
+- Be specific about what you'd like changed
+- Reference specific elements (colors, sections, images)
+- Share the "why" behind your feedback when possible
+- Collect all feedback from your team before sending
+
+**Timeline:**
+Please provide feedback by {DUE_DATE} to stay on schedule.
+
+I'm here if you have any questions about what you're seeing!
+
+Best regards,
+{YOUR_NAME}
+{COMPANY_NAME}`,
+                friendly: `Subject: Ready for your feedback! 👀
+
+Hi {CLIENT_NAME},
+
+It's review time! Take a look: [Insert link]
+
+**Tips for great feedback:**
+✓ Point to specific things you want changed
+✓ Tell me what you love (so I don't accidentally change it!)
+✓ Get your team's input before sending
+✓ There are no wrong answers - tell me what you think!
+
+Can you get me feedback by {DUE_DATE}?
+
+Excited to hear what you think!
+
+{YOUR_NAME}`,
+                casual: `Subject: Check this out! 🎨
+
+Hey {CLIENT_NAME}!
+
+[Insert link]
+
+Take a look and let me know what you think!
+
+Just be specific about any changes ("make the blue darker" vs "I don't like it"). And grab feedback from your team first if needed.
+
+Need it by {DUE_DATE} to keep us on track!
+
+{YOUR_NAME}`
+            },
+            'revision-acknowledgment': {
+                name: 'Revision Acknowledgment',
+                description: 'Confirming requested changes',
+                professional: `Subject: Re: {PROJECT_NAME} Revisions
+
+Dear {CLIENT_NAME},
+
+Thank you for your detailed feedback on {PROJECT_NAME}.
+
+**I'll be implementing the following changes:**
+[List the requested revisions]
+
+**Timeline:**
+You'll see the updated version by {DUE_DATE}.
+
+I'll let you know as soon as it's ready for another look.
+
+Best regards,
+{YOUR_NAME}
+{COMPANY_NAME}`,
+                friendly: `Subject: On it! Making those changes
+
+Hi {CLIENT_NAME},
+
+Got your feedback - thanks for the detailed notes!
+
+**What I'm updating:**
+[List changes]
+
+**When you'll see it:**
+{DUE_DATE}
+
+I'll ping you as soon as it's ready!
+
+{YOUR_NAME}`,
+                casual: `Subject: Changes coming right up! ✏️
+
+Hey {CLIENT_NAME}!
+
+Perfect - making these updates now:
+
+[List changes]
+
+Back to you by {DUE_DATE}!
+
+{YOUR_NAME}`
+            },
+            'delivery': {
+                name: 'Project Delivery',
+                description: 'Final delivery and handoff',
+                professional: `Subject: Your {PROJECT_NAME} is Complete! 🎉
+
+Dear {CLIENT_NAME},
+
+I'm pleased to deliver your completed {PROJECT_NAME}!
+
+**What's Included:**
+[List deliverables]
+
+**Access Information:**
+[Provide relevant credentials, links, files]
+
+**Quick Start Guide:**
+[Brief instructions on how to use/access]
+
+**Documentation:**
+Attached you'll find complete documentation for future reference.
+
+It's been a pleasure working with you on this project. Please don't hesitate to reach out if you have any questions.
+
+Best regards,
+{YOUR_NAME}
+{COMPANY_NAME}`,
+                friendly: `Subject: It's ready! Your {PROJECT_NAME} 🚀
+
+Hi {CLIENT_NAME},
+
+Your {PROJECT_NAME} is complete and ready to go!
+
+**Here's everything:**
+[Deliverables and access info]
+
+**How to get started:**
+[Quick instructions]
+
+I've attached detailed docs too. Let me know if you have any questions as you get familiar with everything!
+
+It's been great working with you!
+
+Cheers,
+{YOUR_NAME}`,
+                casual: `Subject: Done! 🎉
+
+Hey {CLIENT_NAME}!
+
+It's all yours!
+
+[Deliverables and access]
+
+Let me know if you need anything!
+
+{YOUR_NAME}`
+            },
+            'post-launch': {
+                name: 'Post-Launch Check-in',
+                description: 'Follow-up and testimonial request',
+                professional: `Subject: How's Your {PROJECT_NAME} Going?
+
+Dear {CLIENT_NAME},
+
+I wanted to check in and see how everything is going with your {PROJECT_NAME}.
+
+**Quick Questions:**
+- Is everything working smoothly?
+- Do you have any questions?
+- Have you seen the results you were hoping for?
+
+**Share Your Experience:**
+If you're happy with the work we did together, I'd be grateful if you could share a brief testimonial. Your feedback helps other businesses make confident decisions.
+
+[Insert testimonial link or instructions]
+
+I'm always here if you need anything!
+
+Best regards,
+{YOUR_NAME}
+{COMPANY_NAME}`,
+                friendly: `Subject: How's it going? 😊
+
+Hi {CLIENT_NAME},
+
+Just checking in! How's the {PROJECT_NAME} working out?
+
+Everything running smoothly? Any questions come up?
+
+**Quick favor:**
+If you're happy with how things turned out, I'd love a quick testimonial! It really helps other businesses know what to expect.
+
+[Testimonial link]
+
+Let me know how things are going!
+
+{YOUR_NAME}`,
+                casual: `Subject: How are things?
+
+Hey {CLIENT_NAME}!
+
+How's the {PROJECT_NAME} treating you?
+
+All good? Any questions?
+
+If you're loving it, drop me a quick testimonial? 🙏
+[Link]
+
+{YOUR_NAME}`
+            },
+            'upsell': {
+                name: 'Upsell/Next Service',
+                description: 'Proposing additional services',
+                professional: `Subject: Take Your {PROJECT_NAME} to the Next Level
+
+Dear {CLIENT_NAME},
+
+Now that your {PROJECT_NAME} is live and performing well, I wanted to share some ideas for how we could build on this success.
+
+**Opportunities I've Identified:**
+[Specific suggestions based on their business]
+
+**Potential Services:**
+- Ongoing maintenance and updates
+- SEO optimization
+- Content marketing
+- Social media management
+- Email marketing campaigns
+
+These services could help you [specific benefits for their business].
+
+Would you like to schedule a brief call to discuss what might make sense for your goals?
+
+Best regards,
+{YOUR_NAME}
+{COMPANY_NAME}`,
+                friendly: `Subject: Some ideas for what's next 💡
+
+Hi {CLIENT_NAME},
+
+Your {PROJECT_NAME} is doing great! I've been thinking about some ways we could take things even further.
+
+**What could come next:**
+[Specific ideas]
+
+**How it could help:**
+[Benefits for their business]
+
+Want to chat about it? No pressure - just some ideas!
+
+{YOUR_NAME}`,
+                casual: `Subject: Let's keep the momentum going!
+
+Hey {CLIENT_NAME}!
+
+Got some ideas for what we could do next:
+
+[Ideas and benefits]
+
+Interested? Let's talk!
+
+{YOUR_NAME}`
+            }
+        };
+
+        // State Management
+        let projects = JSON.parse(localStorage.getItem('projects') || '[]');
+        let currentProjectId = null;
+        let currentFilter = 'all';
+        let customTemplates = JSON.parse(localStorage.getItem('customTemplates') || '{}');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTabs();
+            initializeFilters();
+            renderDashboard();
+            renderProjects();
+            renderTemplates();
+            updateTimelineProjectSelect();
+            
+            // Set today's date as default
+            document.getElementById('project-start-date').valueAsDate = new Date();
+        });
+
+        // Tab Navigation
+        function initializeTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.dataset.tab;
+                    
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                    
+                    if (targetTab === 'timeline') {
+                        renderTimeline();
+                    }
+                });
+            });
+        }
+
+        // Filter Functionality
+        function initializeFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    renderProjects();
+                });
+            });
+        }
+
+        // Project Management
+        function showNewProjectModal() {
+            document.getElementById('new-project-modal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function createProject() {
+            const project = {
+                id: Date.now().toString(),
+                name: document.getElementById('project-name').value,
+                clientName: document.getElementById('client-name').value,
+                clientEmail: document.getElementById('client-email').value,
+                type: document.getElementById('project-type').value,
+                startDate: document.getElementById('project-start-date').value,
+                status: 'active',
+                currentPhase: 0,
+                createdAt: new Date().toISOString(),
+                checklist: JSON.parse(JSON.stringify(projectTemplates[document.getElementById('project-type').value].phases))
+            };
+
+            projects.push(project);
+            saveProjects();
+            closeModal('new-project-modal');
+            
+            // Clear form
+            document.getElementById('project-name').value = '';
+            document.getElementById('client-name').value = '';
+            document.getElementById('client-email').value = '';
+            
+            renderDashboard();
+            renderProjects();
+            updateTimelineProjectSelect();
+        }
+
+        function saveProjects() {
+            localStorage.setItem('projects', JSON.stringify(projects));
+        }
+
+        function renderDashboard() {
+            const active = projects.filter(p => p.status === 'active').length;
+            const completed = projects.filter(p => p.status === 'completed').length;
+            const onHold = projects.filter(p => p.status === 'on-hold').length;
+            
+            document.getElementById('stat-active').textContent = active;
+            document.getElementById('stat-completed').textContent = completed;
+            document.getElementById('stat-onhold').textContent = onHold;
+            
+            const dashboardProjects = document.getElementById('dashboard-projects');
+            const activeProjects = projects.filter(p => p.status === 'active');
+            
+            if (activeProjects.length === 0) {
+                dashboardProjects.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📁</div>
+                        <h3>No Active Projects</h3>
+                        <p>Create your first project to get started!</p>
+                    </div>
+                `;
+            } else {
+                dashboardProjects.innerHTML = activeProjects.map(project => createProjectCard(project)).join('');
+            }
+        }
+
+        function renderProjects() {
+            const projectsList = document.getElementById('projects-list');
+            let filteredProjects = projects;
+            
+            if (currentFilter !== 'all') {
+                filteredProjects = projects.filter(p => p.status === currentFilter);
+            }
+            
+            if (filteredProjects.length === 0) {
+                projectsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <h3>No Projects Found</h3>
+                        <p>No projects match the current filter.</p>
+                    </div>
+                `;
+            } else {
+                projectsList.innerHTML = filteredProjects.map(project => createProjectCard(project)).join('');
+            }
+        }
+
+        function createProjectCard(project) {
+            const template = projectTemplates[project.type];
+            const totalTasks = project.checklist.reduce((sum, phase) => sum + phase.tasks.length, 0);
+            const completedTasks = project.checklist.reduce((sum, phase) => 
+                sum + phase.tasks.filter(t => t.completed).length, 0);
+            const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            
+            const currentPhase = project.checklist[project.currentPhase];
+            const daysElapsed = Math.floor((new Date() - new Date(project.startDate)) / (1000 * 60 * 60 * 24));
+            const totalDuration = project.checklist.reduce((sum, phase) => sum + phase.duration, 0);
+            const daysRemaining = Math.max(0, totalDuration - daysElapsed);
+            
+            return `
+                <div class="project-card ${project.status}" onclick="showProjectDetail('${project.id}')">
+                    <div class="project-title">${project.name}</div>
+                    <div class="project-meta">
+                        <span>👤 ${project.clientName}</span>
+                        <span>📧 ${project.clientEmail}</span>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <span class="phase-badge" style="background: ${currentPhase.color}">${currentPhase.name}</span>
+                        <span class="status-badge status-${project.status}">${project.status}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-light);">
+                        <span>${progress}% Complete</span>
+                        <span>${daysRemaining} days remaining</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showProjectDetail(projectId) {
+            currentProjectId = projectId;
+            const project = projects.find(p => p.id === projectId);
+            
+            document.getElementById('detail-project-name').textContent = project.name;
+            
+            let content = `
+                <div style="margin-bottom: 2rem;">
+                    <p><strong>Client:</strong> ${project.clientName} (${project.clientEmail})</p>
+                    <p><strong>Type:</strong> ${projectTemplates[project.type].name}</p>
+                    <p><strong>Start Date:</strong> ${new Date(project.startDate).toLocaleDateString()}</p>
+                    <p><strong>Status:</strong> <span class="status-badge status-${project.status}">${project.status}</span></p>
+                </div>
+            `;
+            
+            project.checklist.forEach((phase, phaseIndex) => {
+                const completedCount = phase.tasks.filter(t => t.completed).length;
+                const phaseProgress = Math.round((completedCount / phase.tasks.length) * 100);
+                
+                content += `
+                    <div class="card" style="border-left: 4px solid ${phase.color}">
+                        <div class="card-header">
+                            <span>${phase.name}</span>
+                            <span style="font-size: 0.9rem; color: var(--text-light);">${completedCount}/${phase.tasks.length} complete</span>
+                        </div>
+                        <div class="progress-bar" style="margin-bottom: 1rem;">
+                            <div class="progress-fill" style="width: ${phaseProgress}%; background: ${phase.color}"></div>
+                        </div>
+                        <ul class="checklist">
+                            ${phase.tasks.map((task, taskIndex) => `
+                                <li class="checklist-item ${task.completed ? 'completed' : ''}">
+                                    <input type="checkbox" 
+                                           ${task.completed ? 'checked' : ''} 
+                                           onchange="toggleTask(${phaseIndex}, ${taskIndex})"
+                                           id="task-${phaseIndex}-${taskIndex}">
+                                    <label for="task-${phaseIndex}-${taskIndex}">${typeof task === 'string' ? task : task.name}</label>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('project-detail-content').innerHTML = content;
+            document.getElementById('project-detail-modal').classList.add('active');
+        }
+
+        function toggleTask(phaseIndex, taskIndex) {
+            const project = projects.find(p => p.id === currentProjectId);
+            const task = project.checklist[phaseIndex].tasks[taskIndex];
+            
+            if (typeof task === 'string') {
+                project.checklist[phaseIndex].tasks[taskIndex] = {
+                    name: task,
+                    completed: true
+                };
+            } else {
+                task.completed = !task.completed;
+            }
+            
+            // Update current phase
+            const allPhasesUpToCurrent = project.checklist.slice(0, phaseIndex + 1);
+            const allTasksComplete = allPhasesUpToCurrent.every(phase => 
+                phase.tasks.every(t => t.completed === true)
+            );
+            
+            if (allTasksComplete && phaseIndex < project.checklist.length - 1) {
+                project.currentPhase = phaseIndex + 1;
+            }
+            
+            saveProjects();
+            showProjectDetail(currentProjectId);
+            renderDashboard();
+            renderProjects();
+        }
+
+        function updateProjectStatus(status) {
+            const project = projects.find(p => p.id === currentProjectId);
+            project.status = status;
+            saveProjects();
+            closeModal('project-detail-modal');
+            renderDashboard();
+            renderProjects();
+        }
+
+        function deleteProject() {
+            if (confirm('Are you sure you want to delete this project? This cannot be undone.')) {
+                projects = projects.filter(p => p.id !== currentProjectId);
+                saveProjects();
+                closeModal('project-detail-modal');
+                renderDashboard();
+                renderProjects();
+                updateTimelineProjectSelect();
+            }
+        }
+
+        // Template Management
+        function renderTemplates() {
+            const templatesList = document.getElementById('templates-list');
+            
+            let html = '';
+            for (const [key, template] of Object.entries(emailTemplates)) {
+                html += `
+                    <div class="template-item" onclick="showTemplate('${key}')">
+                        <h3>${template.name}</h3>
+                        <p>${template.description}</p>
+                    </div>
+                `;
+            }
+            
+            // Add custom templates
+            for (const [key, template] of Object.entries(customTemplates)) {
+                html += `
+                    <div class="template-item" onclick="showCustomTemplate('${key}')" style="border-left-color: var(--success)">
+                        <h3>${template.name} ⭐</h3>
+                        <p>${template.description} (Custom)</p>
+                    </div>
+                `;
+            }
+            
+            templatesList.innerHTML = html;
+        }
+
+        let currentTemplate = null;
+        let currentTone = 'professional';
+
+        function showTemplate(templateKey) {
+            currentTemplate = templateKey;
+            const template = emailTemplates[templateKey];
+            
+            document.getElementById('template-title').textContent = template.name;
+            document.getElementById('template-content').value = template[currentTone];
+            updateTemplatePreview();
+            
+            document.getElementById('template-modal').classList.add('active');
+        }
+
+        function showCustomTemplate(templateKey) {
+            const template = customTemplates[templateKey];
+            currentTemplate = 'custom-' + templateKey;
+            
+            document.getElementById('template-title').textContent = template.name;
+            document.getElementById('template-content').value = template.content;
+            updateTemplatePreview();
+            
+            document.getElementById('template-modal').classList.add('active');
+        }
+
+        function changeTone(tone) {
+            currentTone = tone;
+            document.querySelectorAll('.tone-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (currentTemplate && !currentTemplate.startsWith('custom-')) {
+                const template = emailTemplates[currentTemplate];
+                document.getElementById('template-content').value = template[tone];
+                updateTemplatePreview();
+            }
+        }
+
+        function updateTemplatePreview() {
+            const content = document.getElementById('template-content').value;
+            const preview = content
+                .replace(/{CLIENT_NAME}/g, 'John Smith')
+                .replace(/{PROJECT_NAME}/g, 'Website Redesign')
+                .replace(/{YOUR_NAME}/g, 'Alex')
+                .replace(/{COMPANY_NAME}/g, 'Geco Design')
+                .replace(/{PHASE_NAME}/g, 'Design & Development')
+                .replace(/{NEXT_STEPS}/g, '• Review the mockups\n• Provide feedback by Friday\n• Schedule follow-up call')
+                .replace(/{DUE_DATE}/g, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString());
+            
+            document.getElementById('template-preview').textContent = preview;
+        }
+
+        // Update preview on typing
+        document.addEventListener('DOMContentLoaded', function() {
+            const templateContent = document.getElementById('template-content');
+            if (templateContent) {
+                templateContent.addEventListener('input', updateTemplatePreview);
+            }
+        });
+
+        function copyToClipboard() {
+            const content = document.getElementById('template-preview').textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                alert('Template copied to clipboard!');
+            });
+        }
+
+        function saveCustomTemplate() {
+            const name = prompt('Enter a name for this custom template:');
+            if (!name) return;
+            
+            const description = prompt('Enter a description:');
+            const content = document.getElementById('template-content').value;
+            
+            customTemplates[Date.now()] = {
+                name,
+                description: description || 'Custom template',
+                content
+            };
+            
+            localStorage.setItem('customTemplates', JSON.stringify(customTemplates));
+            renderTemplates();
+            alert('Custom template saved!');
+        }
+
+        // Timeline Management
+        function updateTimelineProjectSelect() {
+            const select = document.getElementById('timeline-project-select');
+            const activeProjects = projects.filter(p => p.status === 'active');
+            
+            select.innerHTML = '<option value="">Choose a project...</option>' +
+                activeProjects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+        }
+
+        function renderTimeline() {
+            const projectId = document.getElementById('timeline-project-select').value;
+            const timelineView = document.getElementById('timeline-view');
+            
+            if (!projectId) {
+                timelineView.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <h3>Select a Project</h3>
+                        <p>Choose a project above to view its timeline</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const project = projects.find(p => p.id === projectId);
+            const startDate = new Date(project.startDate);
+            
+            let currentDate = new Date(startDate);
+            let html = '<div class="timeline">';
+            
+            project.checklist.forEach((phase, index) => {
+                const phaseStart = new Date(currentDate);
+                const phaseEnd = new Date(currentDate);
+                phaseEnd.setDate(phaseEnd.getDate() + phase.duration);
+                
+                html += `
+                    <div class="timeline-item">
+                        <div class="timeline-marker" style="background: ${phase.color}">
+                            ${index + 1}
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">${phase.name}</div>
+                            <div class="timeline-dates">
+                                ${phaseStart.toLocaleDateString()} - ${phaseEnd.toLocaleDateString()}
+                            </div>
+                            <div class="timeline-duration">
+                                <span>Duration:</span>
+                                <input type="number" value="${phase.duration}" min="1" 
+                                       onchange="updatePhaseDuration('${project.id}', ${index}, this.value)">
+                                <span>days</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                currentDate = phaseEnd;
+            });
+            
+            html += '</div>';
+            
+            // Add Gantt Chart
+            html += '<h3 style="margin-top: 2rem; margin-bottom: 1rem;">Visual Timeline</h3>';
+            html += renderGanttChart(project);
+            
+            // Export button
+            html += `
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button class="btn btn-primary" onclick="exportTimeline()">📄 Export Timeline (Print/PDF)</button>
+                </div>
+            `;
+            
+            timelineView.innerHTML = html;
+        }
+
+        function renderGanttChart(project) {
+            const startDate = new Date(project.startDate);
+            const totalDuration = project.checklist.reduce((sum, phase) => sum + phase.duration, 0);
+            
+            let html = '<div class="gantt-chart">';
+            
+            // Calculate bars
+            let currentDay = 0;
+            project.checklist.forEach(phase => {
+                const barWidth = (phase.duration / totalDuration) * 100;
+                
+                html += `
+                    <div class="gantt-row">
+                        <div class="gantt-label">${phase.name}</div>
+                        <div class="gantt-bars" style="background: var(--bg-light); padding: 2px;">
+                            <div class="gantt-bar" style="background: ${phase.color}; width: ${barWidth}%; margin-left: ${(currentDay / totalDuration) * 100}%">
+                                ${phase.duration}d
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                currentDay += phase.duration;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function updatePhaseDuration(projectId, phaseIndex, duration) {
+            const project = projects.find(p => p.id === projectId);
+            project.checklist[phaseIndex].duration = parseInt(duration);
+            saveProjects();
+            renderTimeline();
+        }
+
+        function exportTimeline() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

@@ -339,32 +339,17 @@ export default function ToolsPage() {
                       <div className="flex gap-2 ml-4">
                         <Button
                           size="sm"
-                          variant="outline"
+                          variant="default"
                           asChild
                         >
                           <a
-                            href={`file:///Users/alexanderstevens/Library/Mobile%20Documents/com~apple~CloudDocs/Alex%20-%20MiniMe/${tool.file}`}
+                            href={`/tools/${tool.file}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            title="Open on your Mac"
+                            title="Open tool"
                           >
                             <ExternalLink className="h-4 w-4 mr-1" />
-                            <span className="text-xs">Mac</span>
-                          </a>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          asChild
-                        >
-                          <a
-                            href={`file:///Users/minime/Library/Mobile%20Documents/com~apple~CloudDocs/Alex%20-%20MiniMe/${tool.file}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Open on MiniMe"
-                          >
-                            <ExternalLink className="h-4 w-4 mr-1" />
-                            <span className="text-xs">MiniMe</span>
+                            <span className="text-xs">Open</span>
                           </a>
                         </Button>
                       </div>

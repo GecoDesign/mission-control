@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Briefing Assistant - MiniMe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --bg-primary: white;
+            --bg-secondary: var(--gray-50);
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            --border: var(--gray-200);
+        }
+
+        [data-theme="dark"] {
+            --gray-50: #1f2937;
+            --gray-100: #374151;
+            --gray-200: #4b5563;
+            --gray-300: #6b7280;
+            --gray-600: #d1d5db;
+            --gray-700: #e5e7eb;
+            --gray-900: #f9fafb;
+            --bg-primary: #1f2937;
+            --bg-secondary: #111827;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --border: #374151;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .theme-toggle {
+            padding: 0.5rem 1rem;
+            background: var(--gray-100);
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            opacity: 0.9;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .section {
+            background: var(--bg-primary);
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-header:hover {
+            background: var(--gray-50);
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-toggle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            transition: transform 0.3s;
+        }
+
+        .section-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .section-content {
+            padding: 1.5rem;
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s;
+        }
+
+        .section-content.collapsed {
+            max-height: 0;
+            padding: 0 1.5rem;
+        }
+
+        .crypto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .crypto-card {
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border);
+        }
+
+        .crypto-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .crypto-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .crypto-symbol {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .crypto-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .crypto-change {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .crypto-change.positive {
+            color: var(--success);
+        }
+
+        .crypto-change.negative {
+            color: var(--danger);
+        }
+
+        .crypto-loading {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quick-link {
+            padding: 0.75rem 1rem;
+            background: var(--gray-50);
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .quick-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .news-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            padding: 1rem;
+        }
+
+        .category-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .idea-prompts {
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .idea-prompts h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .idea-prompts ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .idea-prompts li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .idea-prompts li:last-child {
+            border-bottom: none;
+        }
+
+        .briefing-preview {
+            background: var(--gray-50);
+            padding: 1.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border);
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .status-message {
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .status-message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+            display: block;
+        }
+
+        .status-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            display: block;
+        }
+
+        .timestamp {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div>
+                <h1>📋 Daily Briefing Assistant</h1>
+                <p>Prepare comprehensive morning briefings for Alex</p>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙 Toggle Theme</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="actions-bar">
+            <button class="btn btn-primary" onclick="fetchCryptoData()">🔄 Refresh Crypto Data</button>
+            <button class="btn btn-success" onclick="saveDraft()">💾 Save Draft</button>
+            <button class="btn btn-warning" onclick="loadDraft()">📂 Load Draft</button>
+            <button class="btn btn-primary" onclick="exportBriefing()">📤 Export Briefing</button>
+            <button class="btn btn-secondary" onclick="clearAll()">🗑️ Clear All</button>
+        </div>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <!-- Crypto Section -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('crypto')">
+                <h2>💰 Crypto & Markets Analysis</h2>
+                <span class="section-toggle" id="crypto-toggle">▼</span>
+            </div>
+            <div class="section-content" id="crypto-content">
+                <div class="crypto-grid" id="cryptoGrid">
+                    <!-- Crypto cards will be populated here -->
+                </div>
+                
+                <div class="form-group">
+                    <label>💡 Market Analysis & Trade Opportunities</label>
+                    <textarea id="cryptoNotes" placeholder="Notable moves, trends, trading opportunities..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- News & Insights Section -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('news')">
+                <h2>📰 News & Insights Collector</h2>
+                <span class="section-toggle" id="news-toggle">▼</span>
+            </div>
+            <div class="section-content" id="news-content">
+                <div class="quick-links">
+                    <a href="https://news.ycombinator.com/" target="_blank" class="quick-link">🔶 Hacker News</a>
+                    <a href="https://techcrunch.com/" target="_blank" class="quick-link">💻 TechCrunch</a>
+                    <a href="https://www.coindesk.com/" target="_blank" class="quick-link">₿ CoinDesk</a>
+                    <a href="https://cointelegraph.com/" target="_blank" class="quick-link">📊 Cointelegraph</a>
+                    <a href="https://www.constructionnews.co.uk/" target="_blank" class="quick-link">🏗️ Construction News</a>
+                    <a href="https://www.builderonline.com/" target="_blank" class="quick-link">🔨 Builder Online</a>
+                    <a href="https://www.bbc.co.uk/news/business" target="_blank" class="quick-link">📈 BBC Business</a>
+                    <a href="https://www.ft.com/" target="_blank" class="quick-link">📰 Financial Times</a>
+                </div>
+
+                <div class="news-categories">
+                    <div class="category-card">
+                        <div class="category-title">💻 Tech News</div>
+                        <textarea id="techNews" placeholder="Paste or draft tech stories..."></textarea>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-title">💼 Business News</div>
+                        <textarea id="businessNews" placeholder="Paste or draft business stories..."></textarea>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-title">📈 Trading & Markets</div>
+                        <textarea id="tradingNews" placeholder="Paste or draft trading/market stories..."></textarea>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-title">🏗️ UK Construction</div>
+                        <textarea id="constructionNews" placeholder="Paste or draft construction industry stories..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Ideas Section -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('ideas')">
+                <h2>💡 Business Ideas Generator</h2>
+                <span class="section-toggle" id="ideas-toggle">▼</span>
+            </div>
+            <div class="section-content" id="ideas-content">
+                <div class="idea-prompts">
+                    <h3>🎯 Alex's Criteria</h3>
+                    <ul>
+                        <li><strong>Low Capital:</strong> Minimal upfront investment, bootstrap-friendly</li>
+                        <li><strong>High Margin:</strong> 60%+ profit margins, scalable pricing</li>
+                        <li><strong>Leverages Skills:</strong> Web design, development, automation, AI integration</li>
+                        <li><strong>Quick Validation:</strong> Can test market in &lt;2 weeks</li>
+                        <li><strong>Recurring Revenue:</strong> Subscription or retainer potential</li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label>💡 Business Idea #1</label>
+                    <textarea id="businessIdea1" placeholder="Describe the opportunity, why it fits the criteria, first steps..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>💡 Business Idea #2</label>
+                    <textarea id="businessIdea2" placeholder="Describe the opportunity, why it fits the criteria, first steps..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Briefing Composer Section -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('briefing')">
+                <h2>📝 Briefing Composer</h2>
+                <span class="section-toggle" id="briefing-toggle">▼</span>
+            </div>
+            <div class="section-content" id="briefing-content">
+                <div class="form-group">
+                    <label>🌙 Overnight Work Summary</label>
+                    <textarea id="overnightWork" placeholder="What was accomplished overnight..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>📅 Calendar Events</label>
+                    <textarea id="calendarEvents" placeholder="Today's schedule and upcoming events..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>⚽ Spurs Updates</label>
+                    <textarea id="spursUpdates" placeholder="Latest Tottenham news, match results, transfer rumors..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>🌤️ Weather</label>
+                    <textarea id="weather" placeholder="Today's weather forecast..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>✅ Tasks for Today</label>
+                    <textarea id="tasks" placeholder="Priority tasks and to-dos..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>⭐ Daily Recommendation</label>
+                    <textarea id="dailyRec" placeholder="Thought for the day, recommendation, or insight..."></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="generatePreview()" style="margin-bottom: 1rem;">👀 Preview Briefing</button>
+
+                <div class="briefing-preview" id="briefingPreview">
+                    Click "Preview Briefing" to see the compiled briefing...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Crypto API Configuration
+        const COINGECKO_API = 'https://api.coingecko.com/api/v3';
+        
+        const cryptoAssets = {
+            main: [
+                { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC' }
+            ],
+            basechain: [
+                { id: 'dickbutt', name: 'DICKBUTT', symbol: 'DICKBUTT' },
+                { id: 'dribble', name: 'DRB', symbol: 'DRB' },
+                { id: 'bunker', name: 'BNKR', symbol: 'BNKR' },
+                { id: 'pepe', name: 'PEPE', symbol: 'PEPE' },
+                { id: '9mm', name: '9MM', symbol: '9MM' }
+            ],
+            pulsechain: [
+                { id: 'pulsex', name: 'PulseX', symbol: 'PLSX' },
+                { id: 'pulsechain-dai', name: 'PDAI', symbol: 'PDAI' },
+                { id: 'hex', name: 'HEX', symbol: 'HEX' }
+            ]
+        };
+
+        // Theme Management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        // Section Toggle
+        function toggleSection(sectionId) {
+            const content = document.getElementById(`${sectionId}-content`);
+            const toggle = document.getElementById(`${sectionId}-toggle`);
+            
+            content.classList.toggle('collapsed');
+            toggle.classList.toggle('collapsed');
+        }
+
+        // Crypto Data Fetching
+        async function fetchCryptoData() {
+            showStatus('Fetching crypto data...', 'success');
+            const grid = document.getElementById('cryptoGrid');
+            grid.innerHTML = '';
+
+            // Fetch BTC
+            await fetchCryptoPrice(cryptoAssets.main[0], grid);
+
+            // Add section headers and fetch other tokens
+            const basechainHeader = document.createElement('div');
+            basechainHeader.style.gridColumn = '1 / -1';
+            basechainHeader.innerHTML = '<h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">Basechain Tokens</h3>';
+            grid.appendChild(basechainHeader);
+
+            for (const asset of cryptoAssets.basechain) {
+                await fetchCryptoPrice(asset, grid);
+            }
+
+            const pulsechainHeader = document.createElement('div');
+            pulsechainHeader.style.gridColumn = '1 / -1';
+            pulsechainHeader.innerHTML = '<h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">Pulsechain Tokens</h3>';
+            grid.appendChild(pulsechainHeader);
+
+            for (const asset of cryptoAssets.pulsechain) {
+                await fetchCryptoPrice(asset, grid);
+            }
+
+            showStatus('Crypto data refreshed!', 'success');
+            setTimeout(() => hideStatus(), 3000);
+        }
+
+        async function fetchCryptoPrice(asset, container) {
+            const card = createCryptoCard(asset);
+            container.appendChild(card);
+
+            try {
+                const response = await fetch(
+                    `${COINGECKO_API}/simple/price?ids=${asset.id}&vs_currencies=usd&include_24hr_change=true`
+                );
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+
+                const data = await response.json();
+                
+                if (data[asset.id]) {
+                    const price = data[asset.id].usd;
+                    const change = data[asset.id].usd_24h_change;
+                    updateCryptoCard(card, price, change);
+                } else {
+                    updateCryptoCard(card, null, null, 'Data not available');
+                }
+            } catch (error) {
+                console.error(`Error fetching ${asset.name}:`, error);
+                updateCryptoCard(card, null, null, 'Failed to load');
+            }
+
+            // Rate limiting: wait 350ms between requests
+            await new Promise(resolve => setTimeout(resolve, 350));
+        }
+
+        function createCryptoCard(asset) {
+            const card = document.createElement('div');
+            card.className = 'crypto-card';
+            card.innerHTML = `
+                <div class="crypto-header">
+                    <div>
+                        <div class="crypto-name">${asset.name}</div>
+                        <div class="crypto-symbol">${asset.symbol}</div>
+                    </div>
+                </div>
+                <div class="crypto-price crypto-loading">Loading...</div>
+                <div class="crypto-change"></div>
+            `;
+            return card;
+        }
+
+        function updateCryptoCard(card, price, change, errorMsg = null) {
+            const priceElement = card.querySelector('.crypto-price');
+            const changeElement = card.querySelector('.crypto-change');
+
+            if (errorMsg) {
+                priceElement.textContent = errorMsg;
+                priceElement.className = 'crypto-price crypto-loading';
+                changeElement.textContent = '';
+                return;
+            }
+
+            if (price !== null) {
+                priceElement.textContent = `$${price.toLocaleString('en-US', { 
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: price < 1 ? 6 : 2
+                })}`;
+                priceElement.className = 'crypto-price';
+            }
+
+            if (change !== null) {
+                const isPositive = change >= 0;
+                changeElement.textContent = `${isPositive ? '+' : ''}${change.toFixed(2)}% (24h)`;
+                changeElement.className = `crypto-change ${isPositive ? 'positive' : 'negative'}`;
+            }
+        }
+
+        // Status Messages
+        function showStatus(message, type = 'success') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+        }
+
+        function hideStatus() {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.className = 'status-message';
+        }
+
+        // Save/Load Draft
+        function saveDraft() {
+            const draft = {
+                cryptoNotes: document.getElementById('cryptoNotes').value,
+                techNews: document.getElementById('techNews').value,
+                businessNews: document.getElementById('businessNews').value,
+                tradingNews: document.getElementById('tradingNews').value,
+                constructionNews: document.getElementById('constructionNews').value,
+                businessIdea1: document.getElementById('businessIdea1').value,
+                businessIdea2: document.getElementById('businessIdea2').value,
+                overnightWork: document.getElementById('overnightWork').value,
+                calendarEvents: document.getElementById('calendarEvents').value,
+                spursUpdates: document.getElementById('spursUpdates').value,
+                weather: document.getElementById('weather').value,
+                tasks: document.getElementById('tasks').value,
+                dailyRec: document.getElementById('dailyRec').value,
+                timestamp: new Date().toISOString()
+            };
+
+            localStorage.setItem('dailyBriefingDraft', JSON.stringify(draft));
+            showStatus('Draft saved successfully!', 'success');
+            setTimeout(() => hideStatus(), 3000);
+        }
+
+        function loadDraft() {
+            const draft = localStorage.getItem('dailyBriefingDraft');
+            if (!draft) {
+                showStatus('No saved draft found', 'error');
+                setTimeout(() => hideStatus(), 3000);
+                return;
+            }
+
+            const data = JSON.parse(draft);
+            document.getElementById('cryptoNotes').value = data.cryptoNotes || '';
+            document.getElementById('techNews').value = data.techNews || '';
+            document.getElementById('businessNews').value = data.businessNews || '';
+            document.getElementById('tradingNews').value = data.tradingNews || '';
+            document.getElementById('constructionNews').value = data.constructionNews || '';
+            document.getElementById('businessIdea1').value = data.businessIdea1 || '';
+            document.getElementById('businessIdea2').value = data.businessIdea2 || '';
+            document.getElementById('overnightWork').value = data.overnightWork || '';
+            document.getElementById('calendarEvents').value = data.calendarEvents || '';
+            document.getElementById('spursUpdates').value = data.spursUpdates || '';
+            document.getElementById('weather').value = data.weather || '';
+            document.getElementById('tasks').value = data.tasks || '';
+            document.getElementById('dailyRec').value = data.dailyRec || '';
+
+            const timestamp = new Date(data.timestamp).toLocaleString();
+            showStatus(`Draft loaded from ${timestamp}`, 'success');
+            setTimeout(() => hideStatus(), 3000);
+        }
+
+        function clearAll() {
+            if (!confirm('Clear all fields? This cannot be undone.')) return;
+
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.value = '';
+            });
+            document.getElementById('cryptoGrid').innerHTML = '<p class="crypto-loading">Click "Refresh Crypto Data" to load prices</p>';
+            document.getElementById('briefingPreview').textContent = 'Click "Preview Briefing" to see the compiled briefing...';
+            
+            showStatus('All fields cleared', 'success');
+            setTimeout(() => hideStatus(), 3000);
+        }
+
+        // Generate Preview
+        function generatePreview() {
+            const preview = document.getElementById('briefingPreview');
+            
+            const briefing = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌅 DAILY BRIEFING - ${new Date().toLocaleDateString('en-GB', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+})}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🌙 OVERNIGHT WORK SUMMARY
+${document.getElementById('overnightWork').value || 'No overnight work summary provided'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💰 CRYPTO & MARKETS ANALYSIS
+${document.getElementById('cryptoNotes').value || 'No crypto analysis provided'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📰 NEWS & INSIGHTS
+
+💻 Tech:
+${document.getElementById('techNews').value || 'No tech news'}
+
+💼 Business:
+${document.getElementById('businessNews').value || 'No business news'}
+
+📈 Trading & Markets:
+${document.getElementById('tradingNews').value || 'No trading news'}
+
+🏗️ UK Construction:
+${document.getElementById('constructionNews').value || 'No construction news'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 BUSINESS IDEAS
+
+Idea #1:
+${document.getElementById('businessIdea1').value || 'No business idea #1'}
+
+Idea #2:
+${document.getElementById('businessIdea2').value || 'No business idea #2'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📅 TODAY'S CALENDAR
+${document.getElementById('calendarEvents').value || 'No calendar events'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚽ SPURS UPDATES
+${document.getElementById('spursUpdates').value || 'No Spurs updates'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🌤️ WEATHER
+${document.getElementById('weather').value || 'No weather forecast'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ TODAY'S PRIORITY TASKS
+${document.getElementById('tasks').value || 'No tasks listed'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⭐ DAILY RECOMMENDATION
+${document.getElementById('dailyRec').value || 'No daily recommendation'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Have a great day, Alex! 🚀
+            `.trim();
+
+            preview.textContent = briefing;
+            showStatus('Preview generated!', 'success');
+            setTimeout(() => hideStatus(), 2000);
+        }
+
+        // Export Briefing
+        function exportBriefing() {
+            generatePreview();
+            const briefingText = document.getElementById('briefingPreview').textContent;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(briefingText).then(() => {
+                showStatus('Briefing copied to clipboard! Ready to paste in Discord.', 'success');
+                setTimeout(() => hideStatus(), 5000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                showStatus('Failed to copy to clipboard', 'error');
+                setTimeout(() => hideStatus(), 3000);
+            });
+
+            // Also offer download
+            const blob = new Blob([briefingText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `daily-briefing-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            fetchCryptoData();
+        });
+
+        // Auto-save every 2 minutes
+        setInterval(() => {
+            const hasContent = Array.from(document.querySelectorAll('textarea'))
+                .some(textarea => textarea.value.trim().length > 0);
+            
+            if (hasContent) {
+                saveDraft();
+            }
+        }, 120000);
+    </script>
+</body>
+</html>
