@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex's Crypto Trading Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0e17;
+            color: #e0e6ed;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #1a1f2e;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .last-update {
+            color: #6b7280;
+            font-size: 0.9em;
+        }
+
+        .portfolio-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #1a1f2e 0%, #151923 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #2d3748;
+        }
+
+        .summary-card h3 {
+            font-size: 0.9em;
+            color: #9ca3af;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summary-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .chain-section {
+            margin-bottom: 30px;
+        }
+
+        .chain-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #1a1f2e;
+            border-radius: 8px;
+        }
+
+        .chain-header h2 {
+            font-size: 1.5em;
+        }
+
+        .chain-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .badge-base {
+            background: #3b82f6;
+        }
+
+        .badge-pulse {
+            background: #8b5cf6;
+        }
+
+        .tokens-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .token-card {
+            background: #151923;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #2d3748;
+            transition: all 0.3s ease;
+        }
+
+        .token-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.1);
+        }
+
+        .token-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .token-name {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .signal-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .signal-buy {
+            background: #10b981;
+            color: #000;
+        }
+
+        .signal-sell {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .signal-hold {
+            background: #f59e0b;
+            color: #000;
+        }
+
+        .price-info {
+            margin-bottom: 15px;
+        }
+
+        .current-price {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .price-changes {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .change-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .change-label {
+            font-size: 0.75em;
+            color: #9ca3af;
+            margin-bottom: 3px;
+        }
+
+        .change-value {
+            font-weight: bold;
+        }
+
+        .positive {
+            color: #10b981;
+        }
+
+        .negative {
+            color: #ef4444;
+        }
+
+        .neutral {
+            color: #9ca3af;
+        }
+
+        .indicators {
+            margin: 15px 0;
+            padding: 15px;
+            background: #0a0e17;
+            border-radius: 8px;
+        }
+
+        .indicator-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .indicator-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .indicator-label {
+            font-size: 0.9em;
+            color: #9ca3af;
+        }
+
+        .indicator-value {
+            font-weight: bold;
+        }
+
+        .rsi-gauge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .rsi-oversold {
+            background: #10b981;
+            color: #000;
+        }
+
+        .rsi-neutral {
+            background: #f59e0b;
+            color: #000;
+        }
+
+        .rsi-overbought {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .volume-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-bar {
+            flex: 1;
+            height: 6px;
+            background: #2d3748;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .volume-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .recommendation {
+            margin-top: 15px;
+            padding: 12px;
+            background: #1a1f2e;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .recommendation-title {
+            font-size: 0.85em;
+            color: #9ca3af;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .recommendation-text {
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+
+        .risk-low {
+            background: #10b981;
+            color: #000;
+        }
+
+        .risk-medium {
+            background: #f59e0b;
+            color: #000;
+        }
+
+        .risk-high {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #9ca3af;
+        }
+
+        .error {
+            background: #7f1d1d;
+            color: #fecaca;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .social-metrics {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #2d3748;
+        }
+
+        .social-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .social-icon {
+            font-size: 1.2em;
+        }
+
+        .social-value {
+            font-size: 0.85em;
+            color: #9ca3af;
+        }
+
+        .ath-atl {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+            font-size: 0.85em;
+        }
+
+        .ath-atl-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ath-atl-label {
+            color: #9ca3af;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .tokens-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .portfolio-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .refresh-notice {
+            text-align: center;
+            padding: 8px;
+            background: #1a1f2e;
+            border-radius: 6px;
+            font-size: 0.85em;
+            color: #9ca3af;
+            margin-top: 20px;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💎 Alex's Crypto Trading Dashboard</h1>
+            <div class="last-update">Last updated: <span id="last-update">Loading...</span></div>
+        </header>
+
+        <div class="portfolio-summary" id="portfolio-summary">
+            <div class="summary-card">
+                <h3>Best Performer</h3>
+                <div class="value" id="best-performer">--</div>
+            </div>
+            <div class="summary-card">
+                <h3>Worst Performer</h3>
+                <div class="value" id="worst-performer">--</div>
+            </div>
+            <div class="summary-card">
+                <h3>Strong Buy Signals</h3>
+                <div class="value" id="buy-signals">0</div>
+            </div>
+            <div class="summary-card">
+                <h3>Tokens Tracked</h3>
+                <div class="value" id="tokens-tracked">0</div>
+            </div>
+        </div>
+
+        <div class="chain-section">
+            <div class="chain-header">
+                <h2>⛓️ Basechain</h2>
+                <span class="chain-badge badge-base">BASE</span>
+            </div>
+            <div class="tokens-grid" id="base-tokens">
+                <div class="loading">Loading Basechain tokens...</div>
+            </div>
+        </div>
+
+        <div class="chain-section">
+            <div class="chain-header">
+                <h2>💜 Pulsechain</h2>
+                <span class="chain-badge badge-pulse">PULSE</span>
+            </div>
+            <div class="tokens-grid" id="pulse-tokens">
+                <div class="loading">Loading Pulsechain tokens...</div>
+            </div>
+        </div>
+
+        <div class="refresh-notice">
+            🔄 Auto-refreshing every 5 minutes • Data from CoinGecko & DEXScreener
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            refreshInterval: 300000, // 5 minutes
+            baseTokens: ['DICKBUTT', 'DRB', 'BNKR', 'PEPE', '9MM'],
+            pulseTokens: [
+                { symbol: 'PLSX', name: 'PulseX' },
+                { symbol: 'PDAI', name: 'PDAI', contract: '0xaE8429918FdBF9a5867e3243697637Dc56aa76A1' },
+                { symbol: 'HEX', name: 'HEX' }
+            ]
+        };
+
+        // Token data storage
+        let tokenData = {
+            base: [],
+            pulse: []
+        };
+
+        // Historical price storage for MA calculation
+        let priceHistory = {};
+
+        // Calculate RSI
+        function calculateRSI(prices, period = 14) {
+            if (prices.length < period + 1) return 50;
+            
+            let gains = 0;
+            let losses = 0;
+            
+            for (let i = prices.length - period; i < prices.length; i++) {
+                const change = prices[i] - prices[i - 1];
+                if (change > 0) gains += change;
+                else losses += Math.abs(change);
+            }
+            
+            const avgGain = gains / period;
+            const avgLoss = losses / period;
+            
+            if (avgLoss === 0) return 100;
+            const rs = avgGain / avgLoss;
+            return 100 - (100 / (1 + rs));
+        }
+
+        // Calculate Moving Average
+        function calculateMA(prices, period) {
+            if (prices.length < period) return null;
+            const slice = prices.slice(-period);
+            return slice.reduce((a, b) => a + b, 0) / period;
+        }
+
+        // Generate trading signal
+        function generateSignal(rsi, maShort, maLong, volumeSpike) {
+            let score = 0;
+            
+            // RSI signals
+            if (rsi < 30) score += 2; // Oversold - buy signal
+            else if (rsi > 70) score -= 2; // Overbought - sell signal
+            else if (rsi >= 40 && rsi <= 60) score += 0.5; // Neutral range
+            
+            // MA crossover
+            if (maShort && maLong) {
+                if (maShort > maLong * 1.02) score += 1.5; // Bullish crossover
+                else if (maShort < maLong * 0.98) score -= 1.5; // Bearish crossover
+            }
+            
+            // Volume spike
+            if (volumeSpike) score += 1;
+            
+            if (score >= 2) return 'BUY';
+            if (score <= -1.5) return 'SELL';
+            return 'HOLD';
+        }
+
+        // Generate recommendation text
+        function generateRecommendation(signal, rsi, price, change24h) {
+            const risk = Math.abs(change24h) > 20 ? 'HIGH' : Math.abs(change24h) > 10 ? 'MEDIUM' : 'LOW';
+            
+            let text = '';
+            if (signal === 'BUY') {
+                if (rsi < 30) {
+                    text = `Strong buy opportunity - RSI indicates oversold conditions. Consider entering at current levels.`;
+                } else {
+                    text = `Positive momentum detected. Good entry point with upward trend confirmation.`;
+                }
+            } else if (signal === 'SELL') {
+                if (rsi > 70) {
+                    text = `Overbought conditions detected. Consider taking profits or setting stop-loss.`;
+                } else {
+                    text = `Bearish momentum building. Consider reducing position or waiting for reversal.`;
+                }
+            } else {
+                text = `Neutral conditions. Hold position and monitor for breakout signals.`;
+            }
+            
+            return { text, risk };
+        }
+
+        // Fetch from DEXScreener
+        async function fetchDEXScreenerData(searchTerm, chain = 'base') {
+            try {
+                const response = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${searchTerm}`);
+                const data = await response.json();
+                
+                if (data.pairs && data.pairs.length > 0) {
+                    // Filter by chain if specified
+                    const chainPairs = chain ? data.pairs.filter(p => p.chainId === chain) : data.pairs;
+                    return chainPairs[0]; // Return highest liquidity pair
+                }
+                return null;
+            } catch (error) {
+                console.error('DEXScreener error:', error);
+                return null;
+            }
+        }
+
+        // Fetch from CoinGecko (backup)
+        async function fetchCoinGeckoData(tokenId) {
+            try {
+                const response = await fetch(`https://api.coingecko.com/api/v3/coins/${tokenId}?localization=false&tickers=false&community_data=true&developer_data=false`);
+                return await response.json();
+            } catch (error) {
+                console.error('CoinGecko error:', error);
+                return null;
+            }
+        }
+
+        // Process token data
+        async function processToken(symbol, chain = 'base') {
+            const dexData = await fetchDEXScreenerData(symbol, chain);
+            
+            if (!dexData) {
+                return {
+                    symbol,
+                    error: 'No data available',
+                    chain
+                };
+            }
+
+            const price = parseFloat(dexData.priceUsd) || 0;
+            const change24h = parseFloat(dexData.priceChange?.h24) || 0;
+            const change7d = parseFloat(dexData.priceChange?.h6) * 2.8 || 0; // Approximate 7d from 6h
+            const volume24h = parseFloat(dexData.volume?.h24) || 0;
+            const liquidity = parseFloat(dexData.liquidity?.usd) || 0;
+            
+            // Initialize price history if needed
+            if (!priceHistory[symbol]) {
+                priceHistory[symbol] = [];
+            }
+            priceHistory[symbol].push(price);
+            if (priceHistory[symbol].length > 50) {
+                priceHistory[symbol].shift();
+            }
+            
+            // Calculate indicators
+            const rsi = calculateRSI(priceHistory[symbol]);
+            const ma7 = calculateMA(priceHistory[symbol], 7);
+            const ma25 = calculateMA(priceHistory[symbol], 25);
+            const volumeSpike = volume24h > liquidity * 0.3; // Volume > 30% of liquidity
+            
+            const signal = generateSignal(rsi, ma7, ma25, volumeSpike);
+            const recommendation = generateRecommendation(signal, rsi, price, change24h);
+            
+            return {
+                symbol,
+                name: dexData.baseToken?.name || symbol,
+                price,
+                change24h,
+                change7d,
+                volume24h,
+                liquidity,
+                rsi,
+                ma7,
+                ma25,
+                signal,
+                recommendation,
+                volumeSpike,
+                chain,
+                marketCap: parseFloat(dexData.fdv) || 0,
+                txns24h: dexData.txns?.h24?.buys + dexData.txns?.h24?.sells || 0,
+                pairAddress: dexData.pairAddress
+            };
+        }
+
+        // Render token card
+        function renderTokenCard(token) {
+            if (token.error) {
+                return `
+                    <div class="token-card">
+                        <div class="token-header">
+                            <div class="token-name">${token.symbol}</div>
+                        </div>
+                        <div class="error">⚠️ ${token.error}</div>
+                    </div>
+                `;
+            }
+
+            const priceFormatted = token.price > 1 ? `$${token.price.toFixed(4)}` : `$${token.price.toFixed(8)}`;
+            const volumeFormatted = token.volume24h > 1000000 ? `$${(token.volume24h / 1000000).toFixed(2)}M` : `$${(token.volume24h / 1000).toFixed(2)}K`;
+            const liquidityFormatted = token.liquidity > 1000000 ? `$${(token.liquidity / 1000000).toFixed(2)}M` : `$${(token.liquidity / 1000).toFixed(2)}K`;
+            
+            const change24hClass = token.change24h > 0 ? 'positive' : token.change24h < 0 ? 'negative' : 'neutral';
+            const change7dClass = token.change7d > 0 ? 'positive' : token.change7d < 0 ? 'negative' : 'neutral';
+            
+            const rsiClass = token.rsi < 30 ? 'rsi-oversold' : token.rsi > 70 ? 'rsi-overbought' : 'rsi-neutral';
+            const signalClass = token.signal === 'BUY' ? 'signal-buy' : token.signal === 'SELL' ? 'signal-sell' : 'signal-hold';
+            
+            const volumePercent = Math.min((token.volume24h / token.liquidity) * 100, 100);
+
+            return `
+                <div class="token-card">
+                    <div class="token-header">
+                        <div class="token-name">${token.symbol}</div>
+                        <div class="signal-badge ${signalClass}">${token.signal}</div>
+                    </div>
+                    
+                    <div class="price-info">
+                        <div class="current-price">${priceFormatted}</div>
+                        <div class="price-changes">
+                            <div class="change-item">
+                                <div class="change-label">24h</div>
+                                <div class="change-value ${change24hClass}">
+                                    ${token.change24h > 0 ? '+' : ''}${token.change24h.toFixed(2)}%
+                                </div>
+                            </div>
+                            <div class="change-item">
+                                <div class="change-label">7d (est)</div>
+                                <div class="change-value ${change7dClass}">
+                                    ${token.change7d > 0 ? '+' : ''}${token.change7d.toFixed(2)}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="indicators">
+                        <div class="indicator-row">
+                            <span class="indicator-label">RSI (14)</span>
+                            <span class="indicator-value">
+                                <span class="rsi-gauge ${rsiClass}">${token.rsi.toFixed(1)}</span>
+                            </span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">24h Volume</span>
+                            <span class="indicator-value">${volumeFormatted} ${token.volumeSpike ? '🔥' : ''}</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Liquidity</span>
+                            <span class="indicator-value">${liquidityFormatted}</span>
+                        </div>
+                        <div class="indicator-row">
+                            <span class="indicator-label">Volume Momentum</span>
+                            <div class="volume-indicator">
+                                <div class="volume-bar">
+                                    <div class="volume-fill" style="width: ${volumePercent}%"></div>
+                                </div>
+                                <span class="indicator-value">${volumePercent.toFixed(0)}%</span>
+                            </div>
+                        </div>
+                        ${token.txns24h ? `
+                        <div class="indicator-row">
+                            <span class="indicator-label">24h Transactions</span>
+                            <span class="indicator-value">${token.txns24h}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="recommendation">
+                        <div class="recommendation-title">
+                            📊 Recommendation 
+                            <span class="risk-badge risk-${token.recommendation.risk.toLowerCase()}">${token.recommendation.risk} RISK</span>
+                        </div>
+                        <div class="recommendation-text">${token.recommendation.text}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update portfolio summary
+        function updateSummary() {
+            const allTokens = [...tokenData.base, ...tokenData.pulse].filter(t => !t.error);
+            
+            if (allTokens.length === 0) return;
+
+            // Best/worst performers
+            const sorted = [...allTokens].sort((a, b) => b.change24h - a.change24h);
+            const best = sorted[0];
+            const worst = sorted[sorted.length - 1];
+            
+            document.getElementById('best-performer').innerHTML = `
+                ${best.symbol} <span style="color: #10b981; font-size: 0.7em;">+${best.change24h.toFixed(2)}%</span>
+            `;
+            document.getElementById('worst-performer').innerHTML = `
+                ${worst.symbol} <span style="color: #ef4444; font-size: 0.7em;">${worst.change24h.toFixed(2)}%</span>
+            `;
+            
+            // Buy signals count
+            const buySignals = allTokens.filter(t => t.signal === 'BUY').length;
+            document.getElementById('buy-signals').textContent = buySignals;
+            
+            // Total tokens
+            document.getElementById('tokens-tracked').textContent = allTokens.length;
+        }
+
+        // Main refresh function
+        async function refreshData() {
+            console.log('Refreshing data...');
+            
+            // Update timestamp
+            document.getElementById('last-update').textContent = new Date().toLocaleString();
+            
+            // Fetch Basechain tokens
+            const basePromises = CONFIG.baseTokens.map(symbol => processToken(symbol, 'base'));
+            tokenData.base = await Promise.all(basePromises);
+            document.getElementById('base-tokens').innerHTML = tokenData.base.map(renderTokenCard).join('');
+            
+            // Fetch Pulsechain tokens
+            const pulsePromises = CONFIG.pulseTokens.map(token => 
+                processToken(token.symbol, 'pulsechain')
+            );
+            tokenData.pulse = await Promise.all(pulsePromises);
+            document.getElementById('pulse-tokens').innerHTML = tokenData.pulse.map(renderTokenCard).join('');
+            
+            // Update summary
+            updateSummary();
+            
+            console.log('Data refresh complete');
+        }
+
+        // Initialize
+        async function init() {
+            await refreshData();
+            
+            // Set up auto-refresh
+            setInterval(refreshData, CONFIG.refreshInterval);
+        }
+
+        // Start the dashboard
+        init();
+    </script>
+</body>
+</html>

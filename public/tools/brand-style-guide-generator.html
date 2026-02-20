@@ -4,506 +4,827 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brand Style Guide Generator - Geco Design</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
         }
-        
+
         .container {
-            max-width: 1400px;
+            max-width: 900px;
             margin: 0 auto;
-        }
-        
-        .editor-panel {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
         }
-        
-        h1 {
-            color: #1a202c;
-            margin-bottom: 30px;
-            font-size: 32px;
-        }
-        
-        .form-grid {
-            display: grid;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        label {
-            font-weight: 600;
-            color: #2d3748;
-            font-size: 14px;
-        }
-        
-        input[type="text"],
-        input[type="color"],
-        textarea {
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        input[type="text"]:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #00d4aa;
-        }
-        
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-            font-family: inherit;
-        }
-        
-        .color-inputs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-        
-        .color-picker {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        input[type="color"] {
-            width: 50px;
-            height: 50px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        
-        .buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 212, 170, 0.3);
-        }
-        
-        .btn-secondary {
-            background: #f7fafc;
-            color: #2d3748;
-            border: 2px solid #e2e8f0;
-        }
-        
-        .btn-secondary:hover {
-            background: #edf2f7;
-        }
-        
-        .preview {
-            background: white;
-            border-radius: 15px;
             padding: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-        
-        .guide-header {
             text-align: center;
-            padding-bottom: 30px;
-            border-bottom: 3px solid #00d4aa;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .section {
             margin-bottom: 40px;
         }
-        
-        .guide-title {
-            font-size: 42px;
-            color: #1a202c;
-            margin-bottom: 10px;
-        }
-        
-        .guide-subtitle {
-            color: #718096;
-            font-size: 18px;
-        }
-        
-        .section {
-            margin-bottom: 50px;
-            page-break-inside: avoid;
-        }
-        
+
         .section-title {
-            font-size: 28px;
-            color: #1a202c;
+            font-size: 1.5rem;
+            color: #2d3748;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #e2e8f0;
+            border-bottom: 3px solid #667eea;
+            font-weight: 600;
         }
-        
-        .color-grid {
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .color-inputs {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            gap: 15px;
         }
-        
-        .color-swatch {
-            border-radius: 10px;
-            padding: 20px;
-            color: white;
-            text-align: center;
+
+        .color-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
-        
-        .color-name {
-            font-weight: 600;
-            margin-bottom: 10px;
-            font-size: 18px;
+
+        .color-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
         }
-        
-        .color-value {
-            font-size: 14px;
-            opacity: 0.9;
+
+        .color-input-wrapper {
+            flex: 1;
         }
-        
-        .typography-sample {
-            margin: 20px 0;
-            padding: 20px;
-            background: #f7fafc;
-            border-radius: 10px;
-        }
-        
-        .font-display {
-            margin-bottom: 15px;
-        }
-        
-        .font-name {
-            font-size: 14px;
-            color: #718096;
+
+        .color-input-wrapper input {
             margin-bottom: 5px;
         }
-        
-        .font-example {
-            font-size: 32px;
-            color: #1a202c;
+
+        .color-name {
+            font-size: 0.85rem;
+            color: #718096;
         }
-        
-        .guidelines-grid {
+
+        .add-color-btn {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .add-color-btn:hover {
+            background: #cbd5e0;
+        }
+
+        .font-inputs {
+            display: grid;
+            gap: 15px;
+        }
+
+        .font-group {
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .remove-btn {
+            background: #fc8181;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .quick-fill {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 2px dashed #cbd5e0;
+        }
+
+        .quick-fill button {
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .quick-fill button:hover {
+            background: #38a169;
+        }
+
+        .helper-text {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .logo-preview {
+            max-width: 200px;
+            max-height: 100px;
+            margin-top: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .dos-donts-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-top: 20px;
         }
-        
-        .guideline-box {
-            padding: 20px;
-            border-radius: 10px;
-        }
-        
-        .do {
-            background: #f0fff4;
-            border-left: 4px solid #48bb78;
-        }
-        
-        .dont {
-            background: #fff5f5;
-            border-left: 4px solid #f56565;
-        }
-        
-        .guideline-title {
-            font-weight: 600;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-        
-        .do .guideline-title {
-            color: #22543d;
-        }
-        
-        .dont .guideline-title {
-            color: #742a2a;
-        }
-        
-        ul {
-            margin-left: 20px;
-        }
-        
-        li {
-            margin: 8px 0;
-            color: #2d3748;
-        }
-        
-        @media print {
-            body {
-                background: white;
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
             }
-            .editor-panel {
-                display: none;
+            
+            .form-container {
+                padding: 20px;
             }
-            .preview {
-                box-shadow: none;
+
+            .dos-donts-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="editor-panel">
+        <div class="header">
             <h1>🎨 Brand Style Guide Generator</h1>
-            
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Brand Name</label>
-                    <input type="text" id="brandName" value="Geco Design" placeholder="Enter brand name">
-                </div>
-                
-                <div class="form-group">
-                    <label>Tagline</label>
-                    <input type="text" id="tagline" value="Exceptional design for ambitious brands" placeholder="Enter tagline">
-                </div>
-                
-                <div class="form-group">
-                    <label>Brand Colors</label>
-                    <div class="color-inputs">
-                        <div class="color-picker">
-                            <input type="color" id="primary" value="#00d4aa">
-                            <div>
-                                <div style="font-size: 12px; color: #718096;">Primary</div>
-                                <div style="font-size: 12px; font-weight: 600;" id="primaryHex">#00d4aa</div>
-                            </div>
-                        </div>
-                        <div class="color-picker">
-                            <input type="color" id="secondary" value="#1a202c">
-                            <div>
-                                <div style="font-size: 12px; color: #718096;">Secondary</div>
-                                <div style="font-size: 12px; font-weight: 600;" id="secondaryHex">#1a202c</div>
-                            </div>
-                        </div>
-                        <div class="color-picker">
-                            <input type="color" id="accent" value="#00a896">
-                            <div>
-                                <div style="font-size: 12px; color: #718096;">Accent</div>
-                                <div style="font-size: 12px; font-weight: 600;" id="accentHex">#00a896</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Primary Font</label>
-                    <input type="text" id="primaryFont" value="Helvetica Neue" placeholder="e.g., Helvetica, Arial">
-                </div>
-                
-                <div class="form-group">
-                    <label>Secondary Font</label>
-                    <input type="text" id="secondaryFont" value="Georgia" placeholder="e.g., Georgia, Times">
-                </div>
-                
-                <div class="form-group">
-                    <label>Brand Voice & Personality</label>
-                    <textarea id="brandVoice" placeholder="Describe your brand's tone, personality, and voice">Professional yet approachable. We speak with confidence and clarity, avoiding jargon. Our communication is friendly, direct, and always focused on solving client problems.</textarea>
-                </div>
-            </div>
-            
-            <div class="buttons">
-                <button class="btn-primary" onclick="updatePreview()">🔄 Update Preview</button>
-                <button class="btn-secondary" onclick="window.print()">📄 Download PDF</button>
-                <button class="btn-secondary" onclick="loadDemo()">📝 Load Demo (Geco)</button>
-            </div>
+            <p>Create professional brand guidelines in seconds</p>
         </div>
-        
-        <div class="preview" id="preview">
-            <div class="guide-header">
-                <h1 class="guide-title" id="previewBrandName">Geco Design</h1>
-                <p class="guide-subtitle" id="previewTagline">Exceptional design for ambitious brands</p>
+
+        <div class="form-container">
+            <div class="quick-fill">
+                <label style="margin-bottom: 10px;">Quick Fill:</label>
+                <button onclick="fillGecoExample()">📘 Geco Design Example</button>
+                <button onclick="clearForm()">🗑️ Clear Form</button>
             </div>
-            
-            <div class="section">
-                <h2 class="section-title">Brand Colors</h2>
-                <div class="color-grid">
-                    <div class="color-swatch" id="primarySwatch" style="background: #00d4aa;">
-                        <div class="color-name">Primary</div>
-                        <div class="color-value">#00d4aa</div>
+
+            <form id="brandForm">
+                <!-- Basic Info Section -->
+                <div class="section">
+                    <h2 class="section-title">📋 Basic Information</h2>
+                    
+                    <div class="form-group">
+                        <label for="brandName">Brand Name *</label>
+                        <input type="text" id="brandName" required placeholder="Enter brand name">
                     </div>
-                    <div class="color-swatch" id="secondarySwatch" style="background: #1a202c;">
-                        <div class="color-name">Secondary</div>
-                        <div class="color-value">#1a202c</div>
+
+                    <div class="form-group">
+                        <label for="brandTagline">Tagline (Optional)</label>
+                        <input type="text" id="brandTagline" placeholder="Your brand's tagline or motto">
                     </div>
-                    <div class="color-swatch" id="accentSwatch" style="background: #00a896;">
-                        <div class="color-name">Accent</div>
-                        <div class="color-value">#00a896</div>
+
+                    <div class="form-group">
+                        <label for="logoUpload">Logo Upload</label>
+                        <input type="file" id="logoUpload" accept="image/*">
+                        <img id="logoPreview" class="logo-preview" alt="Logo preview">
+                        <p class="helper-text">Upload your logo (PNG, JPG, or SVG recommended)</p>
                     </div>
                 </div>
-            </div>
-            
-            <div class="section">
-                <h2 class="section-title">Typography</h2>
-                <div class="typography-sample">
-                    <div class="font-display">
-                        <div class="font-name">Primary Font - Headings & Titles</div>
-                        <div class="font-example" id="primaryFontExample" style="font-family: 'Helvetica Neue', Helvetica, sans-serif;">
-                            Helvetica Neue
+
+                <!-- Color Palette Section -->
+                <div class="section">
+                    <h2 class="section-title">🎨 Color Palette</h2>
+                    <div id="colorInputs" class="color-inputs">
+                        <!-- Color inputs will be added here dynamically -->
+                    </div>
+                    <button type="button" class="add-color-btn" onclick="addColorInput()">+ Add Color</button>
+                </div>
+
+                <!-- Typography Section -->
+                <div class="section">
+                    <h2 class="section-title">📝 Typography</h2>
+                    <div id="fontInputs" class="font-inputs">
+                        <!-- Font inputs will be added here -->
+                    </div>
+                    <button type="button" class="add-color-btn" onclick="addFontInput()">+ Add Font</button>
+                </div>
+
+                <!-- Brand Voice Section -->
+                <div class="section">
+                    <h2 class="section-title">💬 Brand Voice & Personality</h2>
+                    
+                    <div class="form-group">
+                        <label for="brandVoice">Brand Voice Description</label>
+                        <textarea id="brandVoice" placeholder="Describe your brand's personality, tone, and communication style..."></textarea>
+                        <p class="helper-text">Example: Professional yet approachable, innovative, customer-focused</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brandValues">Core Values</label>
+                        <textarea id="brandValues" placeholder="List your brand's core values..."></textarea>
+                        <p class="helper-text">Example: Innovation, Integrity, Excellence, Collaboration</p>
+                    </div>
+                </div>
+
+                <!-- Spacing & Layout Section -->
+                <div class="section">
+                    <h2 class="section-title">📐 Spacing & Layout</h2>
+                    
+                    <div class="form-group">
+                        <label for="spacingRules">Spacing Guidelines</label>
+                        <textarea id="spacingRules" placeholder="Define spacing and layout rules..."></textarea>
+                        <p class="helper-text">Example: Minimum logo clearspace: 2x logo height, Grid: 12 columns, Margin: 40px</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="logoMinSize">Minimum Logo Size</label>
+                        <input type="text" id="logoMinSize" placeholder="e.g., 40px height for digital, 20mm for print">
+                    </div>
+                </div>
+
+                <!-- Dos & Don'ts Section -->
+                <div class="section">
+                    <h2 class="section-title">✅ Dos & Don'ts</h2>
+                    
+                    <div class="dos-donts-grid">
+                        <div class="form-group">
+                            <label for="brandDos">Do's</label>
+                            <textarea id="brandDos" placeholder="List what TO DO with the brand..."></textarea>
+                            <p class="helper-text">Example: Use official colors, Maintain clearspace, Use approved fonts</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="brandDonts">Don'ts</label>
+                            <textarea id="brandDonts" placeholder="List what NOT TO DO with the brand..."></textarea>
+                            <p class="helper-text">Example: Don't distort logo, Don't use unapproved colors, Don't add effects</p>
                         </div>
                     </div>
-                    <div class="font-display">
-                        <div class="font-name">Secondary Font - Body Text</div>
-                        <div class="font-example" id="secondaryFontExample" style="font-family: Georgia, serif; font-size: 24px;">
-                            Georgia
-                        </div>
-                    </div>
                 </div>
-                <p style="margin-top: 15px; color: #718096;">Use primary font for headlines, subheadings, and UI elements. Use secondary font for body text, long-form content, and descriptions.</p>
-            </div>
-            
-            <div class="section">
-                <h2 class="section-title">Brand Voice & Personality</h2>
-                <div style="background: #f7fafc; padding: 20px; border-radius: 10px; margin-top: 20px;">
-                    <p id="previewBrandVoice" style="color: #2d3748; line-height: 1.6;">
-                        Professional yet approachable. We speak with confidence and clarity, avoiding jargon. Our communication is friendly, direct, and always focused on solving client problems.
-                    </p>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2 class="section-title">Logo Usage Guidelines</h2>
-                <div class="guidelines-grid">
-                    <div class="guideline-box do">
-                        <div class="guideline-title">✓ Do</div>
-                        <ul>
-                            <li>Maintain clear space around the logo (minimum 20px)</li>
-                            <li>Use approved color variations only</li>
-                            <li>Ensure logo is clearly visible</li>
-                            <li>Scale proportionally</li>
-                            <li>Use high-resolution files</li>
-                        </ul>
-                    </div>
-                    <div class="guideline-box dont">
-                        <div class="guideline-title">✗ Don't</div>
-                        <ul>
-                            <li>Rotate, skew, or distort the logo</li>
-                            <li>Change logo colors or add effects</li>
-                            <li>Place on busy backgrounds</li>
-                            <li>Recreate or redraw the logo</li>
-                            <li>Use low-resolution files</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2 class="section-title">Color Application</h2>
-                <div class="guidelines-grid">
-                    <div class="guideline-box do">
-                        <div class="guideline-title">✓ Do</div>
-                        <ul>
-                            <li>Use primary color for CTAs and important elements</li>
-                            <li>Use secondary for text and backgrounds</li>
-                            <li>Ensure sufficient color contrast (WCAG AA)</li>
-                            <li>Use white space effectively</li>
-                        </ul>
-                    </div>
-                    <div class="guideline-box dont">
-                        <div class="guideline-title">✗ Don't</div>
-                        <ul>
-                            <li>Use colors outside the defined palette</li>
-                            <li>Combine colors that reduce readability</li>
-                            <li>Overuse accent color</li>
-                            <li>Use gradients not specified in guidelines</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+
+                <button type="submit" class="generate-btn">🚀 Generate Style Guide PDF</button>
+            </form>
         </div>
     </div>
-    
+
     <script>
-        function updatePreview() {
-            const brandName = document.getElementById('brandName').value;
-            const tagline = document.getElementById('tagline').value;
-            const primary = document.getElementById('primary').value;
-            const secondary = document.getElementById('secondary').value;
-            const accent = document.getElementById('accent').value;
-            const primaryFont = document.getElementById('primaryFont').value;
-            const secondaryFont = document.getElementById('secondaryFont').value;
-            const brandVoice = document.getElementById('brandVoice').value;
+        let colorCount = 0;
+        let fontCount = 0;
+        let logoDataUrl = null;
+
+        // Initialize with default color inputs
+        window.addEventListener('DOMContentLoaded', () => {
+            addColorInput('Primary', '#667eea');
+            addColorInput('Secondary', '#764ba2');
+            addColorInput('Accent', '#48bb78');
             
-            document.getElementById('previewBrandName').textContent = brandName || 'Brand Name';
-            document.getElementById('previewTagline').textContent = tagline || 'Tagline';
-            document.getElementById('previewBrandVoice').textContent = brandVoice || 'Brand voice description...';
+            addFontInput('Heading', 'Inter', '700', '2.5rem / 40px');
+            addFontInput('Body', 'Inter', '400', '1rem / 16px');
+        });
+
+        // Logo preview
+        document.getElementById('logoUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    logoDataUrl = event.target.result;
+                    document.getElementById('logoPreview').src = logoDataUrl;
+                    document.getElementById('logoPreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function addColorInput(name = '', hex = '#000000') {
+            colorCount++;
+            const container = document.getElementById('colorInputs');
+            const div = document.createElement('div');
+            div.className = 'color-input-group';
+            div.id = `color-${colorCount}`;
             
-            document.getElementById('primarySwatch').style.background = primary;
-            document.getElementById('primarySwatch').querySelector('.color-value').textContent = primary;
-            document.getElementById('primaryHex').textContent = primary;
+            div.innerHTML = `
+                <input type="color" class="color-preview" value="${hex}" onchange="updateColorHex(${colorCount}, this.value)">
+                <div class="color-input-wrapper">
+                    <input type="text" placeholder="Color Name" value="${name}" id="colorName-${colorCount}">
+                    <input type="text" placeholder="#HEX" value="${hex}" id="colorHex-${colorCount}" onchange="updateColorPreview(${colorCount}, this.value)">
+                </div>
+                ${colorCount > 1 ? `<button type="button" class="remove-btn" onclick="removeColor(${colorCount})">×</button>` : ''}
+            `;
             
-            document.getElementById('secondarySwatch').style.background = secondary;
-            document.getElementById('secondarySwatch').querySelector('.color-value').textContent = secondary;
-            document.getElementById('secondaryHex').textContent = secondary;
-            
-            document.getElementById('accentSwatch').style.background = accent;
-            document.getElementById('accentSwatch').querySelector('.color-value').textContent = accent;
-            document.getElementById('accentHex').textContent = accent;
-            
-            document.getElementById('primaryFontExample').style.fontFamily = `'${primaryFont}', sans-serif`;
-            document.getElementById('primaryFontExample').textContent = primaryFont;
-            
-            document.getElementById('secondaryFontExample').style.fontFamily = `'${secondaryFont}', serif`;
-            document.getElementById('secondaryFontExample').textContent = secondaryFont;
+            container.appendChild(div);
         }
-        
-        function loadDemo() {
+
+        function updateColorHex(id, hex) {
+            document.getElementById(`colorHex-${id}`).value = hex;
+        }
+
+        function updateColorPreview(id, hex) {
+            document.querySelector(`#color-${id} .color-preview`).value = hex;
+        }
+
+        function removeColor(id) {
+            document.getElementById(`color-${id}`).remove();
+        }
+
+        function addFontInput(usage = '', family = '', weight = '400', size = '') {
+            fontCount++;
+            const container = document.getElementById('fontInputs');
+            const div = document.createElement('div');
+            div.className = 'font-group';
+            div.id = `font-${fontCount}`;
+            
+            div.innerHTML = `
+                <div class="form-group">
+                    <label>Font Usage</label>
+                    <input type="text" placeholder="e.g., Headings, Body, Labels" value="${usage}" id="fontUsage-${fontCount}">
+                </div>
+                <div class="form-group">
+                    <label>Font Family</label>
+                    <input type="text" placeholder="e.g., Inter, Helvetica, Georgia" value="${family}" id="fontFamily-${fontCount}">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Font Weight</label>
+                        <select id="fontWeight-${fontCount}">
+                            <option value="300" ${weight === '300' ? 'selected' : ''}>Light (300)</option>
+                            <option value="400" ${weight === '400' ? 'selected' : ''}>Regular (400)</option>
+                            <option value="500" ${weight === '500' ? 'selected' : ''}>Medium (500)</option>
+                            <option value="600" ${weight === '600' ? 'selected' : ''}>Semi-Bold (600)</option>
+                            <option value="700" ${weight === '700' ? 'selected' : ''}>Bold (700)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Size</label>
+                        <input type="text" placeholder="e.g., 16px, 2rem" value="${size}" id="fontSize-${fontCount}">
+                    </div>
+                </div>
+                ${fontCount > 1 ? `<button type="button" class="remove-btn" onclick="removeFont(${fontCount})">Remove Font</button>` : ''}
+            `;
+            
+            container.appendChild(div);
+        }
+
+        function removeFont(id) {
+            document.getElementById(`font-${id}`).remove();
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function fillGecoExample() {
             document.getElementById('brandName').value = 'Geco Design';
-            document.getElementById('tagline').value = 'Exceptional design for ambitious brands';
-            document.getElementById('primary').value = '#00d4aa';
-            document.getElementById('secondary').value = '#1a202c';
-            document.getElementById('accent').value = '#00a896';
-            document.getElementById('primaryFont').value = 'Helvetica Neue';
-            document.getElementById('secondaryFont').value = 'Georgia';
-            document.getElementById('brandVoice').value = 'Professional yet approachable. We speak with confidence and clarity, avoiding jargon. Our communication is friendly, direct, and always focused on solving client problems.';
-            updatePreview();
+            document.getElementById('brandTagline').value = 'Crafting Digital Excellence';
+            
+            // Clear and add Geco colors
+            document.getElementById('colorInputs').innerHTML = '';
+            colorCount = 0;
+            addColorInput('Deep Purple', '#667eea');
+            addColorInput('Rich Violet', '#764ba2');
+            addColorInput('Success Green', '#48bb78');
+            addColorInput('Dark Gray', '#2d3748');
+            addColorInput('Light Gray', '#f7fafc');
+            
+            // Clear and add Geco fonts
+            document.getElementById('fontInputs').innerHTML = '';
+            fontCount = 0;
+            addFontInput('Display Headings', 'Inter', '700', '3rem / 48px');
+            addFontInput('Headings', 'Inter', '600', '2rem / 32px');
+            addFontInput('Subheadings', 'Inter', '500', '1.5rem / 24px');
+            addFontInput('Body Text', 'Inter', '400', '1rem / 16px');
+            addFontInput('Small Text', 'Inter', '400', '0.875rem / 14px');
+            
+            document.getElementById('brandVoice').value = 'Geco Design speaks with confidence and clarity. We\'re professional yet approachable, innovative without being pretentious. Our tone is warm, helpful, and empowering - we\'re here to solve problems and create exceptional digital experiences.';
+            
+            document.getElementById('brandValues').value = '• Innovation: Pushing boundaries in web design and development\n• Quality: Excellence in every pixel and line of code\n• Collaboration: Partnership-driven approach with clients\n• Simplicity: Clean, elegant solutions that work';
+            
+            document.getElementById('spacingRules').value = 'Grid System: 12-column responsive grid\nContainer Width: 1200px max\nGutter: 24px\nSection Spacing: 80px vertical\nElement Spacing: 40px between major elements, 20px between related items\nLogo Clearspace: Minimum 2x logo height on all sides';
+            
+            document.getElementById('logoMinSize').value = 'Digital: 32px height minimum | Print: 15mm height minimum';
+            
+            document.getElementById('brandDos').value = '✓ Use the official color palette\n✓ Maintain proper logo clearspace\n✓ Use approved typography hierarchy\n✓ Keep designs clean and minimal\n✓ Ensure high contrast for accessibility\n✓ Use the gradient for hero sections and CTAs';
+            
+            document.getElementById('brandDonts').value = '✗ Don\'t distort or skew the logo\n✗ Don\'t use unapproved colors or gradients\n✗ Don\'t add drop shadows or effects to the logo\n✗ Don\'t place logo on busy backgrounds\n✗ Don\'t use low-contrast text combinations\n✗ Don\'t mix too many font weights';
         }
-        
-        document.getElementById('primary').addEventListener('input', function() {
-            document.getElementById('primaryHex').textContent = this.value;
+
+        function clearForm() {
+            if (confirm('Clear all form data?')) {
+                document.getElementById('brandForm').reset();
+                document.getElementById('logoPreview').style.display = 'none';
+                logoDataUrl = null;
+                
+                // Reset to default colors and fonts
+                document.getElementById('colorInputs').innerHTML = '';
+                document.getElementById('fontInputs').innerHTML = '';
+                colorCount = 0;
+                fontCount = 0;
+                
+                addColorInput('Primary', '#667eea');
+                addColorInput('Secondary', '#764ba2');
+                addFontInput('Heading', 'Inter', '700', '2.5rem / 40px');
+                addFontInput('Body', 'Inter', '400', '1rem / 16px');
+            }
+        }
+
+        document.getElementById('brandForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            
+            const brandName = document.getElementById('brandName').value;
+            const brandTagline = document.getElementById('brandTagline').value;
+            
+            let yPos = 20;
+            const margin = 20;
+            const pageWidth = 210;
+            const contentWidth = pageWidth - (margin * 2);
+            
+            // Helper function for page breaks
+            function checkPageBreak(neededSpace) {
+                if (yPos + neededSpace > 280) {
+                    doc.addPage();
+                    yPos = 20;
+                    return true;
+                }
+                return false;
+            }
+            
+            // Cover Page
+            doc.setFillColor(102, 126, 234);
+            doc.rect(0, 0, pageWidth, 297, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(48);
+            doc.setFont('helvetica', 'bold');
+            doc.text(brandName, pageWidth / 2, 120, { align: 'center' });
+            
+            if (brandTagline) {
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'normal');
+                doc.text(brandTagline, pageWidth / 2, 135, { align: 'center' });
+            }
+            
+            doc.setFontSize(32);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Brand Style Guide', pageWidth / 2, 160, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            doc.text(today, pageWidth / 2, 260, { align: 'center' });
+            
+            // Page 2 - Logo & Basic Info
+            doc.addPage();
+            yPos = 20;
+            doc.setTextColor(45, 55, 72);
+            
+            // Add logo if available
+            if (logoDataUrl) {
+                doc.setFontSize(24);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Logo', margin, yPos);
+                yPos += 15;
+                
+                doc.setDrawColor(226, 232, 240);
+                doc.setLineWidth(0.5);
+                doc.rect(margin, yPos, contentWidth, 60);
+                
+                try {
+                    doc.addImage(logoDataUrl, 'PNG', margin + 20, yPos + 10, 60, 40);
+                } catch (e) {
+                    doc.setFontSize(10);
+                    doc.setTextColor(113, 128, 150);
+                    doc.text('Logo preview', margin + 40, yPos + 30);
+                }
+                
+                yPos += 70;
+            }
+            
+            // Logo Usage
+            const logoMinSize = document.getElementById('logoMinSize').value;
+            if (logoMinSize) {
+                checkPageBreak(30);
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(102, 126, 234);
+                doc.text('Logo Usage Guidelines', margin, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(45, 55, 72);
+                doc.text(`Minimum Size: ${logoMinSize}`, margin, yPos);
+                yPos += 15;
+            }
+            
+            // Spacing Rules
+            const spacingRules = document.getElementById('spacingRules').value;
+            if (spacingRules) {
+                checkPageBreak(40);
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(102, 126, 234);
+                doc.text('Spacing & Layout', margin, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(45, 55, 72);
+                const lines = doc.splitTextToSize(spacingRules, contentWidth);
+                doc.text(lines, margin, yPos);
+                yPos += (lines.length * 5) + 10;
+            }
+            
+            // Color Palette
+            doc.addPage();
+            yPos = 20;
+            
+            doc.setFontSize(24);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(45, 55, 72);
+            doc.text('Color Palette', margin, yPos);
+            yPos += 15;
+            
+            const colors = [];
+            for (let i = 1; i <= colorCount; i++) {
+                const nameEl = document.getElementById(`colorName-${i}`);
+                const hexEl = document.getElementById(`colorHex-${i}`);
+                if (nameEl && hexEl) {
+                    colors.push({
+                        name: nameEl.value,
+                        hex: hexEl.value
+                    });
+                }
+            }
+            
+            colors.forEach((color, index) => {
+                checkPageBreak(35);
+                
+                const rgb = hexToRgb(color.hex);
+                if (rgb) {
+                    doc.setFillColor(rgb.r, rgb.g, rgb.b);
+                    doc.roundedRect(margin, yPos, 50, 25, 3, 3, 'F');
+                    
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(45, 55, 72);
+                    doc.text(color.name, margin + 60, yPos + 8);
+                    
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(113, 128, 150);
+                    doc.text(`HEX: ${color.hex.toUpperCase()}`, margin + 60, yPos + 15);
+                    doc.text(`RGB: ${rgb.r}, ${rgb.g}, ${rgb.b}`, margin + 60, yPos + 21);
+                    
+                    yPos += 35;
+                }
+            });
+            
+            // Typography
+            doc.addPage();
+            yPos = 20;
+            
+            doc.setFontSize(24);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(45, 55, 72);
+            doc.text('Typography', margin, yPos);
+            yPos += 15;
+            
+            const fonts = [];
+            for (let i = 1; i <= fontCount; i++) {
+                const usageEl = document.getElementById(`fontUsage-${i}`);
+                const familyEl = document.getElementById(`fontFamily-${i}`);
+                const weightEl = document.getElementById(`fontWeight-${i}`);
+                const sizeEl = document.getElementById(`fontSize-${i}`);
+                
+                if (usageEl && familyEl) {
+                    fonts.push({
+                        usage: usageEl.value,
+                        family: familyEl.value,
+                        weight: weightEl ? weightEl.value : '400',
+                        size: sizeEl ? sizeEl.value : ''
+                    });
+                }
+            }
+            
+            fonts.forEach((font, index) => {
+                checkPageBreak(25);
+                
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(102, 126, 234);
+                doc.text(font.usage, margin, yPos);
+                yPos += 7;
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(45, 55, 72);
+                doc.text(`Font Family: ${font.family}`, margin, yPos);
+                yPos += 5;
+                doc.text(`Weight: ${font.weight}`, margin, yPos);
+                yPos += 5;
+                if (font.size) {
+                    doc.text(`Size: ${font.size}`, margin, yPos);
+                    yPos += 5;
+                }
+                yPos += 8;
+            });
+            
+            // Brand Voice
+            const brandVoice = document.getElementById('brandVoice').value;
+            const brandValues = document.getElementById('brandValues').value;
+            
+            if (brandVoice || brandValues) {
+                doc.addPage();
+                yPos = 20;
+                
+                doc.setFontSize(24);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(45, 55, 72);
+                doc.text('Brand Voice & Personality', margin, yPos);
+                yPos += 15;
+                
+                if (brandVoice) {
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(45, 55, 72);
+                    const voiceLines = doc.splitTextToSize(brandVoice, contentWidth);
+                    doc.text(voiceLines, margin, yPos);
+                    yPos += (voiceLines.length * 5) + 15;
+                }
+                
+                if (brandValues) {
+                    checkPageBreak(30);
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(102, 126, 234);
+                    doc.text('Core Values', margin, yPos);
+                    yPos += 10;
+                    
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(45, 55, 72);
+                    const valueLines = doc.splitTextToSize(brandValues, contentWidth);
+                    doc.text(valueLines, margin, yPos);
+                    yPos += (valueLines.length * 5) + 10;
+                }
+            }
+            
+            // Dos & Don'ts
+            const brandDos = document.getElementById('brandDos').value;
+            const brandDonts = document.getElementById('brandDonts').value;
+            
+            if (brandDos || brandDonts) {
+                doc.addPage();
+                yPos = 20;
+                
+                doc.setFontSize(24);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(45, 55, 72);
+                doc.text('Dos & Don\'ts', margin, yPos);
+                yPos += 15;
+                
+                const colWidth = (contentWidth - 10) / 2;
+                
+                if (brandDos) {
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(72, 187, 120);
+                    doc.text('✓ Do', margin, yPos);
+                    
+                    doc.setFontSize(9);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(45, 55, 72);
+                    const dosLines = doc.splitTextToSize(brandDos, colWidth);
+                    doc.text(dosLines, margin, yPos + 7);
+                }
+                
+                if (brandDonts) {
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(252, 129, 129);
+                    doc.text('✗ Don\'t', margin + colWidth + 10, yPos);
+                    
+                    doc.setFontSize(9);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(45, 55, 72);
+                    const dontsLines = doc.splitTextToSize(brandDonts, colWidth);
+                    doc.text(dontsLines, margin + colWidth + 10, yPos + 7);
+                }
+            }
+            
+            // Save the PDF
+            const fileName = `${brandName.replace(/[^a-z0-9]/gi, '_')}_Brand_Style_Guide.pdf`;
+            doc.save(fileName);
+            
+            alert(`✅ Brand Style Guide Generated!\n\nFile: ${fileName}\n\nThe PDF has been downloaded to your Downloads folder.`);
         });
-        
-        document.getElementById('secondary').addEventListener('input', function() {
-            document.getElementById('secondaryHex').textContent = this.value;
-        });
-        
-        document.getElementById('accent').addEventListener('input', function() {
-            document.getElementById('accentHex').textContent = this.value;
-        });
-        
-        window.addEventListener('load', updatePreview);
     </script>
 </body>
 </html>

@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geco Design - Service Landing Page Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .form-section {
+            padding: 40px;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+
+        .preview-section {
+            padding: 40px;
+            background: #f5f5f5;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .benefit-input {
+            margin-bottom: 10px;
+        }
+
+        .add-benefit-btn, .add-testimonial-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .add-benefit-btn:hover, .add-testimonial-btn:hover {
+            background: #5568d3;
+        }
+
+        .testimonial-group {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .preview-iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .color-scheme-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .color-option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .color-option:hover {
+            border-color: #667eea;
+        }
+
+        .color-option.active {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .color-preview {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .color-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 968px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .form-section {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Geco Design</h1>
+            <p>Service Landing Page Generator</p>
+        </div>
+
+        <div class="content">
+            <div class="form-section">
+                <form id="landingPageForm">
+                    <div class="form-group">
+                        <label for="vertical">Service Vertical</label>
+                        <select id="vertical" required>
+                            <option value="">Select a vertical...</option>
+                            <option value="construction">Construction Sector</option>
+                            <option value="professional">Professional Services</option>
+                            <option value="webdesign">Web Design & Digital Marketing</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serviceName">Service Name / Headline</label>
+                        <input type="text" id="serviceName" placeholder="e.g., Professional Architecture Services" required>
+                        <p class="help-text">Main headline that appears in the hero section</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subheadline">Subheadline</label>
+                        <input type="text" id="subheadline" placeholder="e.g., Bringing your vision to life with expert design">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="targetIndustry">Target Industry</label>
+                        <input type="text" id="targetIndustry" placeholder="e.g., Residential & Commercial Architecture" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Key Benefits (3-5 points)</label>
+                        <div id="benefitsContainer">
+                            <input type="text" class="benefit-input" placeholder="Benefit 1" required>
+                            <input type="text" class="benefit-input" placeholder="Benefit 2" required>
+                            <input type="text" class="benefit-input" placeholder="Benefit 3" required>
+                        </div>
+                        <button type="button" class="add-benefit-btn" onclick="addBenefit()">+ Add Benefit</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Testimonials</label>
+                        <div id="testimonialsContainer"></div>
+                        <button type="button" class="add-testimonial-btn" onclick="addTestimonial()">+ Add Testimonial</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ctaText">Call-to-Action Text</label>
+                        <input type="text" id="ctaText" placeholder="e.g., Get Your Free Consultation" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ctaLink">Call-to-Action Link</label>
+                        <input type="url" id="ctaLink" placeholder="https://example.com/contact" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="heroImage">Hero Image URL</label>
+                        <input type="url" id="heroImage" placeholder="https://images.unsplash.com/...">
+                        <p class="help-text">Paste an image URL or leave blank for a gradient background</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Color Scheme</label>
+                        <div class="color-scheme-selector">
+                            <div class="color-option active" data-scheme="purple" onclick="selectColorScheme('purple')">
+                                <div class="color-preview">
+                                    <div class="color-dot" style="background: #667eea;"></div>
+                                    <div class="color-dot" style="background: #764ba2;"></div>
+                                </div>
+                                <div>Purple</div>
+                            </div>
+                            <div class="color-option" data-scheme="blue" onclick="selectColorScheme('blue')">
+                                <div class="color-preview">
+                                    <div class="color-dot" style="background: #4facfe;"></div>
+                                    <div class="color-dot" style="background: #00f2fe;"></div>
+                                </div>
+                                <div>Blue</div>
+                            </div>
+                            <div class="color-option" data-scheme="green" onclick="selectColorScheme('green')">
+                                <div class="color-preview">
+                                    <div class="color-dot" style="background: #43e97b;"></div>
+                                    <div class="color-dot" style="background: #38f9d7;"></div>
+                                </div>
+                                <div>Green</div>
+                            </div>
+                            <div class="color-option" data-scheme="orange" onclick="selectColorScheme('orange')">
+                                <div class="color-preview">
+                                    <div class="color-dot" style="background: #fa709a;"></div>
+                                    <div class="color-dot" style="background: #fee140;"></div>
+                                </div>
+                                <div>Sunset</div>
+                            </div>
+                            <div class="color-option" data-scheme="navy" onclick="selectColorScheme('navy')">
+                                <div class="color-preview">
+                                    <div class="color-dot" style="background: #2c3e50;"></div>
+                                    <div class="color-dot" style="background: #3498db;"></div>
+                                </div>
+                                <div>Navy</div>
+                            </div>
+                            <div class="color-option" data-scheme="professional" onclick="selectColorScheme('professional')">
+                                <div class="color-preview">
+                                    <div class="color-dot" style="background: #1e3a8a;"></div>
+                                    <div class="color-dot" style="background: #60a5fa;"></div>
+                                </div>
+                                <div>Professional</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="generatePreview()">👁️ Preview</button>
+                        <button type="button" class="btn btn-primary" onclick="exportHTML()">💾 Export HTML</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="preview-section">
+                <h3 style="margin-bottom: 20px; color: #333;">Live Preview</h3>
+                <iframe id="previewFrame" class="preview-iframe"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentColorScheme = 'purple';
+
+        const colorSchemes = {
+            purple: {
+                primary: '#667eea',
+                secondary: '#764ba2',
+                accent: '#b794f6',
+                text: '#2d3748'
+            },
+            blue: {
+                primary: '#4facfe',
+                secondary: '#00f2fe',
+                accent: '#0ea5e9',
+                text: '#1e3a8a'
+            },
+            green: {
+                primary: '#43e97b',
+                secondary: '#38f9d7',
+                accent: '#10b981',
+                text: '#065f46'
+            },
+            orange: {
+                primary: '#fa709a',
+                secondary: '#fee140',
+                accent: '#f97316',
+                text: '#7c2d12'
+            },
+            navy: {
+                primary: '#2c3e50',
+                secondary: '#3498db',
+                accent: '#60a5fa',
+                text: '#1e293b'
+            },
+            professional: {
+                primary: '#1e3a8a',
+                secondary: '#60a5fa',
+                accent: '#3b82f6',
+                text: '#1e293b'
+            }
+        };
+
+        function selectColorScheme(scheme) {
+            currentColorScheme = scheme;
+            document.querySelectorAll('.color-option').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelector(`[data-scheme="${scheme}"]`).classList.add('active');
+            generatePreview();
+        }
+
+        function addBenefit() {
+            const container = document.getElementById('benefitsContainer');
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'benefit-input';
+            input.placeholder = `Benefit ${container.children.length + 1}`;
+            container.appendChild(input);
+        }
+
+        function addTestimonial() {
+            const container = document.getElementById('testimonialsContainer');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'testimonial-group';
+            div.innerHTML = `
+                <input type="text" placeholder="Client Name" class="testimonial-name" style="width: 100%; margin-bottom: 8px; padding: 8px; border: 1px solid #e0e0e0; border-radius: 4px;">
+                <input type="text" placeholder="Client Title/Company" class="testimonial-title" style="width: 100%; margin-bottom: 8px; padding: 8px; border: 1px solid #e0e0e0; border-radius: 4px;">
+                <textarea placeholder="Testimonial text..." class="testimonial-text" style="width: 100%; padding: 8px; border: 1px solid #e0e0e0; border-radius: 4px; min-height: 60px;"></textarea>
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function getFormData() {
+            const benefits = Array.from(document.querySelectorAll('.benefit-input'))
+                .map(input => input.value.trim())
+                .filter(value => value !== '');
+
+            const testimonials = Array.from(document.querySelectorAll('.testimonial-group')).map(group => ({
+                name: group.querySelector('.testimonial-name').value,
+                title: group.querySelector('.testimonial-title').value,
+                text: group.querySelector('.testimonial-text').value
+            })).filter(t => t.name && t.text);
+
+            return {
+                vertical: document.getElementById('vertical').value,
+                serviceName: document.getElementById('serviceName').value,
+                subheadline: document.getElementById('subheadline').value,
+                targetIndustry: document.getElementById('targetIndustry').value,
+                benefits: benefits,
+                testimonials: testimonials,
+                ctaText: document.getElementById('ctaText').value,
+                ctaLink: document.getElementById('ctaLink').value,
+                heroImage: document.getElementById('heroImage').value,
+                colorScheme: currentColorScheme
+            };
+        }
+
+        function generateLandingPageHTML(data) {
+            const colors = colorSchemes[data.colorScheme];
+            
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="${data.serviceName} - ${data.targetIndustry}">
+    <meta name="keywords" content="${data.targetIndustry}, ${data.serviceName}, Geco Design">
+    <meta property="og:title" content="${data.serviceName}">
+    <meta property="og:description" content="${data.subheadline}">
+    <meta property="og:type" content="website">
+    <title>${data.serviceName} | Geco Design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: ${colors.text};
+        }
+
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%);
+            ${data.heroImage ? `background-image: linear-gradient(135deg, ${colors.primary}cc 0%, ${colors.secondary}cc 100%), url('${data.heroImage}');` : ''}
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 18px 40px;
+            background: white;
+            color: ${colors.primary};
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .section {
+            padding: 80px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            text-align: center;
+            margin-bottom: 60px;
+            color: ${colors.text};
+        }
+
+        .benefits {
+            background: #f9fafb;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .benefit-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .benefit-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 30px;
+        }
+
+        .benefit-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: ${colors.text};
+        }
+
+        .testimonials {
+            background: white;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .testimonial-card {
+            background: #f9fafb;
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 4px solid ${colors.primary};
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: ${colors.primary};
+        }
+
+        .testimonial-title {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .contact-section {
+            background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: ${colors.text};
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: ${colors.primary};
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .footer {
+            background: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .footer a {
+            color: ${colors.accent};
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                padding: 50px 20px;
+            }
+
+            .benefits-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>${data.serviceName}</h1>
+            <p>${data.subheadline}</p>
+            <a href="${data.ctaLink}" class="cta-button">${data.ctaText}</a>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="section benefits">
+        <div class="container">
+            <h2 class="section-title">Why Choose Us</h2>
+            <div class="benefits-grid">
+                ${data.benefits.map((benefit, index) => `
+                <div class="benefit-card">
+                    <div class="benefit-icon">✓</div>
+                    <h3>${benefit}</h3>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+    </section>
+
+    ${data.testimonials.length > 0 ? `
+    <!-- Testimonials Section -->
+    <section class="section testimonials">
+        <div class="container">
+            <h2 class="section-title">What Our Clients Say</h2>
+            <div class="testimonials-grid">
+                ${data.testimonials.map(testimonial => `
+                <div class="testimonial-card">
+                    <div class="testimonial-text">"${testimonial.text}"</div>
+                    <div class="testimonial-author">${testimonial.name}</div>
+                    <div class="testimonial-title">${testimonial.title}</div>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+    </section>
+    ` : ''}
+
+    <!-- Contact Section -->
+    <section class="section contact-section">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">Get In Touch</h2>
+            <form class="contact-form" onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+                <button type="submit" class="submit-button">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Powered by <a href="https://gecodesign.com" target="_blank">Geco Design</a></p>
+        <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">© ${new Date().getFullYear()} All rights reserved</p>
+    </footer>
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+            
+            // Here you would typically send the data to your backend
+            alert('Thank you for your message! We will get back to you soon.');
+            event.target.reset();
+        }
+    </script>
+</body>
+</html>`;
+        }
+
+        function generatePreview() {
+            const data = getFormData();
+            if (!data.serviceName || !data.targetIndustry || data.benefits.length === 0) {
+                alert('Please fill in the required fields (Service Name, Target Industry, and at least one benefit)');
+                return;
+            }
+
+            const html = generateLandingPageHTML(data);
+            const iframe = document.getElementById('previewFrame');
+            iframe.srcdoc = html;
+        }
+
+        function exportHTML() {
+            const data = getFormData();
+            if (!data.serviceName || !data.targetIndustry || data.benefits.length === 0) {
+                alert('Please fill in the required fields before exporting');
+                return;
+            }
+
+            const html = generateLandingPageHTML(data);
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${data.serviceName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-landing-page.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Auto-generate preview on form changes
+        document.getElementById('landingPageForm').addEventListener('input', function() {
+            clearTimeout(window.previewTimeout);
+            window.previewTimeout = setTimeout(generatePreview, 1000);
+        });
+
+        // Initialize with a sample
+        window.addEventListener('load', function() {
+            document.getElementById('vertical').value = 'construction';
+            document.getElementById('serviceName').value = 'Professional Architecture Services';
+            document.getElementById('subheadline').value = 'Bringing your vision to life with expert design and planning';
+            document.getElementById('targetIndustry').value = 'Residential & Commercial Architecture';
+            document.querySelectorAll('.benefit-input')[0].value = 'Expert team with 15+ years experience';
+            document.querySelectorAll('.benefit-input')[1].value = 'Cutting-edge 3D visualization technology';
+            document.querySelectorAll('.benefit-input')[2].value = 'On-time, on-budget delivery guarantee';
+            document.getElementById('ctaText').value = 'Get Your Free Consultation';
+            document.getElementById('ctaLink').value = 'https://gecodesign.com/contact';
+            
+            addTestimonial();
+            setTimeout(() => {
+                document.querySelector('.testimonial-name').value = 'Sarah Johnson';
+                document.querySelector('.testimonial-title').value = 'Property Developer';
+                document.querySelector('.testimonial-text').value = 'Working with this team transformed our project. Their attention to detail and innovative approach exceeded all expectations.';
+                generatePreview();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

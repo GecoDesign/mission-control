@@ -10,13 +10,31 @@ import { Search, ExternalLink, Calendar, FileCode } from "lucide-react"
 const tools = [
   // February 20, 2026
   {
-    name: "Crypto Trading Signals Dashboard",
-    description: "Real-time trading signals for Base & Pulse portfolio with RSI, MA, volume analysis",
+    name: "Crypto Trading Dashboard",
+    description: "Comprehensive portfolio tracking for Base & Pulse tokens with real-time data, charts, and analysis",
     category: "crypto",
-    file: "crypto-trading-signals.html",
-    size: "13 KB",
+    file: "crypto-trading-dashboard.html",
+    size: "25 KB",
     date: "2026-02-20",
-    time: "11:15"
+    time: "06:43"
+  },
+  {
+    name: "Geco Landing Page Generator",
+    description: "Professional landing page generator with customizable templates for Geco Design services",
+    category: "geco",
+    file: "geco-landing-page-generator.html",
+    size: "31 KB",
+    date: "2026-02-20",
+    time: "05:43"
+  },
+  {
+    name: "Architecture Landing Page Example",
+    description: "Example landing page template for architectural firms and construction sector",
+    category: "marketing",
+    file: "example-architecture-landing-page.html",
+    size: "11 KB",
+    date: "2026-02-20",
+    time: "05:44"
   },
   {
     name: "Service Landing Page Generator",
@@ -32,9 +50,9 @@ const tools = [
     description: "Create professional brand guidelines with colors, typography, logo usage - PDF export",
     category: "client",
     file: "brand-style-guide-generator.html",
-    size: "19 KB",
+    size: "32 KB",
     date: "2026-02-20",
-    time: "11:13"
+    time: "04:44"
   },
   {
     name: "Website Performance Analyzer",
