@@ -12,6 +12,7 @@ import {
   Lightbulb, 
   GanttChart, 
   StickyNote,
+  Wrench,
   ChevronLeft,
   ChevronRight
 } from "lucide-react"
@@ -23,6 +24,7 @@ const navigation = [
   { name: "Tasks", href: "/tasks", icon: CheckSquare },
   { name: "Ideas", href: "/ideas", icon: Lightbulb },
   { name: "Timeline", href: "/timeline", icon: GanttChart },
+  { name: "Tools", href: "/tools", icon: Wrench },
   { name: "Notes", href: "/notes", icon: StickyNote },
 ]
 
